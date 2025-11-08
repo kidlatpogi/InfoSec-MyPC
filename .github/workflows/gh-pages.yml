@@ -9,18 +9,29 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node (for possible build steps)
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          fetch-depth: 0
+
+      - name: Prepare publish directory
+        run: |
+          # Create a clean directory for files to publish. Adjust the list below to include any other static files/folders you want published.
+          rm -rf publish || true
+          mkdir -p publish
+          # Copy visible static site files
+          cp -r index.html CSS JS README.md publish/ 2>/dev/null || true
+          # Copy root-level assets if present (favicon, assets folder, etc.)
+          cp -r assets publish/ 2>/dev/null || true
+
+      # If you have a build step (npm/yarn) run it here and copy the build output into publish/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./publish
           publish_branch: gh-pages
-          # If your site needs a build step (npm run build), add it above and point publish_dir to the build output
+          # prevent keeping history from previous gh-pages (optional)
+          keep_files: false
+
