@@ -2,11 +2,16 @@
     <div class="container header-inner">
         <a class="logo" href="/">MyPC</a>
         <nav class="main-nav">
-            <a href="/shop">Shop</a>
-            <div id="auth-nav" style="display:flex;gap:1rem;align-items:center;">
-                <a href="/login" id="login-link">Login</a>
-            </div>
+            <a href="/shop" class="nav-link">Shop</a>
         </nav>
+        <div class="header-right">
+            <button id="cart-toggle" class="cart-btn" title="Shopping Cart">
+                <span class="cart-label">Cart</span>
+                <span id="cart-count" class="cart-badge">0</span>
+            </button>
+            <!-- `updateAuthNav()` will populate this with Login/Create or User + Logout -->
+            <div id="auth-nav" style="display:flex;gap:0.6rem;align-items:center;"></div>
+        </div>
     </div>
 </header>
 
@@ -17,8 +22,8 @@
     </div>
 
     <div class="admin-tabs">
-        <button class="tab-btn active" data-tab="users">👥 Manage Users</button>
-        <button class="tab-btn" data-tab="products">📦 Manage Products</button>
+        <button class="tab-btn active" data-tab="users">Manage Users</button>
+        <button class="tab-btn" data-tab="products">Manage Products</button>
     </div>
 
     <!-- Users Management Tab -->

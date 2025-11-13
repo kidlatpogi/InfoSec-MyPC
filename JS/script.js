@@ -34,14 +34,9 @@ function updateAuthNav(){
     // Check if user is admin
     const users = getAdminUsers ? getAdminUsers() : [];
     const isAdmin = users.some(u=>u.email===user && u.isAdmin);
-    const adminLink = isAdmin ? `<a href="/admin" style="text-decoration:none;color:#ef4444;font-weight:600">⚙️ Admin</a>` : '';
-    authNav.innerHTML = `<div style="display:flex;gap:0.5rem;align-items:center;"><span style="color:var(--text-light)">${user}</span><a href="/profile" style="text-decoration:none;color:var(--accent);font-weight:600">Profile</a>${adminLink}<button id="logout-btn" style="background:#2563eb;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-weight:600;transition:background 0.3s">Logout</button></div>`;
-    const logoutBtn = document.getElementById('logout-btn');
-    if(logoutBtn) {
-      logoutBtn.addEventListener('click', ()=>{ doLogout(true); });
-      logoutBtn.addEventListener('mouseover', ()=>{ logoutBtn.style.background='#1d4ed8'; });
-      logoutBtn.addEventListener('mouseout', ()=>{ logoutBtn.style.background='#2563eb'; });
-    }
+  const adminLink = isAdmin ? `<a href="/admin" style="text-decoration:none;color:#ef4444;font-weight:600">⚙️ Admin</a>` : '';
+  // Show Profile (button) then Admin link (if any), and place the user's email to the right of the Profile button.
+  authNav.innerHTML = `<div style="display:flex;gap:0.5rem;align-items:center;"><a href="/profile" style="text-decoration:none;color:var(--accent);font-weight:600">Profile</a>${adminLink}<span class="user-email">${user}</span></div>`;
   } else {
     // Show both Login and Create account links when not signed in
     authNav.innerHTML = '<a href="/login" style="font-weight:600;margin-right:0.5rem">Login</a><a href="/signup" style="font-weight:600">Create account</a>';
@@ -652,8 +647,8 @@ function renderAdminUsers(){
       <td><span class="badge ${u.status==='active'?'active':'inactive'}">${u.status}</span></td>
       <td>${new Date(u.created).toLocaleDateString()}</td>
       <td>
-        <button class="action-btn edit" onclick="editUser(${i})">✏️ Edit</button>
-        <button class="action-btn delete" onclick="deleteUser(${i})">🗑️ Delete</button>
+        <button class="action-btn edit" onclick="editUser(${i})">Edit</button>
+        <button class="action-btn delete" onclick="deleteUser(${i})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -670,9 +665,9 @@ function renderAdminProducts(){
       <td>${formatPHP(p.price)}</td>
       <td>${(p.variants||[]).length} variants</td>
       <td>
-        <button class="action-btn view" onclick="viewProduct(${i})">👁️ View</button>
-        <button class="action-btn edit" onclick="editProduct(${i})">✏️ Edit</button>
-        <button class="action-btn delete" onclick="deleteProduct(${i})">🗑️ Delete</button>
+        <button class="action-btn view" onclick="viewProduct(${i})">View</button>
+        <button class="action-btn edit" onclick="editProduct(${i})">Edit</button>
+        <button class="action-btn delete" onclick="deleteProduct(${i})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -814,8 +809,8 @@ function filterAdminUsers(){
       <td><span class="badge ${u.status==='active'?'active':'inactive'}">${u.status}</span></td>
       <td>${new Date(u.created).toLocaleDateString()}</td>
       <td>
-        <button class="action-btn edit" onclick="editUser(${getAdminUsers().indexOf(u)})">✏️ Edit</button>
-        <button class="action-btn delete" onclick="deleteUser(${getAdminUsers().indexOf(u)})">🗑️ Delete</button>
+        <button class="action-btn edit" onclick="editUser(${getAdminUsers().indexOf(u)})">Edit</button>
+        <button class="action-btn delete" onclick="deleteUser(${getAdminUsers().indexOf(u)})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -834,9 +829,9 @@ function filterAdminProducts(){
       <td>${formatPHP(p.price)}</td>
       <td>${(p.variants||[]).length} variants</td>
       <td>
-        <button class="action-btn view" onclick="viewProduct(${getAdminProducts().indexOf(p)})">👁️ View</button>
-        <button class="action-btn edit" onclick="editProduct(${getAdminProducts().indexOf(p)})">✏️ Edit</button>
-        <button class="action-btn delete" onclick="deleteProduct(${getAdminProducts().indexOf(p)})">🗑️ Delete</button>
+        <button class="action-btn view" onclick="viewProduct(${getAdminProducts().indexOf(p)})">View</button>
+        <button class="action-btn edit" onclick="editProduct(${getAdminProducts().indexOf(p)})">Edit</button>
+        <button class="action-btn delete" onclick="deleteProduct(${getAdminProducts().indexOf(p)})">Delete</button>
       </td>
     </tr>
   `).join('');

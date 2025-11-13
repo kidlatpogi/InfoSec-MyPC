@@ -558,3 +558,24 @@
   #confirm-message{padding:0.7rem 0.9rem;font-size:0.8rem;line-height:1.4}
   .badge{padding:0.15rem 0.4rem;font-size:0.6rem}
 }
+
+/* Extra responsive fixes: ensure tables scroll and cells don't wrap on small screens */
+@media (max-width: 991px) {
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .admin-table { min-width: 720px; }
+    .admin-table th, .admin-table td { white-space: nowrap; }
+}
+
+@media (max-width: 599px) {
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* reduce required min width so horizontal scroll is less aggressive on small phones */
+    .admin-table { min-width: 560px; }
+    .action-btn { white-space: nowrap; }
+}
+
+@media (max-width: 479px) {
+    /* make tables comfortably scrollable on very small screens */
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .admin-table { min-width: 480px; }
+    .action-btn { font-size: 0.7rem; padding: 0.25rem 0.45rem; }
+}
