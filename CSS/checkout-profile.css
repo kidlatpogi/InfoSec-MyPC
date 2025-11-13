@@ -218,9 +218,28 @@
 .profile-content {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
+    width: 40vw;
+    height: fit-content;
+    padding: 20px;
+    border-radius: 10px;
 }
+
+/* Mobile stack for profile pages */
+@media (max-width:767px){
+    .profile-wrapper{grid-template-columns:1fr;gap:1rem;padding:1rem 0}
+    .profile-sidebar{
+        order:0;
+        position:relative;
+        top:auto;
+        width:70vw;
+    }
+    .profile-content{
+        order:1;
+        width:70vw;
+    }
+    .profile-sidebar{padding:1rem}
+}
+
 
 .profile-section {
     display: none;

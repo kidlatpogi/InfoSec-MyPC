@@ -82,20 +82,26 @@ input,select{font-family:inherit}
   .product .actions{gap:0.4rem}
 }
 
-/* Mobile: 4 columns */
+/* Mobile: single column product feed for small screens */
 @media (max-width:480px){
-  .product-grid{grid-template-columns:repeat(4,1fr);gap:0.75rem}
-  .product{padding:0.75rem}
-  .product h3{font-size:0.85rem}
-  .product .price{font-size:0.9rem}
-  .product img{height:100px;padding:6px}
-  .search-row{margin:1rem 0}
-  .search-row input,.search-row select{padding:0.7rem}
-  .hero{padding:3rem 1rem 2rem}
-  .hero h1{font-size:1.5rem;margin-bottom:0.5rem}
-  .hero p{font-size:0.95rem;margin-bottom:1rem}
-  .primary{padding:0.6rem 1rem;font-size:0.95rem}
-  .product .actions{gap:0.3rem;font-size:0.8rem}
+  .product-grid{grid-template-columns:1fr;gap:0.75rem;padding:0.5rem 0}
+  .product{padding:0.9rem;border-radius:10px}
+  .product h3{font-size:1rem}
+  .product .price{font-size:1.05rem}
+  .product img{height:auto;max-height:140px;padding:6px}
+  .search-row{margin:0.75rem 0}
+  .search-row input,.search-row select{padding:0.65rem}
+  .hero{padding:2.5rem 0.75rem 1.5rem}
+  .hero h1{font-size:1.6rem;margin-bottom:0.6rem}
+  .hero p{font-size:0.95rem;margin-bottom:0.9rem}
+  .primary{padding:0.55rem 0.9rem;font-size:0.95rem}
+  .product .actions{gap:0.4rem;font-size:0.9rem}
+}
+
+/* Very small devices - ensure tap targets are roomy */
+@media (max-width:360px){
+  .cart-btn, .auth-btn, #user-info .profile-link { padding:0.45rem 0.6rem; height:34px }
+  .product img{max-height:120px}
 }
 
 /* Product Detail Modal */

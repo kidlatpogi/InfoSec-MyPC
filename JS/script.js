@@ -86,7 +86,10 @@ function syncAuthButton(){
 }
 
 // pagination & sort state
-let STATE = {query:'',category:'',sort:'relevance',page:1,perPage:6}
+// Use window.STATE so reloading/injecting this script multiple times doesn't
+// throw "Identifier 'STATE' has already been declared". We only initialize
+// when it doesn't already exist.
+window.STATE = window.STATE || {query:'',category:'',sort:'relevance',page:1,perPage:6};
 
 function applySort(list, sort){
   if(sort==='price-asc') return list.sort((a,b)=>a.price-b.price);
@@ -570,8 +573,10 @@ if(!localStorage.getItem('mypc_admin_users')){
   ]);
 }
 
-let currentEditingId = null;
-let deleteTarget = null;
+// Avoid redeclaration errors when this file is injected multiple times by the router.
+// Preserve any existing values (important for numeric indexes like 0).
+window.currentEditingId = (typeof window.currentEditingId !== 'undefined') ? window.currentEditingId : null;
+window.deleteTarget = (typeof window.deleteTarget !== 'undefined') ? window.deleteTarget : null;
 
 function initializeAdmin(){
   // Check if user is admin
