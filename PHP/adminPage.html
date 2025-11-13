@@ -24,6 +24,7 @@
     <div class="admin-tabs">
         <button class="tab-btn active" data-tab="users">Manage Users</button>
         <button class="tab-btn" data-tab="products">Manage Products</button>
+        <button class="tab-btn" data-tab="orders">Manage Orders</button>
     </div>
 
     <!-- Users Management Tab -->
@@ -81,6 +82,35 @@
                 </thead>
                 <tbody id="products-tbody">
                     <tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Orders Management Tab -->
+    <div id="orders-tab" class="tab-content">
+        <div class="tab-header">
+            <h2>Orders Management</h2>
+        </div>
+
+        <div class="search-filter">
+            <input type="text" id="order-search" placeholder="Search orders by order ID or customer email...">
+        </div>
+
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Email</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                    <tr><td colspan="6" style="text-align:center;padding:2rem">Loading orders...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -165,6 +195,23 @@
         <div class="form-actions">
             <button type="button" class="secondary" data-action="cancel">Cancel</button>
             <button type="button" id="confirm-delete-btn" class="danger">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="order-modal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h2 id="order-modal-title">Order Details</h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div id="order-modal-content" style="padding:1.5rem">
+            <!-- Order details injected by JS -->
+        </div>
+        <div class="form-actions">
+            <button type="button" class="secondary" data-action="cancel">Close</button>
+            <button type="button" id="update-order-status-btn" class="primary">Update Status</button>
         </div>
     </div>
 </div>

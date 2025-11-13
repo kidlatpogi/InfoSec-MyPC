@@ -568,6 +568,21 @@ if(!localStorage.getItem('mypc_admin_users')){
   ]);
 }
 
+// Orders Management
+function getAdminOrders(){
+  try{ return JSON.parse(localStorage.getItem('mypc_admin_orders')||'[]') }catch(e){return []}
+}
+function saveAdminOrders(orders){ localStorage.setItem('mypc_admin_orders', JSON.stringify(orders)) }
+
+// Initialize sample orders if none exist
+if(!localStorage.getItem('mypc_admin_orders')){
+  saveAdminOrders([
+    {id:'ORD-001', email:'john@example.com', items:[{title:'RTX 3080', quantity:1, price:50000}], total:50000, status:'delivered', date:new Date(Date.now()-7*24*60*60*1000).toISOString()},
+    {id:'ORD-002', email:'jane@example.com', items:[{title:'Ryzen 5 5600X', quantity:1, price:18000}], total:18000, status:'shipped', date:new Date(Date.now()-3*24*60*60*1000).toISOString()},
+    {id:'ORD-003', email:'admin@mypc.com', items:[{title:'32GB DDR4 RAM', quantity:2, price:8000}], total:16000, status:'pending', date:new Date().toISOString()}
+  ]);
+}
+
 // Avoid redeclaration errors when this file is injected multiple times by the router.
 // Preserve any existing values (important for numeric indexes like 0).
 window.currentEditingId = (typeof window.currentEditingId !== 'undefined') ? window.currentEditingId : null;
@@ -594,6 +609,7 @@ function initializeAdmin(){
       e.target.classList.add('active');
       document.getElementById(tab+'-tab').classList.add('active');
       if(tab==='products') renderAdminProducts();
+      else if(tab==='orders') renderAdminOrders();
     });
   });
   
@@ -628,6 +644,7 @@ function initializeAdmin(){
   // Search filters
   document.getElementById('user-search').addEventListener('input', filterAdminUsers);
   document.getElementById('product-search').addEventListener('input', filterAdminProducts);
+  document.getElementById('order-search').addEventListener('input', filterAdminOrders);
   
   // Confirm delete
   document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
@@ -835,6 +852,89 @@ function filterAdminProducts(){
       </td>
     </tr>
   `).join('');
+}
+
+function renderAdminOrders(){
+  const orders = getAdminOrders();
+  const tbody = document.getElementById('orders-tbody');
+  tbody.innerHTML = orders.map((o,i)=>`
+    <tr>
+      <td>${o.id}</td>
+      <td>${o.email}</td>
+      <td>${formatPHP(o.total)}</td>
+      <td><span class="badge ${o.status==='delivered'?'active':o.status==='shipped'?'active':'inactive'}">${o.status}</span></td>
+      <td>${new Date(o.date).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn view" onclick="viewOrder(${i})">View</button>
+        <button class="action-btn edit" onclick="updateOrderStatus(${i})">Update</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterAdminOrders(){
+  const query = document.getElementById('order-search').value.toLowerCase();
+  const orders = getAdminOrders();
+  const filtered = orders.filter(o=>o.id.toLowerCase().includes(query) || o.email.toLowerCase().includes(query));
+  const tbody = document.getElementById('orders-tbody');
+  tbody.innerHTML = filtered.map((o,i)=>`
+    <tr>
+      <td>${o.id}</td>
+      <td>${o.email}</td>
+      <td>${formatPHP(o.total)}</td>
+      <td><span class="badge ${o.status==='delivered'?'active':o.status==='shipped'?'active':'inactive'}">${o.status}</span></td>
+      <td>${new Date(o.date).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn view" onclick="viewOrder(${getAdminOrders().indexOf(o)})">View</button>
+        <button class="action-btn edit" onclick="updateOrderStatus(${getAdminOrders().indexOf(o)})">Update</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function viewOrder(index){
+  const orders = getAdminOrders();
+  const order = orders[index];
+  window.currentEditingOrderId = index;
+  const itemsHTML = (order.items||[]).map(item=>`
+    <div style="padding:0.8rem;background:var(--surface);border-radius:6px;margin-bottom:0.5rem">
+      <strong>${item.title}</strong><br>
+      Qty: ${item.quantity} × ${formatPHP(item.price)} = ${formatPHP(item.quantity * item.price)}
+    </div>
+  `).join('');
+  document.getElementById('order-modal-title').textContent = `Order Details: ${order.id}`;
+  document.getElementById('order-modal-content').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <strong>Order ID:</strong> ${order.id}<br>
+      <strong>Customer:</strong> ${order.email}<br>
+      <strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}<br>
+      <strong>Status:</strong> 
+      <select id="order-status-select" style="padding:0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)">
+        <option value="pending" ${order.status==='pending'?'selected':''}>Pending</option>
+        <option value="shipped" ${order.status==='shipped'?'selected':''}>Shipped</option>
+        <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered</option>
+        <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelled</option>
+      </select>
+    </div>
+    <div style="margin-bottom:1rem">
+      <strong>Items:</strong><br>
+      ${itemsHTML}
+    </div>
+    <div style="padding:1rem;background:var(--accent);color:#fff;border-radius:6px">
+      <strong>Total: ${formatPHP(order.total)}</strong>
+    </div>
+  `;
+  document.getElementById('order-modal').classList.add('open');
+}
+
+function updateOrderStatus(index){
+  const orders = getAdminOrders();
+  const newStatus = document.getElementById('order-status-select').value;
+  orders[index].status = newStatus;
+  saveAdminOrders(orders);
+  renderAdminOrders();
+  alert(`Order status updated to: ${newStatus}`);
+  document.getElementById('order-modal').classList.remove('open');
 }
 
 // ============= END ADMIN FUNCTIONS =============
