@@ -10,7 +10,9 @@ class Router {
             '/signup': 'signup',
             '/checkout': 'checkout',
             '/profile': 'profile',
-            '/admin': 'admin'
+            '/admin': 'admin',
+            '/employee': 'employee',
+            '/superadmin': 'superadmin'
         };
         
         // Store original history state for back button
@@ -170,6 +172,8 @@ class Router {
                     'checkout': 'Checkout - MyPC',
                     'profile': 'My Profile - MyPC',
                     'admin': 'Admin Dashboard - MyPC',
+                    'employee': 'Employee Dashboard - MyPC',
+                    'superadmin': 'Superadmin Dashboard - MyPC',
                     'product': 'Product - MyPC'
                 };
                 document.title = title[page] || 'MyPC';

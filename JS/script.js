@@ -31,12 +31,31 @@ function updateAuthNav(){
   if(!authNav) return;
   const user = getUserSession();
   if(user){
-    // Check if user is admin
+    // Check if user is superadmin, admin, or employee
     const users = getAdminUsers ? getAdminUsers() : [];
-    const isAdmin = users.some(u=>u.email===user && u.isAdmin);
-  const adminLink = isAdmin ? `<a href="/admin" style="text-decoration:none;color:#ef4444;font-weight:600">⚙️ Admin</a>` : '';
-  // Show Profile (button) then Admin link (if any), and place the user's email to the right of the Profile button.
-  authNav.innerHTML = `<div style="display:flex;gap:0.5rem;align-items:center;"><a href="/profile" style="text-decoration:none;color:var(--accent);font-weight:600">Profile</a>${adminLink}<span class="user-email">${user}</span></div>`;
+    const currentUser = users.find(u=>u.email===user);
+    const isSuperAdmin = currentUser && currentUser.isSuperAdmin;
+    const isAdmin = currentUser && currentUser.isAdmin;
+    
+    // Debug logging
+    console.log('[updateAuthNav] User:', user, 'isSuperAdmin:', isSuperAdmin, 'isAdmin:', isAdmin);
+    
+    // Check if user is employee
+    const employees = getAdminEmployees ? getAdminEmployees() : [];
+    const isEmployee = employees.some(e=>e.email===user && e.isEmployee);
+    
+    let dashboardLink = '';
+    
+    if(isSuperAdmin) {
+      dashboardLink = `<a href="/superadmin" style="text-decoration:none;color:#f59e0b;font-weight:600">👑 Superadmin</a>`;
+    } else if(isAdmin) {
+      dashboardLink = `<a href="/admin" style="text-decoration:none;color:#ef4444;font-weight:600">⚙️ Admin</a>`;
+    } else if(isEmployee) {
+      dashboardLink = `<a href="/employee" style="text-decoration:none;color:#3b82f6;font-weight:600">📦 Dashboard</a>`;
+    }
+    
+    // Show Profile (button) then Dashboard/Admin link (if any), and place the user's email to the right
+    authNav.innerHTML = `<div style="display:flex;gap:0.5rem;align-items:center;"><a href="/profile" style="text-decoration:none;color:var(--accent);font-weight:600">Profile</a>${dashboardLink}<span class="user-email">${user}</span></div>`;
   } else {
     // Show both Login and Create account links when not signed in
     authNav.innerHTML = '<a href="/login" style="font-weight:600;margin-right:0.5rem">Login</a><a href="/signup" style="font-weight:600">Create account</a>';
@@ -457,9 +476,21 @@ function initializePageScript(){
   // Also sync any legacy auth button instances
   syncAuthButton();
   
+  // Check if this is superadmin page
+  if(document.getElementById('superadmin-welcome')){
+    initializeSuperAdmin();
+    return;
+  }
+  
   // Check if this is admin page
-  if(document.getElementById('users-tab')){
+  if(document.getElementById('admin-welcome')){
     initializeAdmin();
+    return;
+  }
+  
+  // Check if this is employee page
+  if(document.getElementById('employee-welcome')){
+    initializeEmployee();
     return;
   }
   
@@ -555,16 +586,42 @@ function getAdminUsers(){
 }
 function saveAdminUsers(users){ localStorage.setItem('mypc_admin_users', JSON.stringify(users)) }
 
+function getAdminEmployees(){
+  try{ return JSON.parse(localStorage.getItem('mypc_admin_employees')||'[]') }catch(e){return []}
+}
+function saveAdminEmployees(employees){ localStorage.setItem('mypc_admin_employees', JSON.stringify(employees)) }
+
 function getAdminProducts(){
   try{ return JSON.parse(localStorage.getItem('mypc_admin_products')||JSON.stringify(window.PRODUCTS||[])) }catch(e){return window.PRODUCTS||[]}
 }
 function saveAdminProducts(products){ localStorage.setItem('mypc_admin_products', JSON.stringify(products)); window.PRODUCTS = products }
 
-// Initialize admin data if first time
+// Initialize admin data if first time or if missing required fields (isSuperAdmin flag)
 if(!localStorage.getItem('mypc_admin_users')){
-  saveAdminUsers([
-    {id:1, email:'admin@mypc.com', name:'Admin User', password:'admin123', isAdmin:true, status:'active', created:new Date().toISOString()},
-    {id:2, email:'test@example.com', name:'Test User', password:'test123', isAdmin:false, status:'active', created:new Date().toISOString()}
+  const initialUsers = [
+    {id:1, email:'superadmin@mypc.com', name:'Superadmin User', password:'superadmin123', isAdmin:false, isSuperAdmin:true, status:'active', created:new Date().toISOString()},
+    {id:2, email:'admin@mypc.com', name:'Admin User', password:'admin123', isAdmin:true, isSuperAdmin:false, status:'active', created:new Date().toISOString()},
+    {id:3, email:'test@example.com', name:'Test User', password:'test123', isAdmin:false, isSuperAdmin:false, status:'active', created:new Date().toISOString()}
+  ];
+  saveAdminUsers(initialUsers);
+} else {
+  // Ensure all users have the required flags (for backward compatibility after code updates)
+  const users = getAdminUsers();
+  let needsUpdate = false;
+  users.forEach(u => {
+    if (u.isSuperAdmin === undefined) { u.isSuperAdmin = false; needsUpdate = true; }
+    if (u.isAdmin === undefined) { u.isAdmin = false; needsUpdate = true; }
+    // Ensure superadmin@mypc.com has isSuperAdmin flag
+    if (u.email === 'superadmin@mypc.com' && !u.isSuperAdmin) { u.isSuperAdmin = true; needsUpdate = true; }
+  });
+  if (needsUpdate) saveAdminUsers(users);
+}
+
+// Initialize employee data if first time
+if(!localStorage.getItem('mypc_admin_employees')){
+  saveAdminEmployees([
+    {id:1, email:'employee@mypc.com', name:'John Employee', password:'emp123', isEmployee:true, status:'active', created:new Date().toISOString()},
+    {id:2, email:'staff@mypc.com', name:'Jane Staff', password:'staff123', isEmployee:true, status:'active', created:new Date().toISOString()}
   ]);
 }
 
@@ -608,14 +665,13 @@ function initializeAdmin(){
       document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
       e.target.classList.add('active');
       document.getElementById(tab+'-tab').classList.add('active');
-      if(tab==='products') renderAdminProducts();
-      else if(tab==='orders') renderAdminOrders();
+      if(tab==='employees') renderAdminEmployees();
     });
   });
   
   // User form handlers
   document.getElementById('add-user-btn').addEventListener('click', ()=>{
-    currentEditingId = null;
+    window.currentEditingId = null;
     document.getElementById('user-modal-title').textContent = 'Add New User';
     document.getElementById('user-form').reset();
     document.getElementById('user-modal').classList.add('open');
@@ -623,28 +679,31 @@ function initializeAdmin(){
   
   document.getElementById('user-form').addEventListener('submit', saveUser);
   
-  // Product form handlers
-  document.getElementById('add-product-btn').addEventListener('click', ()=>{
-    currentEditingId = null;
-    document.getElementById('product-modal-title').textContent = 'Add New Product';
-    document.getElementById('product-form').reset();
-    document.getElementById('product-modal').classList.add('open');
-  });
-  
-  document.getElementById('product-form').addEventListener('submit', saveProduct);
+  // Employee form handlers
+  if(document.getElementById('add-employee-btn')){
+    document.getElementById('add-employee-btn').addEventListener('click', ()=>{
+      window.currentEditingId = null;
+      document.getElementById('employee-modal-title').textContent = 'Add New Employee';
+      document.getElementById('employee-form').reset();
+      document.getElementById('employee-modal').classList.add('open');
+    });
+    
+    document.getElementById('employee-form').addEventListener('submit', saveEmployee);
+  }
   
   // Modal close buttons
   document.querySelectorAll('.modal-close, [data-action="cancel"]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'));
-      deleteTarget = null;
+      window.deleteTarget = null;
     });
   });
   
   // Search filters
   document.getElementById('user-search').addEventListener('input', filterAdminUsers);
-  document.getElementById('product-search').addEventListener('input', filterAdminProducts);
-  document.getElementById('order-search').addEventListener('input', filterAdminOrders);
+  if(document.getElementById('employee-search')){
+    document.getElementById('employee-search').addEventListener('input', filterAdminEmployees);
+  }
   
   // Confirm delete
   document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
@@ -671,6 +730,45 @@ function renderAdminUsers(){
   `).join('');
 }
 
+function renderAdminAdmins(){
+  const users = getAdminUsers();
+  const admins = users.filter(u=>u.isAdmin && !u.isSuperAdmin);
+  const tbody = document.getElementById('admins-tbody');
+  tbody.innerHTML = admins.map((a,i)=>{
+    const originalIndex = users.indexOf(a);
+    return `
+    <tr>
+      <td>#${a.id}</td>
+      <td>${a.email}</td>
+      <td>${a.name}</td>
+      <td><span class="badge ${a.status==='active'?'active':'inactive'}">${a.status}</span></td>
+      <td>${new Date(a.created).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn edit" onclick="editAdmin(${originalIndex})">Edit</button>
+        <button class="action-btn delete" onclick="deleteAdmin(${originalIndex})">Delete</button>
+      </td>
+    </tr>
+  `}).join('');
+}
+
+function renderAdminEmployees(){
+  const employees = getAdminEmployees();
+  const tbody = document.getElementById('employees-tbody');
+  tbody.innerHTML = employees.map((e,i)=>`
+    <tr>
+      <td>#${e.id}</td>
+      <td>${e.email}</td>
+      <td>${e.name}</td>
+      <td><span class="badge ${e.status==='active'?'active':'inactive'}">${e.status}</span></td>
+      <td>${new Date(e.created).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn edit" onclick="editEmployee(${i})">Edit</button>
+        <button class="action-btn delete" onclick="deleteEmployee(${i})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
 function renderAdminProducts(){
   const products = getAdminProducts();
   const tbody = document.getElementById('products-tbody');
@@ -690,16 +788,37 @@ function renderAdminProducts(){
   `).join('');
 }
 
+function editAdmin(index){
+  window.currentEditingId = index;
+  const users = getAdminUsers();
+  const admin = users[index];
+  document.getElementById('admin-modal-title').textContent = 'Edit Admin';
+  document.getElementById('admin-email').value = admin.email;
+  document.getElementById('admin-name').value = admin.name;
+  document.getElementById('admin-password').value = '';
+  document.getElementById('admin-modal').classList.add('open');
+}
+
 function editUser(index){
-  currentEditingId = index;
+  window.currentEditingId = index;
   const users = getAdminUsers();
   const user = users[index];
   document.getElementById('user-modal-title').textContent = 'Edit User';
   document.getElementById('user-email').value = user.email;
   document.getElementById('user-name').value = user.name;
   document.getElementById('user-password').value = '';
-  document.getElementById('user-is-admin').checked = user.isAdmin;
   document.getElementById('user-modal').classList.add('open');
+}
+
+function editEmployee(index){
+  window.currentEditingId = index;
+  const employees = getAdminEmployees();
+  const employee = employees[index];
+  document.getElementById('employee-modal-title').textContent = 'Edit Employee';
+  document.getElementById('employee-email').value = employee.email;
+  document.getElementById('employee-name').value = employee.name;
+  document.getElementById('employee-password').value = '';
+  document.getElementById('employee-modal').classList.add('open');
 }
 
 function editProduct(index){
@@ -716,7 +835,47 @@ function editProduct(index){
 
 function viewProduct(index){
   const products = getAdminProducts();
-  alert('Product Details:\n\n' + JSON.stringify(products[index], null, 2));
+  const product = products[index];
+  
+  const variantsHTML = (product.variants||[]).map(v=>`
+    <div style="padding:0.5rem 0;border-bottom:1px solid var(--border)">
+      <strong>${v.label}</strong> - ${v.priceDelta > 0 ? '+' : ''}${formatPHP(v.priceDelta)}
+    </div>
+  `).join('');
+  
+  document.getElementById('product-view-title').textContent = `Product Details: ${product.title}`;
+  document.getElementById('product-view-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+      <div>
+        <div style="margin-bottom:1rem">
+          <label style="font-weight:600;color:var(--text-muted);font-size:0.9rem">Product ID</label>
+          <p style="margin:0.5rem 0;font-size:1rem">${product.id}</p>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-weight:600;color:var(--text-muted);font-size:0.9rem">Category</label>
+          <p style="margin:0.5rem 0;font-size:1rem">${product.category}</p>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-weight:600;color:var(--text-muted);font-size:0.9rem">Price</label>
+          <p style="margin:0.5rem 0;font-size:1.3rem;font-weight:600;color:var(--accent)">${formatPHP(product.price)}</p>
+        </div>
+      </div>
+      <div>
+        <div style="padding:1rem;background:var(--surface);border-radius:6px;border:1px solid var(--border)">
+          <label style="font-weight:600;margin-bottom:0.5rem;display:block">Variants (${(product.variants||[]).length})</label>
+          <div style="max-height:150px;overflow-y:auto">
+            ${variantsHTML || '<p style="color:var(--text-muted)">No variants</p>'}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:1rem;background:var(--surface);border-radius:6px;border:1px solid var(--border);margin-bottom:1rem">
+      <label style="font-weight:600;margin-bottom:0.5rem;display:block">Description</label>
+      <p style="margin:0;color:var(--text)">${product.description || 'No description provided'}</p>
+    </div>
+  `;
+  
+  document.getElementById('product-view-modal').classList.add('open');
 }
 
 function saveUser(e){
@@ -729,24 +888,80 @@ function saveUser(e){
   if(!email || !name) { alert('Email and name are required'); return; }
   
   const users = getAdminUsers();
-  if(currentEditingId===null){
+  if(window.currentEditingId===null){
     const newUser = {
       id: Math.max(...users.map(u=>u.id), 0)+1,
-      email, name, password: password||'user123', isAdmin, status:'active',
+      email, name, password: password||'user123', isAdmin, isSuperAdmin:false, status:'active',
       created: new Date().toISOString()
     };
     users.push(newUser);
     alert('User added successfully!');
   } else {
-    if(password) users[currentEditingId].password = password;
-    users[currentEditingId].email = email;
-    users[currentEditingId].name = name;
-    users[currentEditingId].isAdmin = isAdmin;
+    if(password) users[window.currentEditingId].password = password;
+    users[window.currentEditingId].email = email;
+    users[window.currentEditingId].name = name;
+    users[window.currentEditingId].isAdmin = isAdmin;
     alert('User updated successfully!');
   }
   saveAdminUsers(users);
   renderAdminUsers();
   document.getElementById('user-modal').classList.remove('open');
+}
+
+function saveAdmin(e){
+  e.preventDefault();
+  const email = document.getElementById('admin-email').value.trim();
+  const name = document.getElementById('admin-name').value.trim();
+  const password = document.getElementById('admin-password').value.trim();
+  
+  if(!email || !name) { alert('Email and name are required'); return; }
+  
+  const users = getAdminUsers();
+  if(window.currentEditingId===null){
+    const newAdmin = {
+      id: Math.max(...users.map(u=>u.id), 0)+1,
+      email, name, password: password||'admin123', isAdmin:true, isSuperAdmin:false, status:'active',
+      created: new Date().toISOString()
+    };
+    users.push(newAdmin);
+    alert('Admin added successfully!');
+  } else {
+    if(password) users[window.currentEditingId].password = password;
+    users[window.currentEditingId].email = email;
+    users[window.currentEditingId].name = name;
+    alert('Admin updated successfully!');
+  }
+  saveAdminUsers(users);
+  renderAdminAdmins();
+  document.getElementById('admin-modal').classList.remove('open');
+}
+
+function saveEmployee(e){
+  e.preventDefault();
+  const email = document.getElementById('employee-email').value.trim();
+  const name = document.getElementById('employee-name').value.trim();
+  const password = document.getElementById('employee-password').value.trim();
+  
+  if(!email || !name) { alert('Email and name are required'); return; }
+  
+  const employees = getAdminEmployees();
+  if(window.currentEditingId===null){
+    const newEmployee = {
+      id: Math.max(...employees.map(e=>e.id), 0)+1,
+      email, name, password: password||'emp123', isEmployee:true, status:'active',
+      created: new Date().toISOString()
+    };
+    employees.push(newEmployee);
+    alert('Employee added successfully!');
+  } else {
+    if(password) employees[window.currentEditingId].password = password;
+    employees[window.currentEditingId].email = email;
+    employees[window.currentEditingId].name = name;
+    alert('Employee updated successfully!');
+  }
+  saveAdminEmployees(employees);
+  renderAdminEmployees();
+  document.getElementById('employee-modal').classList.remove('open');
 }
 
 function saveProduct(e){
@@ -761,7 +976,7 @@ function saveProduct(e){
   if(!title || !category || !price) { alert('Title, category, and price are required'); return; }
   
   const products = getAdminProducts();
-  if(currentEditingId===null){
+  if(window.currentEditingId===null){
     const newProduct = {
       id: 'custom-'+(Math.max(...products.filter(p=>p.id.toString().startsWith('custom-')).map(p=>parseInt(p.id.split('-')[1])||0), 0)+1),
       title, category, price, variants: variants, img: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%23666%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EPRODUCT%3C/text%3E%3C/svg%3E'
@@ -769,10 +984,10 @@ function saveProduct(e){
     products.push(newProduct);
     alert('Product added successfully!');
   } else {
-    products[currentEditingId].title = title;
-    products[currentEditingId].category = category;
-    products[currentEditingId].price = price;
-    products[currentEditingId].variants = variants;
+    products[window.currentEditingId].title = title;
+    products[window.currentEditingId].category = category;
+    products[window.currentEditingId].price = price;
+    products[window.currentEditingId].variants = variants;
     alert('Product updated successfully!');
   }
   saveAdminProducts(products);
@@ -782,35 +997,82 @@ function saveProduct(e){
 }
 
 function deleteUser(index){
-  deleteTarget = {type:'user', index};
+  window.deleteTarget = {type:'user', index};
   document.getElementById('confirm-message').textContent = 'Are you sure you want to delete this user? This action cannot be undone.';
   document.getElementById('confirm-modal').classList.add('open');
 }
 
+function deleteAdmin(index){
+  window.deleteTarget = {type:'admin', index};
+  document.getElementById('confirm-message').textContent = 'Are you sure you want to delete this admin? This action cannot be undone.';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function deleteEmployee(index){
+  window.deleteTarget = {type:'employee', index};
+  document.getElementById('confirm-message').textContent = 'Are you sure you want to delete this employee? This action cannot be undone.';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
 function deleteProduct(index){
-  deleteTarget = {type:'product', index};
+  window.deleteTarget = {type:'product', index};
   document.getElementById('confirm-message').textContent = 'Are you sure you want to delete this product? This action cannot be undone.';
   document.getElementById('confirm-modal').classList.add('open');
 }
 
 function confirmDelete(){
-  if(!deleteTarget) return;
-  if(deleteTarget.type==='user'){
+  if(!window.deleteTarget) return;
+  if(window.deleteTarget.type==='user'){
     const users = getAdminUsers();
-    users.splice(deleteTarget.index, 1);
+    users.splice(window.deleteTarget.index, 1);
     saveAdminUsers(users);
     renderAdminUsers();
     alert('User deleted successfully!');
+  } else if(window.deleteTarget.type==='admin'){
+    const users = getAdminUsers();
+    users.splice(window.deleteTarget.index, 1);
+    saveAdminUsers(users);
+    renderAdminAdmins();
+    alert('Admin deleted successfully!');
+  } else if(window.deleteTarget.type==='employee'){
+    const employees = getAdminEmployees();
+    employees.splice(window.deleteTarget.index, 1);
+    saveAdminEmployees(employees);
+    renderAdminEmployees();
+    alert('Employee deleted successfully!');
   } else {
     const products = getAdminProducts();
-    products.splice(deleteTarget.index, 1);
+    products.splice(window.deleteTarget.index, 1);
     saveAdminProducts(products);
     window.PRODUCTS = products;
     renderAdminProducts();
     alert('Product deleted successfully!');
   }
   document.getElementById('confirm-modal').classList.remove('open');
-  deleteTarget = null;
+  window.deleteTarget = null;
+}
+
+function filterAdminAdmins(){
+  const query = document.getElementById('admin-search').value.toLowerCase();
+  const users = getAdminUsers();
+  const admins = users.filter(u=>u.isAdmin && !u.isSuperAdmin);
+  const filtered = admins.filter(a=>a.email.toLowerCase().includes(query) || a.name.toLowerCase().includes(query));
+  const tbody = document.getElementById('admins-tbody');
+  tbody.innerHTML = filtered.map((a)=>{
+    const originalIndex = users.indexOf(a);
+    return `
+    <tr>
+      <td>#${a.id}</td>
+      <td>${a.email}</td>
+      <td>${a.name}</td>
+      <td><span class="badge ${a.status==='active'?'active':'inactive'}">${a.status}</span></td>
+      <td>${new Date(a.created).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn edit" onclick="editAdmin(${originalIndex})">Edit</button>
+        <button class="action-btn delete" onclick="deleteAdmin(${originalIndex})">Delete</button>
+      </td>
+    </tr>
+  `}).join('');
 }
 
 function filterAdminUsers(){
@@ -828,6 +1090,26 @@ function filterAdminUsers(){
       <td>
         <button class="action-btn edit" onclick="editUser(${getAdminUsers().indexOf(u)})">Edit</button>
         <button class="action-btn delete" onclick="deleteUser(${getAdminUsers().indexOf(u)})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterAdminEmployees(){
+  const query = document.getElementById('employee-search').value.toLowerCase();
+  const employees = getAdminEmployees();
+  const filtered = employees.filter(e=>e.email.toLowerCase().includes(query) || e.name.toLowerCase().includes(query));
+  const tbody = document.getElementById('employees-tbody');
+  tbody.innerHTML = filtered.map((e,i)=>`
+    <tr>
+      <td>#${e.id}</td>
+      <td>${e.email}</td>
+      <td>${e.name}</td>
+      <td><span class="badge ${e.status==='active'?'active':'inactive'}">${e.status}</span></td>
+      <td>${new Date(e.created).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn edit" onclick="editEmployee(${getAdminEmployees().indexOf(e)})">Edit</button>
+        <button class="action-btn delete" onclick="deleteEmployee(${getAdminEmployees().indexOf(e)})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -908,13 +1190,7 @@ function viewOrder(index){
       <strong>Order ID:</strong> ${order.id}<br>
       <strong>Customer:</strong> ${order.email}<br>
       <strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}<br>
-      <strong>Status:</strong> 
-      <select id="order-status-select" style="padding:0.4rem;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)">
-        <option value="pending" ${order.status==='pending'?'selected':''}>Pending</option>
-        <option value="shipped" ${order.status==='shipped'?'selected':''}>Shipped</option>
-        <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered</option>
-        <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelled</option>
-      </select>
+      <strong>Status:</strong> <span style="display:inline-block;padding:0.4rem 0.8rem;background:var(--surface);border-radius:4px;border:1px solid var(--border)">${order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/-/g,' ')}</span>
     </div>
     <div style="margin-bottom:1rem">
       <strong>Items:</strong><br>
@@ -929,12 +1205,202 @@ function viewOrder(index){
 
 function updateOrderStatus(index){
   const orders = getAdminOrders();
-  const newStatus = document.getElementById('order-status-select').value;
-  orders[index].status = newStatus;
-  saveAdminOrders(orders);
+  const order = orders[index];
+  window.currentEditingOrderId = index;
+  const itemsHTML = (order.items||[]).map(item=>`
+    <div style="padding:0.8rem;background:var(--surface);border-radius:6px;margin-bottom:0.5rem">
+      <strong>${item.title}</strong><br>
+      Qty: ${item.quantity} × ${formatPHP(item.price)} = ${formatPHP(item.quantity * item.price)}
+    </div>
+  `).join('');
+  document.getElementById('order-modal-title').textContent = `Update Order Status: ${order.id}`;
+  document.getElementById('order-modal-content').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <strong>Order ID:</strong> ${order.id}<br>
+      <strong>Customer:</strong> ${order.email}<br>
+      <strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}<br>
+    </div>
+    <div style="margin-bottom:1rem;padding:1rem;background:var(--surface);border-radius:6px;border:1px solid var(--border)">
+      <label style="display:block;margin-bottom:0.75rem;font-weight:600">Update Status:</label>
+      <select id="order-status-select" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-size:1rem">
+        <option value="pending" ${order.status==='pending'?'selected':''}>Pending</option>
+        <option value="waiting-payment" ${order.status==='waiting-payment'?'selected':''}>Waiting for Payment</option>
+        <option value="on-the-way" ${order.status==='on-the-way'?'selected':''}>On the way</option>
+        <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered</option>
+        <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelled</option>
+      </select>
+    </div>
+    <div style="margin-bottom:1rem">
+      <strong>Items:</strong><br>
+      ${itemsHTML}
+    </div>
+    <div style="padding:1rem;background:var(--accent);color:#fff;border-radius:6px">
+      <strong>Total: ${formatPHP(order.total)}</strong>
+    </div>
+  `;
+  document.getElementById('order-modal').classList.add('open');
+  
+  setTimeout(()=>{
+    const select = document.getElementById('order-status-select');
+    if(select){
+      select.addEventListener('change', ()=>{
+        const newStatus = select.value;
+        const orders = getAdminOrders();
+        orders[index].status = newStatus;
+        saveAdminOrders(orders);
+        renderAdminOrders();
+      });
+    }
+  }, 100);
+}
+
+function initializeEmployee(){
+  // Check if user is employee
+  const user = getUserSession();
+  if(!user) { window.router.navigateTo('/login'); return; }
+  
+  const employees = getAdminEmployees();
+  const isEmployee = employees.some(e=>e.email===user && e.isEmployee);
+  if(!isEmployee) { alert('Access denied: Employee only'); window.router.navigateTo('/'); return; }
+  
+  // Render employee page (products first tab)
+  renderAdminProducts();
+  
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const tab = e.target.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      e.target.classList.add('active');
+      document.getElementById(tab+'-tab').classList.add('active');
+      if(tab==='orders') renderAdminOrders();
+    });
+  });
+  
+  // Product form handlers
+  document.getElementById('add-product-btn').addEventListener('click', ()=>{
+    window.currentEditingId = null;
+    document.getElementById('product-modal-title').textContent = 'Add New Product';
+    document.getElementById('product-form').reset();
+    document.getElementById('product-modal').classList.add('open');
+  });
+  
+  document.getElementById('product-form').addEventListener('submit', saveProduct);
+  
+  // Modal close buttons
+  document.querySelectorAll('.modal-close, [data-action="cancel"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'));
+      window.deleteTarget = null;
+    });
+  });
+  
+  // Search filters
+  document.getElementById('product-search').addEventListener('input', filterAdminProducts);
+  document.getElementById('order-search').addEventListener('input', filterAdminOrders);
+  
+  // Confirm delete
+  document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
+  
+  // Welcome message
+  document.getElementById('employee-welcome').textContent = `Welcome, ${user}`;
+}
+
+function initializeSuperAdmin(){
+  // Check if user is superadmin
+  const user = getUserSession();
+  if(!user) { window.router.navigateTo('/login'); return; }
+  
+  const users = getAdminUsers();
+  const isSuperAdmin = users.some(u=>u.email===user && u.isSuperAdmin);
+  if(!isSuperAdmin) { alert('Access denied: Superadmin only'); window.router.navigateTo('/'); return; }
+  
+  // Render all sections
+  renderAdminUsers();
+  renderAdminEmployees();
+  renderAdminAdmins();
+  renderAdminProducts();
   renderAdminOrders();
-  alert(`Order status updated to: ${newStatus}`);
-  document.getElementById('order-modal').classList.remove('open');
+  
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const tab = e.target.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      e.target.classList.add('active');
+      document.getElementById(tab+'-tab').classList.add('active');
+      if(tab==='admins') renderAdminAdmins();
+      else if(tab==='users') renderAdminUsers();
+      else if(tab==='employees') renderAdminEmployees();
+      else if(tab==='products') renderAdminProducts();
+      else if(tab==='orders') renderAdminOrders();
+    });
+  });
+  
+  // Admin form handlers
+  if(document.getElementById('add-admin-btn')){
+    document.getElementById('add-admin-btn').addEventListener('click', ()=>{
+      window.currentEditingId = null;
+      document.getElementById('admin-modal-title').textContent = 'Add New Admin';
+      document.getElementById('admin-form').reset();
+      document.getElementById('admin-modal').classList.add('open');
+    });
+    document.getElementById('admin-form').addEventListener('submit', saveAdmin);
+  }
+  
+  // User form handlers
+  document.getElementById('add-user-btn').addEventListener('click', ()=>{
+    window.currentEditingId = null;
+    document.getElementById('user-modal-title').textContent = 'Add New User';
+    document.getElementById('user-form').reset();
+    document.getElementById('user-modal').classList.add('open');
+  });
+  document.getElementById('user-form').addEventListener('submit', saveUser);
+  
+  // Employee form handlers
+  if(document.getElementById('add-employee-btn')){
+    document.getElementById('add-employee-btn').addEventListener('click', ()=>{
+      window.currentEditingId = null;
+      document.getElementById('employee-modal-title').textContent = 'Add New Employee';
+      document.getElementById('employee-form').reset();
+      document.getElementById('employee-modal').classList.add('open');
+    });
+    document.getElementById('employee-form').addEventListener('submit', saveEmployee);
+  }
+  
+  // Product form handlers
+  if(document.getElementById('add-product-btn')){
+    document.getElementById('add-product-btn').addEventListener('click', ()=>{
+      window.currentEditingId = null;
+      document.getElementById('product-modal-title').textContent = 'Add New Product';
+      document.getElementById('product-form').reset();
+      document.getElementById('product-modal').classList.add('open');
+    });
+    document.getElementById('product-form').addEventListener('submit', saveProduct);
+  }
+  
+  // Modal close buttons
+  document.querySelectorAll('.modal-close, [data-action="cancel"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'));
+      window.deleteTarget = null;
+    });
+  });
+  
+  // Search filters
+  if(document.getElementById('admin-search')) document.getElementById('admin-search').addEventListener('input', filterAdminAdmins);
+  if(document.getElementById('user-search')) document.getElementById('user-search').addEventListener('input', filterAdminUsers);
+  if(document.getElementById('employee-search')) document.getElementById('employee-search').addEventListener('input', filterAdminEmployees);
+  if(document.getElementById('product-search')) document.getElementById('product-search').addEventListener('input', filterAdminProducts);
+  if(document.getElementById('order-search')) document.getElementById('order-search').addEventListener('input', filterAdminOrders);
+  
+  // Confirm delete
+  document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
+  
+  // Welcome message
+  document.getElementById('superadmin-welcome').textContent = `Welcome, ${user}`;
 }
 
 // ============= END ADMIN FUNCTIONS =============
