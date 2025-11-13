@@ -9,20 +9,25 @@
     --text-light:#666666;
     --accent:#000000;
     --border:#e0e0e0;
-    --transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md:0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg:0 8px 24px rgba(0,0,0,0.12);
+    --transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}
 
-#app{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+#app{min-height:100vh;display:flex;flex-direction:column}
 
-.container{max-width:1200px;margin:0 auto;padding:1rem;flex:1;width:100%;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:1rem;flex:1}
 .site-header{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:0.75rem 0}
+
+.logo{font-weight:800;color:var(--accent);text-decoration:none;font-size:1.5rem;letter-spacing:-0.5px;transition:var(--transition)}
+.logo:hover{transform:scale(1.02)}
+
+.main-nav{display:flex;gap:2rem;align-items:center}
+.main-nav a{color:var(--text-light);text-decoration:none;font-weight:500;transition:var(--transition)}
+.main-nav a:hover{color:var(--accent)}
 
 .site-footer{padding:2rem 1rem;text-align:center;color:var(--text-light);margin-top:3rem;border-top:1px solid var(--border);background:var(--surface)}
 
@@ -44,42 +49,13 @@ body.page-exit{animation:pageTransitionOut 0.3s ease-out forwards}
 body.page-enter{animation:pageTransitionIn 0.3s ease-out}
 
 /* Mobile first - base responsive */
-
-/* Extra Large Devices (1440px+) */
-@media (min-width:1440px){
-  .site-footer{padding:2.5rem 1.5rem;font-size:1rem}
+@media (max-width:768px){
+  .header-inner{gap:1rem}
+  .main-nav{gap:1rem;flex-wrap:wrap}
 }
 
-/* Desktop/Laptop (1200px - 1439px) */
-@media (max-width:1439px){
-}
-
-/* Laptop (992px - 1199px) */
-@media (max-width:1199px){
-  .site-footer{padding:1.75rem 1rem;font-size:0.95rem}
-}
-
-/* Medium Tablet (992px - 1023px) - Fix for awkward 1024px display */
-@media (max-width:1023px){
-  .site-footer{padding:1.6rem 0.8rem;font-size:0.92rem;margin-top:2rem}
-}
-
-/* Tablet (768px - 991px) */
-@media (max-width:991px){
-  .site-footer{padding:1.5rem 0.75rem;font-size:0.9rem;margin-top:2rem}
-}
-
-/* Large Mobile (600px - 767px) */
-@media (max-width:767px){
-  .site-footer{padding:1.25rem 0.6rem;font-size:0.85rem}
-}
-
-/* Mobile (480px - 599px) */
-@media (max-width:599px){
-  .site-footer{padding:1rem 0.5rem;font-size:0.8rem;margin-top:1.5rem}
-}
-
-/* Small Mobile (320px - 479px) */
-@media (max-width:479px){
-  .site-footer{padding:0.8rem 0.4rem;font-size:0.75rem;margin-top:1rem}
+@media (max-width:480px){
+  .container{padding:0.75rem}
+  .header-inner{flex-direction:column;gap:0.75rem}
+  .main-nav{justify-content:center}
 }

@@ -6,15 +6,12 @@
         </nav>
         <div class="header-right">
             <button id="cart-toggle" class="cart-btn" title="Shopping Cart">
-                <span class="cart-icon">🛒</span>
                 <span class="cart-label">Cart</span>
                 <span id="cart-count" class="cart-badge">0</span>
             </button>
-            <div class="auth-menu">
-                <button class="auth-btn" id="auth-trigger" title="Account">
-                    <span class="user-icon">👤</span>
-                    <span class="auth-label">Account</span>
-                </button>
+            <div id="user-info" style="display:flex;gap:0.6rem;align-items:center;">
+                <a href="/profile" class="profile-link">Profile</a>
+                <span class="user-email">john.doe@example.com</span>
             </div>
         </div>
     </div>
@@ -66,9 +63,23 @@
         </div>
         <div class="auth-modal-body" id="auth-nav">
             <a href="/login" id="login-link" class="auth-menu-item">
-                <span class="auth-menu-icon">🔑</span>
+                <svg class="auth-menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4l5-5-5-5m5 5H3"/>
+                </svg>
                 <span>Login</span>
             </a>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="product-modal-backdrop" id="product-modal-backdrop"></div>
+    <div class="product-modal" id="product-modal">
+        <div class="product-modal-header">
+            <h2 id="product-modal-title">Product Details</h2>
+            <button class="product-modal-close" id="product-modal-close">✕</button>
+        </div>
+        <div class="product-modal-body" id="product-modal-content">
+            <!-- Content injected by JS -->
         </div>
     </div>
 
