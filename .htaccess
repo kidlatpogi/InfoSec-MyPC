@@ -1,0 +1,37 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Allow access to API files
+<FilesMatch "\.(php)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Protect sensitive files
+<FilesMatch "^(db_config|\.env)">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Handle API routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.+)$ api/$1 [L]
+
+# Custom error pages
+ErrorDocument 404 /index.html
+ErrorDocument 500 /index.html
+
+# Enable CORS for API
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>

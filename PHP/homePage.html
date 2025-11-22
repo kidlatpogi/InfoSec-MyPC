@@ -1,0 +1,86 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop" class="nav-link">Shop</a>
+        </nav>
+        <div class="header-right">
+            <button id="cart-toggle" class="cart-btn" title="Shopping Cart">
+                <span class="cart-label">Cart</span>
+                <span id="cart-count" class="cart-badge">0</span>
+            </button>
+            <!-- `updateAuthNav()` will populate this with Login/Create or User + Logout -->
+            <div id="auth-nav" style="display:flex;gap:0.6rem;align-items:center;"></div>
+        </div>
+    </div>
+</header>
+
+    <main class="container">
+        <section class="search-row">
+            <input id="search-input" type="search" placeholder="Search GPU, CPU, RAM..." />
+            <div class="controls">
+                <select id="category-filter">
+                    <option value="">All categories</option>
+                </select>
+                <select id="sort-select" class="variant-select">
+                    <option value="relevance">Sort: Relevance</option>
+                    <option value="price-asc">Price: Low → High</option>
+                    <option value="price-desc">Price: High → Low</option>
+                    <option value="alpha">Name: A → Z</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="product-grid" class="product-grid">
+            <!-- Products injected by JS -->
+        </section>
+
+        <div class="pagination" id="pagination"></div>
+    </main>
+
+    <!-- Cart drawer backdrop -->
+    <div id="cart-backdrop" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.3s ease;z-index:50"></div>
+
+    <!-- Cart drawer (slide-in) -->
+    <aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
+        <button id="close-cart" class="close-cart">×</button>
+        <h2>Your Cart</h2>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-footer">
+            <div>Total: <strong id="cart-total">₱0</strong></div>
+            <button id="checkout-btn" class="primary">Checkout</button>
+        </div>
+    </aside>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal-backdrop" id="auth-modal-backdrop"></div>
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-modal-header">
+            <h2>Account</h2>
+            <button class="auth-modal-close" id="auth-modal-close">✕</button>
+        </div>
+        <div class="auth-modal-body" id="auth-nav">
+            <a href="/login" id="login-link" class="auth-menu-item">
+                <svg class="auth-menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4l5-5-5-5m5 5H3"/>
+                </svg>
+                <span>Login</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="product-modal-backdrop" id="product-modal-backdrop"></div>
+    <div class="product-modal" id="product-modal">
+        <div class="product-modal-header">
+            <h2 id="product-modal-title">Product Details</h2>
+            <button class="product-modal-close" id="product-modal-close">✕</button>
+        </div>
+        <div class="product-modal-body" id="product-modal-content">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">© MyPC — Premium PC Component Store</div>
+    </footer>

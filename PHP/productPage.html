@@ -1,0 +1,110 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop" class="nav-link">Shop</a>
+        </nav>
+        <div class="header-right">
+            <button id="cart-toggle" class="cart-btn" title="Shopping Cart">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-label">Cart</span>
+                <span id="cart-count" class="cart-badge">0</span>
+            </button>
+            <div class="auth-menu">
+                <button class="auth-btn" id="auth-trigger" title="Account">
+                    <span class="user-icon">👤</span>
+                    <span class="auth-label">Account</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="product-page">
+  <div class="container">
+    <a href="/shop" class="back-link">← Back to shop</a>
+    <div class="product-detail">
+      <div class="product-media">
+        <img id="prod-img" src="" alt="">
+      </div>
+      <div class="product-info">
+        <h1 id="prod-title"></h1>
+        <div class="meta" id="prod-category"></div>
+        <div class="price" id="prod-price"></div>
+        <p id="prod-desc" class="muted" style="margin-top:.5rem;">Product details and specifications.</p>
+
+        <div class="purchase-controls" style="margin-top:1rem;">
+          <label for="prod-qty">Quantity</label>
+          <input id="prod-qty" type="number" value="1" min="1" class="qty-input" style="width:5rem;">
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:.5rem;">
+          <button id="prod-add" class="btn add">Add to cart</button>
+          <button id="prod-buy" class="btn primary">Buy now</button>
+        </div>
+        
+        <hr style="margin:1.25rem 0;border:none;border-top:1px solid var(--border)">
+        <!-- review and specs cards positioned under the product -->
+      </div>
+    </div>
+
+    <!-- Reviews card (full width under product) -->
+    <div class="info-card" style="margin-top:1.25rem;">
+      <div class="card-header" style="cursor:pointer;user-select:none;" onclick="toggleCollapse('reviews-card')">
+        <h3 style="margin:0;display:flex;align-items:center;justify-content:space-between;">
+          <span>Customer reviews <span id="prod-rating" style="font-weight:700;color:var(--accent);margin-left:.5rem"></span></span>
+          <span class="collapse-icon" id="reviews-icon">▼</span>
+        </h3>
+      </div>
+      <div class="card-body" id="reviews-card-body">
+        <div id="prod-reviews">Loading reviews...</div>
+      </div>
+    </div>
+
+    <!-- Specifications card -->
+    <div class="info-card" style="margin-top:1rem;">
+      <div class="card-header" style="cursor:pointer;user-select:none;" onclick="toggleCollapse('specs-card')">
+        <h3 style="margin:0;display:flex;align-items:center;justify-content:space-between;">
+          <span>Product specifications</span>
+          <span class="collapse-icon" id="specs-icon">▼</span>
+        </h3>
+      </div>
+      <div class="card-body" id="specs-card-body">
+        <div id="prod-specs">Loading specifications...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cart drawer backdrop -->
+<div id="cart-backdrop" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.3s ease;z-index:50"></div>
+
+<!-- Cart drawer (slide-in) -->
+<aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <button id="close-cart" class="close-cart">×</button>
+    <h2>Your Cart</h2>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+        <div>Total: <strong id="cart-total">₱0</strong></div>
+        <button id="checkout-btn" class="primary">Checkout</button>
+    </div>
+</aside>
+
+<!-- Auth Modal -->
+<div class="auth-modal-backdrop" id="auth-modal-backdrop"></div>
+<div class="auth-modal" id="auth-modal">
+    <div class="auth-modal-header">
+        <h2>Account</h2>
+        <button class="auth-modal-close" id="auth-modal-close">✕</button>
+    </div>
+    <div class="auth-modal-body" id="auth-nav">
+        <a href="/login" id="login-link" class="auth-menu-item">
+            <span class="auth-menu-icon">🔑</span>
+            <span>Login</span>
+        </a>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container">© MyPC — Premium PC Component Store</div>
+</footer>

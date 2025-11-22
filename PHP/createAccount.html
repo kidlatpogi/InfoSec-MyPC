@@ -1,0 +1,28 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop">Shop</a>
+        </nav>
+    </div>
+</header>
+
+    <main class="container" style="min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center">
+        <section class="auth-panel">
+            <h2>Create Account</h2>
+            <form id="create-form" novalidate>
+                <label>Full name</label>
+                <input type="text" id="fullname" placeholder="John Doe" required>
+                <label>Email address</label>
+                <input type="email" id="email" placeholder="your@email.com" required>
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+                <button class="primary" type="submit">Create Account</button>
+            </form>
+            <p>Already have an account? <a href="/login">Log in</a></p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">© MyPC — Component Store</div>
+    </footer>

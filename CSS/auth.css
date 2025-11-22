@@ -1,0 +1,77 @@
+/* Auth Forms - Login & Signup */
+
+.auth-panel{max-width:480px;margin:3rem auto;padding:2.5rem;background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.1);animation:slideInUp 0.5s ease-out}
+
+.auth-header{text-align:center;margin-bottom:2rem}
+
+.auth-panel h2{color:var(--accent);margin:0;font-size:1.6rem;font-weight:700}
+
+.form-field{margin-bottom:1.2rem}
+
+.auth-panel label{color:var(--text);font-size:0.9rem;font-weight:600;display:block;margin-bottom:0.5rem}
+
+.auth-panel input{width:100%;padding:0.85rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:0.95rem;transition:var(--transition);font-family:inherit}
+
+.auth-panel input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+
+.auth-panel input.invalid{border-color:#ef4444}
+
+.auth-panel button{width:100%;padding:1rem;margin-top:1.5rem;font-size:1rem;font-weight:600}
+
+.error{color:#ef4444;font-size:0.85rem;margin-top:0.4rem;display:block;animation:slideInLeft 0.3s ease-out;min-height:1.2rem}
+
+.auth-panel p{text-align:center;color:var(--text-light);margin:1.5rem 0 0 0}
+
+.auth-panel a{color:var(--accent);text-decoration:none;font-weight:600;transition:var(--transition)}
+
+.auth-panel a:hover{text-decoration:underline}
+
+/* Laptop/Desktop (1200px+) */
+@media (min-width:1200px){
+  .auth-panel{max-width:450px;padding:2.5rem}
+  .auth-panel h2{font-size:1.5rem;margin-bottom:1.75rem}
+  .auth-panel input{padding:0.9rem 1.1rem;font-size:1rem}
+  .auth-panel button{padding:1rem;font-size:1.05rem}
+}
+
+/* Tablet (768px - 1199px) */
+@media (max-width:1199px){
+  .auth-panel{max-width:100%;margin:2rem 1rem;padding:1.5rem}
+  .auth-panel h2{font-size:1.2rem;margin-bottom:1.2rem}
+  .auth-panel label{font-size:0.9rem;margin-top:0.8rem}
+  .auth-panel input{padding:0.75rem;font-size:0.9rem;margin-top:0.3rem}
+  .auth-panel button{padding:0.8rem;margin-top:1.2rem;font-size:0.95rem}
+  .auth-panel p{font-size:0.9rem}
+}
+
+/* Large Mobile (600px - 767px) */
+@media (max-width:767px){
+  .auth-panel{max-width:100%;margin:1.5rem 1rem;padding:1.25rem}
+  .auth-panel h2{font-size:1.1rem;margin-bottom:1rem}
+  .auth-panel label{font-size:0.85rem}
+  .auth-panel input{padding:0.7rem;font-size:0.85rem}
+  .auth-panel button{padding:0.75rem;margin-top:1rem;font-size:0.9rem}
+}
+
+/* Mobile (480px - 599px) */
+@media (max-width:599px){
+  .auth-panel{max-width:100%;margin:1.2rem 0.75rem;padding:1rem}
+  .auth-panel h2{font-size:1rem;margin-bottom:0.9rem}
+  .auth-panel label{font-size:0.8rem;margin-top:0.7rem}
+  .auth-panel input{padding:0.65rem;font-size:0.8rem;margin-top:0.25rem}
+  .auth-panel button{padding:0.7rem;margin-top:0.9rem;font-size:0.85rem}
+  .error{font-size:0.75rem;margin-top:0.2rem}
+  .auth-panel p{font-size:0.8rem;margin-top:0.8rem}
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width:479px){
+  .auth-panel{max-width:100%;margin:0.8rem 0.5rem;padding:0.85rem}
+  .auth-panel h2{font-size:0.95rem;margin-bottom:0.8rem}
+  .auth-panel label{font-size:0.75rem;margin-top:0.6rem}
+  .auth-panel input{padding:0.6rem;font-size:0.75rem;margin-top:0.2rem;border-radius:6px}
+  .auth-panel button{padding:0.6rem;margin-top:0.8rem;font-size:0.8rem}
+  .error{font-size:0.7rem;margin-top:0.15rem}
+  .auth-panel p{font-size:0.75rem;margin-top:0.6rem}
+  .auth-panel a{font-size:0.75rem}
+}

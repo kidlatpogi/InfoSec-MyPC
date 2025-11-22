@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MyPC Store</title>
+    <link rel="stylesheet" href="/CSS/styles.css?v=1">
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop" class="nav-link">Shop</a>
+        </nav>
+        <div class="header-right">
+            <button id="cart-toggle" class="cart-btn" title="Shopping Cart">
+                <span class="cart-label">Cart</span>
+                <span id="cart-count" class="cart-badge">0</span>
+            </button>
+            <!-- `updateAuthNav()` will populate this with Login/Create or User + Logout -->
+            <div id="auth-nav" style="display:flex;gap:0.6rem;align-items:center;"></div>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="profile-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="profile-sidebar">
+            <div class="profile-menu">
+                <button class="menu-item active" data-section="overview">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Profile Overview</span>
+                </button>
+                <button class="menu-item" data-section="edit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 1 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    <span>Edit Profile</span>
+                </button>
+                <button class="menu-item" data-section="orders">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                    <span>My Orders</span>
+                </button>
+                <button class="menu-item" data-section="addresses">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>Addresses</span>
+                </button>
+                <button class="menu-item" data-section="settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m-3-9.67L5.67 12m12 0l-3.33-2.67M5.67 12L12 18.67m12-6.67L18.67 12"/>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+                <button class="menu-item" data-section="logout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="profile-content">
+            
+            <!-- Profile Overview Section -->
+            <section id="overview" class="profile-section active">
+                <h1>Welcome back, John!</h1>
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <h3>Total Orders</h3>
+                        <p class="stat-number">12</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Total Spent</h3>
+                        <p class="stat-number">₱156,499</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Account Status</h3>
+                        <p class="stat-number" style="color: #28a745;">Active</p>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h2>Account Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Name</label>
+                            <p>John Doe</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Email</label>
+                            <p><em>Shown in header</em></p>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone</label>
+                            <p>+63 912 345 6789</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Member Since</label>
+                            <p>January 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Edit Profile Section -->
+            <section id="edit" class="profile-section">
+                <h1>Edit Profile</h1>
+                <div class="profile-card">
+                    <form id="edit-profile-form" novalidate>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="edit-name" value="John Doe" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="edit-email" value="john.doe@example.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="edit-phone" value="+63 912 345 6789" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="current-password" placeholder="Enter current password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>New Password (optional)</label>
+                            <input type="password" id="new-password" placeholder="Leave blank to keep current password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirm-password" placeholder="Confirm new password">
+                        </div>
+                        
+                        <button type="submit" class="primary">Save Changes</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders" class="profile-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+                    <h1 style="margin:0;">My Orders</h1>
+                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                        <label style="font-size:0.9rem;color:var(--text-light);display:flex;align-items:center;gap:0.5rem;">
+                            Sort by:
+                            <select id="order-sort-date" class="variant-select" style="padding:0.5rem 0.75rem;">
+                                <option value="newest">Date: Newest First</option>
+                                <option value="oldest">Date: Oldest First</option>
+                            </select>
+                        </label>
+                        <select id="order-sort-status" class="variant-select" style="padding:0.5rem 0.75rem;">
+                            <option value="all">All Status</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="In Transit">In Transit</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="orders-list" id="orders-list">
+                    <div class="order-card" data-order-date="2024-11-05" data-order-status="Delivered">
+                        <div class="order-header">
+                            <span class="order-id">Order #12345</span>
+                            <span class="order-status" style="color: #28a745;">Delivered</span>
+                        </div>
+                        <div class="order-body">
+                            <p><strong>Date:</strong> November 5, 2024</p>
+                            <p><strong>Total:</strong> ₱34,499</p>
+                            <p><strong>Items:</strong> RTX 3060 12GB, 16GB DDR4 RAM</p>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn">View Details</button>
+                            <button class="btn">Reorder</button>
+                        </div>
+                    </div>
+
+                    <div class="order-card" data-order-date="2024-11-03" data-order-status="In Transit">
+                        <div class="order-header">
+                            <span class="order-id">Order #12344</span>
+                            <span class="order-status" style="color: #ff9800;">In Transit</span>
+                        </div>
+                        <div class="order-body">
+                            <p><strong>Date:</strong> November 3, 2024</p>
+                            <p><strong>Total:</strong> ₱12,995</p>
+                            <p><strong>Items:</strong> Ryzen 5 5600X</p>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn">Track Order</button>
+                        </div>
+                    </div>
+
+                    <div class="order-card" data-order-date="2024-10-28" data-order-status="Delivered">
+                        <div class="order-header">
+                            <span class="order-id">Order #12343</span>
+                            <span class="order-status" style="color: #28a745;">Delivered</span>
+                        </div>
+                        <div class="order-body">
+                            <p><strong>Date:</strong> October 28, 2024</p>
+                            <p><strong>Total:</strong> ₱8,995</p>
+                            <p><strong>Items:</strong> MSI B450 Tomahawk</p>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn">View Details</button>
+                            <button class="btn">Reorder</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Addresses Section -->
+            <section id="addresses" class="profile-section">
+                <h1>Saved Addresses</h1>
+                <div class="addresses-list">
+                    <div class="address-card">
+                        <div class="address-header">
+                            <h3>Home (Default)</h3>
+                            <span class="badge">Primary</span>
+                        </div>
+                        <p>123 Main Street, Makati City</p>
+                        <p>Manila 1200, Philippines</p>
+                        <p>Phone: +63 912 345 6789</p>
+                        <div class="address-actions">
+                            <button class="btn">Edit</button>
+                            <button class="btn">Delete</button>
+                        </div>
+                    </div>
+
+                    <div class="address-card">
+                        <div class="address-header">
+                            <h3>Office</h3>
+                        </div>
+                        <p>456 Business Avenue, BGC</p>
+                        <p>Taguig 1634, Philippines</p>
+                        <p>Phone: +63 912 345 6789</p>
+                        <div class="address-actions">
+                            <button class="btn">Edit</button>
+                            <button class="btn">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="primary" style="margin-top: 1.5rem;">Add New Address</button>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="profile-section">
+                <h1>Account Settings</h1>
+                <div class="profile-card">
+                    <div class="setting-item">
+                        <div>
+                            <h3>Email Notifications</h3>
+                            <p>Receive updates about your orders</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <h3>Two-Factor Authentication</h3>
+                            <p>Add extra security to your account</p>
+                        </div>
+                        <button class="btn">Enable</button>
+                    </div>
+
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+                    
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="color: #d32f2f;">Delete Account</h3>
+                            <p>Permanently delete your account and all data</p>
+                        </div>
+                        <button class="btn" style="color: #d32f2f; border-color: #d32f2f;">Delete</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- Cart drawer backdrop -->
+<div id="cart-backdrop" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.3s ease;z-index:50"></div>
+
+<!-- Cart drawer (slide-in) -->
+<aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <button id="close-cart" class="close-cart">×</button>
+    <h2>Your Cart</h2>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+        <div>Total: <strong id="cart-total">₱0</strong></div>
+        <a href="/checkout" class="primary" style="text-align: center; text-decoration: none;">Proceed to Checkout</a>
+    </div>
+</aside>
+
+<!-- Auth Modal -->
+<div class="auth-modal-backdrop" id="auth-modal-backdrop"></div>
+<div class="auth-modal" id="auth-modal">
+    <div class="auth-modal-header">
+        <h2>Account</h2>
+        <button class="auth-modal-close" id="auth-modal-close">✕</button>
+    </div>
+    <div class="auth-modal-body" id="auth-nav">
+        <a href="/login" id="login-link" class="auth-menu-item">
+            <svg class="auth-menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4l5-5-5-5m5 5H3"/>
+            </svg>
+            <span>Login</span>
+        </a>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container">© MyPC — Premium PC Component Store</div>
+</footer>
+
+<!-- Product Detail Modal -->
+<div class="product-modal-backdrop" id="product-modal-backdrop"></div>
+<div class="product-modal" id="product-modal">
+    <div class="product-modal-header">
+        <h2 id="product-modal-title">Product Details</h2>
+        <button class="product-modal-close" id="product-modal-close">✕</button>
+    </div>
+    <div class="product-modal-body" id="product-modal-content">
+        <!-- Content injected by JS -->
+    </div>
+</div>
+
+<script src="/JS/router.js" defer></script>
+</body>
+</html>
