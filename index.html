@@ -1,45 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyPC - Premium PC Components Store</title>
     <link rel="stylesheet" href="/CSS/styles.css?v=1">
 </head>
+
 <body>
     <div id="app"></div>
-        <script>
+    <script>
         // Dynamic loader: compute app root for both http(s) and file:// environments
-        (function(){
-            try{
+        (function () {
+            try {
                 var baseRoot;
-                if(window.location.protocol === 'file:'){
+                if (window.location.protocol === 'file:') {
                     // file:///C:/path/to/index.html -> base root is directory containing the file
                     baseRoot = window.location.href.replace(/\/[^\/]*$/, '/');
                 } else {
                     baseRoot = window.location.origin;
                 }
-            var s = document.createElement('script');
-            s.src = baseRoot.replace(/\/$/, '') + '/JS/router.js';
+                // Load API helper first
+                var apiScript = document.createElement('script');
+                apiScript.src = baseRoot.replace(/\/$/, '') + '/JS/api.js';
+                apiScript.defer = false;
+                apiScript.onerror = function() {
+                    console.error('Failed to load API script');
+                };
+                document.body.appendChild(apiScript);
+
+                // Then load router
+                var s = document.createElement('script');
+                s.src = baseRoot.replace(/\/$/, '') + '/JS/router.js';
                 s.defer = false;
+                s.onerror = function() {
+                    console.error('Failed to load router script');
+                    document.getElementById('app').innerHTML = '<p style="color:red;">Failed to load application. Please refresh the page.</p>';
+                };
                 document.body.appendChild(s);
-            }catch(e){
+            } catch (e) {
                 // fallback to relative path
-                var s2 = document.createElement('script'); s2.src='JS/router.js'; document.body.appendChild(s2);
+                var s2 = document.createElement('script'); s2.src = 'JS/router.js'; document.body.appendChild(s2);
             }
         })();
-        </script>
-                <script>
-                // Dev helper: ensure styles.css is reloaded during development by appending timestamp
-                (function(){
-                    try{
-                        var links = document.querySelectorAll('link[rel="stylesheet"][href*="/CSS/styles.css"]');
-                        links.forEach(l=>{
-                            var href = l.getAttribute('href').split('?')[0];
-                            l.setAttribute('href', href + '?v=' + Date.now());
-                        });
-                    }catch(e){}
-                })();
-                </script>
+    </script>
+    <script>
+        // Dev helper: ensure styles.css is reloaded during development by appending timestamp
+        (function () {
+            try {
+                var links = document.querySelectorAll('link[rel="stylesheet"][href*="/CSS/styles.css"]');
+                links.forEach(l => {
+                    var href = l.getAttribute('href').split('?')[0];
+                    l.setAttribute('href', href + '?v=' + Date.now());
+                });
+            } catch (e) { }
+        })();
+    </script>
 </body>
+
 </html>
