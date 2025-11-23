@@ -223,6 +223,8 @@ INSERT INTO `product_variants` (`product_id`, `label`, `price_adjustment`, `stoc
 (5, '32GB Kit', 2000.00, 15, '32GB');
 
 -- Insert sample admin user (password: admin123)
+-- WARNING: These are TEST credentials only. Change these passwords immediately in production!
+-- To generate new password hash, use: password_hash('your_password', PASSWORD_BCRYPT)
 INSERT INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `phone`, `role`, `status`) VALUES
 ('admin@mypc.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'User', '09123456789', 'admin', 'active'),
 ('customer@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'John', 'Doe', '09987654321', 'customer', 'active');

@@ -118,7 +118,7 @@ class Router {
     loadPage(page) {
         const app = document.getElementById('app');
 
-        fetch(this.baseRoot + `/HTML_PHP/${page}Page.html`)
+        fetch(this.baseRoot + `${this.templatesDir}/${page}Page.html`)
             .then(response => {
                 if (!response.ok) throw new Error(`Failed to load ${page}Page.html`);
                 return response.text();
