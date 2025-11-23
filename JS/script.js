@@ -160,6 +160,28 @@ async function loadProducts(filters = {}) {
     return { products: [], pagination: { page: 1, total: 0, pages: 0 } };
 }
 
+// Load categories from backend
+async function loadCategories() {
+    try {
+        const data = await ProductsAPI.getCategories();
+        const catSel = document.getElementById("category-filter");
+        if (!catSel || !data.categories) return;
+
+        // Keep "All categories" option
+        catSel.innerHTML = '<option value="">All categories</option>';
+
+        // Add each category
+        data.categories.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat.slug;
+            option.textContent = cat.name;
+            catSel.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Failed to load categories:", error);
+    }
+}
+
 function applySort(list, sort) {
     if (sort === "price-asc") return list.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") return list.sort((a, b) => b.price - a.price);
@@ -529,6 +551,7 @@ async function initializePageScript() {
 
     // Load products if on shop page
     if (document.getElementById("product-grid")) {
+        await loadCategories(); // Load categories for filter dropdown
         await renderProducts();
     }
 

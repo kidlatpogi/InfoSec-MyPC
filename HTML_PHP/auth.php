@@ -47,8 +47,8 @@ try {
         
         // Insert user
         $user_id = $db->insert(
-            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, created_at) 
-             VALUES (?, ?, ?, ?, ?, 'customer', NOW())",
+            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role) 
+             VALUES (?, ?, ?, ?, ?, 'customer')",
             [$email, $password_hash, $first_name, $last_name, $phone]
         );
         
