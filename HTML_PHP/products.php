@@ -113,6 +113,18 @@ try {
 
         $products = $db->fetchAll($sql, $params);
 
+        // Get variants for each product
+        foreach ($products as &$product) {
+            $variants = $db->fetchAll(
+                "SELECT id, label, price_adjustment, stock_quantity, sku_suffix 
+                 FROM product_variants 
+                 WHERE product_id = ? AND is_active = 1 
+                 ORDER BY price_adjustment ASC",
+                [$product['id']]
+            );
+            $product['variants'] = $variants;
+        }
+
         // Get total count for pagination
         $countSql = "SELECT COUNT(*) as total FROM products p 
                      LEFT JOIN categories c ON p.category_id = c.id 

@@ -141,12 +141,15 @@ window.STATE = window.STATE || {
 // Load products from backend
 async function loadProducts(filters = {}) {
     try {
+        console.log("[loadProducts] Loading products with filters:", filters);
         const data = await ProductsAPI.getProducts({
             search: filters.search || STATE.query,
             category: filters.category || STATE.category,
             page: filters.page || STATE.page,
             limit: filters.limit || STATE.perPage
         });
+
+        console.log("[loadProducts] API response:", data);
 
         if (data.products) {
             // Transform backend data to match frontend format
@@ -161,10 +164,11 @@ async function loadProducts(filters = {}) {
                 dbId: p.id // Store database ID for cart operations
             }));
 
+            console.log("[loadProducts] Transformed PRODUCTS array:", window.PRODUCTS);
             return data;
         }
     } catch (error) {
-        console.error("Failed to load products:", error);
+        console.error("[loadProducts] Failed to load products:", error);
         window.PRODUCTS = [];
     }
     return { products: [], pagination: { page: 1, total: 0, pages: 0 } };
@@ -201,14 +205,22 @@ function applySort(list, sort) {
 
 async function renderProducts() {
     const grid = document.getElementById("product-grid");
-    if (!grid) return;
+    if (!grid) {
+        console.error("[renderProducts] product-grid element not found");
+        return;
+    }
 
     // Load products from backend
+    console.log("[renderProducts] Calling loadProducts");
     const data = await loadProducts();
+    console.log("[renderProducts] loadProducts returned:", data);
+    
     let list = window.PRODUCTS.slice();
+    console.log("[renderProducts] PRODUCTS array before sort:", list);
 
     // Apply client-side sorting
     list = applySort(list, STATE.sort);
+    console.log("[renderProducts] PRODUCTS array after sort:", list);
 
     grid.innerHTML = "";
 
@@ -245,10 +257,12 @@ async function renderProducts() {
         </button>
       </div>
     `;
+        console.log("[renderProducts] Rendering product:", p.id, p.title, "with data-id on buttons");
         grid.appendChild(el);
     });
 
     renderPagination(data.pagination?.page || 1, data.pagination?.pages || 1);
+    console.log("[renderProducts] Rendering complete");
 }
 
 function renderPagination(page, total) {
@@ -422,9 +436,15 @@ async function removeFromCart(cartItemId) {
 }
 
 function openCart() {
+    console.log("[openCart] Opening cart drawer");
     const drawer = document.getElementById("cart-drawer");
     const backdrop = document.getElementById("cart-backdrop");
-    if (!drawer) return;
+    console.log("[openCart] Drawer:", drawer, "Backdrop:", backdrop);
+    
+    if (!drawer) {
+        console.error("[openCart] cart-drawer element not found");
+        return;
+    }
 
     drawer.classList.add("open");
     drawer.setAttribute("aria-hidden", "false");
@@ -432,6 +452,7 @@ function openCart() {
         backdrop.style.opacity = "1";
         backdrop.style.pointerEvents = "auto";
     }
+    console.log("[openCart] Cart drawer opened");
     renderCartItems();
 }
 
@@ -460,11 +481,24 @@ document.addEventListener("click", (e) => {
     const id = t.getAttribute("data-id");
     const cartItemId = t.getAttribute("data-cart-item-id");
 
+    console.log("[Click Handler] Action:", action, "ID:", id, "CartItemID:", cartItemId);
+
     if (action === "add") addToCart(id, 1);
+    if (action === "add-from-modal") {
+        // Get quantity from modal input
+        const qtyInput = document.getElementById(`modal-qty-${id}`);
+        const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+        console.log("[Add from Modal] Product ID:", id, "Quantity:", qty);
+        addToCart(id, qty);
+        closeProductDetail();
+    }
     if (action === "inc" && cartItemId) changeCartQty(cartItemId, 1);
     if (action === "dec" && cartItemId) changeCartQty(cartItemId, -1);
     if (action === "rem" && cartItemId) removeFromCart(cartItemId);
-    if (action === "view") openProductDetail(id);
+    if (action === "view") {
+        console.log("[View Button Clicked] Product ID:", id);
+        openProductDetail(id);
+    }
 });
 
 // Variant price change
@@ -478,8 +512,16 @@ document.addEventListener("change", (e) => {
         const base = prod.price;
         const variant = prod.variants && prod.variants[parseInt(sel.value, 10)];
         const priceAdj = variant ? parseFloat(variant.price_adjustment || 0) : 0;
-        const priceEl = sel.closest(".product").querySelector(".price");
+        
+        // Update price in product card
+        const priceEl = sel.closest(".product")?.querySelector(".price");
         if (priceEl) priceEl.textContent = formatPHP(base + priceAdj);
+        
+        // Update price in product detail modal
+        const modalPriceEl = document.querySelector(".product-detail-price");
+        if (modalPriceEl && modalPriceEl.getAttribute("data-base")) {
+            modalPriceEl.textContent = formatPHP(base + priceAdj);
+        }
     }
 });
 
@@ -488,14 +530,27 @@ document.addEventListener("change", (e) => {
 // ========================================
 
 function openProductDetail(productId) {
+    console.log("[openProductDetail] Looking for product ID:", productId);
+    console.log("[openProductDetail] PRODUCTS array:", window.PRODUCTS);
+    
     const product = window.PRODUCTS.find((p) => p.id === productId);
-    if (!product) return;
+    console.log("[openProductDetail] Found product:", product);
+    
+    if (!product) {
+        console.error("[openProductDetail] Product not found with ID:", productId);
+        return;
+    }
 
     const modal = document.getElementById("product-modal");
     const backdrop = document.getElementById("product-modal-backdrop");
     const content = document.getElementById("product-modal-content");
 
-    if (!modal || !backdrop || !content) return;
+    console.log("[openProductDetail] Modal elements - modal:", modal, "backdrop:", backdrop, "content:", content);
+
+    if (!modal || !backdrop || !content) {
+        console.error("[openProductDetail] Missing modal elements");
+        return;
+    }
 
     const variantOptions = (product.variants || [])
         .map((v, idx) => {
@@ -527,8 +582,10 @@ function openProductDetail(productId) {
     </div>
   `;
 
+    console.log("[openProductDetail] Adding 'open' class to modal and backdrop");
     modal.classList.add("open");
     backdrop.classList.add("open");
+    console.log("[openProductDetail] Modal opened successfully");
 }
 
 function closeProductDetail() {
@@ -543,6 +600,8 @@ function closeProductDetail() {
 // ========================================
 
 async function initializePageScript() {
+    console.log("[initializePageScript] Starting page initialization");
+    
     // Check user session
     await checkUserSession();
     updateAuthNav();
@@ -550,31 +609,43 @@ async function initializePageScript() {
 
     // Check if this is admin/employee/superadmin page
     if (document.getElementById("superadmin-welcome")) {
+        console.log("[initializePageScript] Detected superadmin page");
         initializeSuperAdmin?.();
         return;
     }
     if (document.getElementById("admin-welcome")) {
+        console.log("[initializePageScript] Detected admin page");
         initializeAdmin?.();
         return;
     }
     if (document.getElementById("employee-welcome")) {
+        console.log("[initializePageScript] Detected employee page");
         initializeEmployee?.();
         return;
     }
 
     // Load products if on shop page
     if (document.getElementById("product-grid")) {
+        console.log("[initializePageScript] Detected shop page, loading products");
         await loadCategories(); // Load categories for filter dropdown
         await renderProducts();
+        console.log("[initializePageScript] Products loaded, window.PRODUCTS:", window.PRODUCTS);
     }
 
     // Setup cart
+    console.log("[initializePageScript] Setting up cart");
     await loadCartFromBackend();
     updateCartCount();
 
     // Setup event listeners
+    console.log("[initializePageScript] Setting up event listeners");
     const cartToggle = document.getElementById("cart-toggle");
-    if (cartToggle) cartToggle.addEventListener("click", openCart);
+    if (cartToggle) {
+        console.log("[initializePageScript] Found cart-toggle, attaching click listener");
+        cartToggle.addEventListener("click", openCart);
+    } else {
+        console.warn("[initializePageScript] cart-toggle not found");
+    }
 
     const closeBtn = document.querySelectorAll("#close-cart");
     if (closeBtn) closeBtn.forEach((b) => b.addEventListener("click", closeCart));
@@ -589,11 +660,24 @@ async function initializePageScript() {
     });
 
     // Product modal
+    console.log("[initializePageScript] Setting up product modal listeners");
     const productModalClose = document.getElementById("product-modal-close");
-    if (productModalClose) productModalClose.addEventListener("click", closeProductDetail);
+    if (productModalClose) {
+        console.log("[initializePageScript] Found product-modal-close button");
+        productModalClose.addEventListener("click", closeProductDetail);
+    } else {
+        console.warn("[initializePageScript] product-modal-close button not found");
+    }
 
     const productModalBackdrop = document.getElementById("product-modal-backdrop");
-    if (productModalBackdrop) productModalBackdrop.addEventListener("click", closeProductDetail);
+    if (productModalBackdrop) {
+        console.log("[initializePageScript] Found product-modal-backdrop");
+        productModalBackdrop.addEventListener("click", closeProductDetail);
+    } else {
+        console.warn("[initializePageScript] product-modal-backdrop not found");
+    }
+    
+    console.log("[initializePageScript] Page initialization complete");
 
     // Category filter
     const catSel = document.getElementById("category-filter");
