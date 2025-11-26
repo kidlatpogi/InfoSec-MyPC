@@ -211,20 +211,61 @@ function editProduct(productId) {
 // ========================================
 
 function editUser(userId) {
-    const firstName = prompt('Enter first name:');
-    if (firstName === null) return;
+    const userModal = document.getElementById('user-modal');
+    const userForm = document.getElementById('user-form');
+    const modalTitle = document.getElementById('user-modal-title');
     
-    const lastName = prompt('Enter last name:');
-    if (lastName === null) return;
-    
-    const status = confirm('Is this user active? (OK=active, Cancel=suspended)') ? 'active' : 'suspended';
-    
-    ManagementAPI.updateUser(userId, { first_name: firstName, last_name: lastName, status })
-        .then(() => {
-            alert('User updated successfully');
-            loadUsers();
+    // Fetch the user data
+    ManagementAPI.getUsers()
+        .then(data => {
+            const user = data.users.find(u => u.id == userId);
+            if (!user) {
+                alert('User not found');
+                return;
+            }
+            
+            // Populate form
+            document.getElementById('user-email').value = user.email;
+            document.getElementById('user-email').disabled = true;
+            document.getElementById('user-name').value = `${user.first_name} ${user.last_name}`;
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-password').placeholder = 'Leave empty to keep current';
+            
+            // Set modal title
+            modalTitle.textContent = `Edit User: ${user.email}`;
+            
+            // Show modal
+            userModal.classList.add('active');
+            
+            // Handle form submission
+            userForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('user-name').value.trim();
+                const nameParts = fullName.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ') || '';
+                const password = document.getElementById('user-password').value;
+                
+                const updates = {
+                    first_name: firstName,
+                    last_name: lastName
+                };
+                
+                if (password) {
+                    updates.password = password;
+                }
+                
+                try {
+                    await ManagementAPI.updateUser(userId, updates);
+                    alert('User updated successfully');
+                    userModal.classList.remove('active');
+                    loadUsers();
+                } catch (error) {
+                    alert('Error updating user: ' + error.message);
+                }
+            };
         })
-        .catch(error => alert('Error updating user: ' + error.message));
+        .catch(error => alert('Error loading user: ' + error.message));
 }
 
 async function deleteUser(userId) {
@@ -244,20 +285,62 @@ async function deleteUser(userId) {
 // ========================================
 
 function editEmployee(employeeId) {
-    const firstName = prompt('Enter first name:');
-    if (firstName === null) return;
+    const employeeModal = document.getElementById('employee-modal');
+    const employeeForm = document.getElementById('employee-form');
+    const modalTitle = document.getElementById('employee-modal-title');
     
-    const lastName = prompt('Enter last name:');
-    if (lastName === null) return;
-    
-    const status = confirm('Is this employee active? (OK=active, Cancel=suspended)') ? 'active' : 'suspended';
-    
-    ManagementAPI.updateEmployee(employeeId, { first_name: firstName, last_name: lastName, status })
-        .then(() => {
-            alert('Employee updated successfully');
-            loadEmployees();
+    // Fetch the employee data
+    ManagementAPI.getEmployees()
+        .then(data => {
+            const employee = data.employees.find(e => e.id == employeeId);
+            if (!employee) {
+                alert('Employee not found');
+                return;
+            }
+            
+            // Populate form
+            document.getElementById('employee-email').value = employee.email;
+            document.getElementById('employee-email').disabled = true;
+            document.getElementById('employee-name').value = `${employee.first_name} ${employee.last_name}`;
+            document.getElementById('employee-password').value = '';
+            document.getElementById('employee-password').placeholder = 'Leave empty to keep current';
+            
+            // Set modal title
+            modalTitle.textContent = `Edit Employee: ${employee.email}`;
+            
+            // Show modal
+            employeeModal.classList.add('active');
+            
+            // Handle form submission
+            employeeForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('employee-name').value.trim();
+                const nameParts = fullName.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ') || '';
+                const password = document.getElementById('employee-password').value;
+                
+                const updates = {
+                    first_name: firstName,
+                    last_name: lastName
+                };
+                
+                if (password) {
+                    updates.password = password;
+                }
+                
+                try {
+                    await ManagementAPI.updateEmployee(employeeId, updates);
+                    alert('Employee updated successfully');
+                    employeeModal.classList.remove('active');
+                    loadEmployees();
+                } catch (error) {
+                    alert('Error updating employee: ' + error.message);
+                }
+            };
         })
-        .catch(error => alert('Error updating employee: ' + error.message));
+        .catch(error => alert('Error loading employee: ' + error.message));
+}
 }
 
 async function deleteEmployee(employeeId) {
