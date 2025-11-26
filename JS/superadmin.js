@@ -464,13 +464,13 @@ async function loadAuditLogs() {
     try {
         const data = await AuditAPI.getAuditLogs(1000);
 
-        if (!data.logs || data.logs.length === 0) {
+        if (!data.audit_logs || data.audit_logs.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
             return;
         }
 
         tbody.innerHTML = '';
-        data.logs.forEach(log => {
+        data.audit_logs.forEach(log => {
             const row = document.createElement('tr');
             const timestamp = new Date(log.created_at).toLocaleString();
             const actionBadgeColor = 
