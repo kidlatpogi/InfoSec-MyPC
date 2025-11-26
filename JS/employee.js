@@ -192,10 +192,12 @@ async function loadProducts() {
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(product.base_price)}</td>
+                <td>${product.stock_quantity || 0}</td>
                 <td>${product.variants?.length || 0}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${product.stock_quantity || 0})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
                 </td>
             `;
@@ -340,6 +342,44 @@ function editProduct(productId) {
             })
             .catch(error => alert('Error loading product: ' + error.message));
     });
+}
+
+function editStock(productId, currentStock) {
+    const stockModal = document.getElementById('stock-modal');
+    const stockForm = document.getElementById('stock-form');
+    const stockInput = document.getElementById('stock-input');
+    const currentStockDisplay = document.getElementById('current-stock-display');
+    const modalTitle = document.getElementById('stock-modal-title');
+    
+    // Set current stock display and input
+    currentStockDisplay.textContent = currentStock;
+    stockInput.value = currentStock;
+    modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
+    
+    // Show modal
+    stockModal.classList.add('open');
+    
+    // Handle form submission
+    stockForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const newStock = parseInt(stockInput.value, 10);
+        
+        if (isNaN(newStock) || newStock < 0) {
+            alert('Please enter a valid stock quantity');
+            return;
+        }
+        
+        try {
+            await ProductsAPI.updateProductStock(productId, newStock);
+            stockModal.classList.remove('open');
+            alert('Stock updated successfully');
+            // Reload products table
+            await loadProducts();
+        } catch (error) {
+            alert('Error updating stock: ' + error.message);
+        }
+    };
 }
 
 async function deleteProduct(productId) {
@@ -492,6 +532,7 @@ function initializeEmployee() {
 window.initEmployeePage = initEmployeePage;
 window.initializeEmployee = initializeEmployee;
 window.editProduct = editProduct;
+window.editStock = editStock;
 window.deleteProduct = deleteProduct;
 window.viewOrder = viewOrder;
 

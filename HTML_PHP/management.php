@@ -602,6 +602,200 @@ try {
         sendSuccess(['audit_logs' => $logs]);
     }
     
+    // ========================================
+    // PRODUCTS MANAGEMENT (Admin & Superadmin)
+    // ========================================
+    
+    // Get all products (for dashboards)
+    elseif ($action === 'getProducts') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        $products = $db->fetchAll(
+            "SELECT p.id, p.name, p.slug, p.base_price, p.category_id, c.name as category_name, p.created_at
+             FROM products p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.is_active = 1
+             ORDER BY p.created_at DESC"
+        );
+        
+        // Get variants for each product
+        foreach ($products as &$product) {
+            $variants = $db->fetchAll(
+                "SELECT id, label, price_adjustment FROM product_variants WHERE product_id = ? AND is_active = 1",
+                [$product['id']]
+            );
+            $product['variants'] = $variants;
+        }
+        
+        sendSuccess(['products' => $products]);
+    }
+    
+    // Create new product
+    elseif ($action === 'createProduct') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $name = $_POST['name'] ?? null;
+        $category = $_POST['category'] ?? null;
+        $basePrice = $_POST['base_price'] ?? 0;
+        $variants = isset($_POST['variants']) ? json_decode($_POST['variants'], true) : [];
+        
+        if (!$name || !$category) {
+            sendError('Name and category are required');
+        }
+        
+        // Get category ID from name
+        $cat = $db->fetchOne("SELECT id FROM categories WHERE name = ? OR slug = ?", [$category, strtolower(str_replace(' ', '-', $category))]);
+        $categoryId = $cat['id'] ?? 1;
+        
+        // Create product
+        $slug = strtolower(str_replace(' ', '-', $name)) . '-' . time();
+        $db->execute(
+            "INSERT INTO products (name, slug, base_price, category_id, is_active) VALUES (?, ?, ?, ?, 1)",
+            [$name, $slug, $basePrice, $categoryId]
+        );
+        
+        $productId = $db->lastInsertId();
+        
+        // Create variants if provided
+        if (!empty($variants)) {
+            foreach ($variants as $variant) {
+                $db->execute(
+                    "INSERT INTO product_variants (product_id, label, price_adjustment, is_active) VALUES (?, ?, ?, 1)",
+                    [$productId, $variant['label'] ?? '', $variant['priceDelta'] ?? 0]
+                );
+            }
+        }
+        
+        // Log audit
+        logAuditEvent($db, 'CREATE', 'product', $productId, $current_user['id'], json_encode(['name' => $name]));
+        
+        sendSuccess(['product_id' => $productId]);
+    }
+    
+    // Update product
+    elseif ($action === 'updateProduct') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $productId = $_POST['product_id'] ?? null;
+        $name = $_POST['name'] ?? null;
+        $category = $_POST['category'] ?? null;
+        $basePrice = $_POST['base_price'] ?? 0;
+        $variants = isset($_POST['variants']) ? json_decode($_POST['variants'], true) : [];
+        
+        if (!$productId || !$name) {
+            sendError('Product ID and name are required');
+        }
+        
+        // Get category ID
+        $cat = $db->fetchOne("SELECT id FROM categories WHERE name = ? OR slug = ?", [$category, strtolower(str_replace(' ', '-', $category))]);
+        $categoryId = $cat['id'] ?? 1;
+        
+        // Update product
+        $db->execute(
+            "UPDATE products SET name = ?, base_price = ?, category_id = ? WHERE id = ?",
+            [$name, $basePrice, $categoryId, $productId]
+        );
+        
+        // Delete old variants and create new ones
+        $db->execute("DELETE FROM product_variants WHERE product_id = ?", [$productId]);
+        if (!empty($variants)) {
+            foreach ($variants as $variant) {
+                $db->execute(
+                    "INSERT INTO product_variants (product_id, label, price_adjustment, is_active) VALUES (?, ?, ?, 1)",
+                    [$productId, $variant['label'] ?? '', $variant['priceDelta'] ?? 0]
+                );
+            }
+        }
+        
+        // Log audit
+        logAuditEvent($db, 'UPDATE', 'product', $productId, $current_user['id'], json_encode(['name' => $name]));
+        
+        sendSuccess(['message' => 'Product updated']);
+    }
+
+    // Update product stock
+    elseif ($action === 'updateProductStock') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $productId = $_POST['product_id'] ?? null;
+        $stockQuantity = isset($_POST['stock_quantity']) ? intval($_POST['stock_quantity']) : null;
+        
+        if (!$productId || $stockQuantity === null) {
+            sendError('Product ID and stock quantity are required');
+        }
+
+        if ($stockQuantity < 0) {
+            sendError('Stock quantity cannot be negative');
+        }
+        
+        // Get current stock for audit logging
+        $currentProduct = $db->fetchOne(
+            "SELECT stock_quantity FROM products WHERE id = ?",
+            [$productId]
+        );
+
+        if (!$currentProduct) {
+            sendError('Product not found', 404);
+        }
+
+        // Update stock
+        $db->execute(
+            "UPDATE products SET stock_quantity = ? WHERE id = ?",
+            [$stockQuantity, $productId]
+        );
+        
+        // Log audit
+        logAuditEvent($db, 'UPDATE', 'product_stock', $productId, $current_user['id'], 
+            json_encode([
+                'previous_stock' => $currentProduct['stock_quantity'],
+                'new_stock' => $stockQuantity
+            ])
+        );
+        
+        sendSuccess(['message' => 'Product stock updated successfully', 'stock_quantity' => $stockQuantity]);
+    }
+    
+    // Delete product
+    elseif ($action === 'deleteProduct') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        $productId = $_GET['product_id'] ?? $_POST['product_id'] ?? null;
+        
+        if (!$productId) {
+            sendError('Product ID is required');
+        }
+        
+        // Soft delete - mark as inactive
+        $db->execute("UPDATE products SET is_active = 0 WHERE id = ?", [$productId]);
+        
+        // Log audit
+        logAuditEvent($db, 'DELETE', 'product', $productId, $current_user['id'], json_encode(['product_id' => $productId]));
+        
+        sendSuccess(['message' => 'Product deleted']);
+    }
+    
     else {
         sendError('Unknown action', 400);
     }

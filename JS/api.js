@@ -129,6 +129,62 @@ const ProductsAPI = {
     // Get all categories
     async getCategories() {
         return await apiCall('products.php?action=categories');
+    },
+
+    // Get all products (for admin/employee dashboards)
+    async getAllProducts() {
+        return await apiCall('management.php?action=getProducts');
+    },
+
+    // Create new product
+    async createProduct(name, category, basePrice, variants = []) {
+        const body = toFormData({
+            action: 'createProduct',
+            name,
+            category,
+            base_price: basePrice,
+            variants: JSON.stringify(variants)
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // Update product
+    async updateProduct(productId, name, category, basePrice, variants = []) {
+        const body = toFormData({
+            action: 'updateProduct',
+            product_id: productId,
+            name,
+            category,
+            base_price: basePrice,
+            variants: JSON.stringify(variants)
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // Delete product
+    async deleteProduct(productId) {
+        return await apiCall(`management.php?action=deleteProduct&product_id=${productId}`, {
+            method: 'POST'
+        });
+    },
+
+    // Update product stock
+    async updateProductStock(productId, stockQuantity) {
+        const body = toFormData({
+            action: 'updateProductStock',
+            product_id: productId,
+            stock_quantity: stockQuantity
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
     }
 };
 

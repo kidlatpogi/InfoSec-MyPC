@@ -259,15 +259,48 @@ try {
             sendError('Only pending orders can be cancelled');
         }
 
-        // Update order status
-        $db->query(
-            "UPDATE orders SET status = 'cancelled' WHERE id = ?",
-            [$order_id]
-        );
+        // Start transaction
+        $db->beginTransaction();
 
-        // TODO: Restore stock quantities
+        try {
+            // Get order items to restore stock
+            $order_items = $db->fetchAll(
+                "SELECT oi.product_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?",
+                [$order_id]
+            );
 
-        sendSuccess([], 'Order cancelled successfully');
+            // Restore stock for each item
+            foreach ($order_items as $item) {
+                // Get product to check if it has variants
+                $product = $db->fetchOne(
+                    "SELECT id FROM products WHERE id = ?",
+                    [$item['product_id']]
+                );
+
+                if ($product) {
+                    // Restore to main product stock
+                    $db->query(
+                        "UPDATE products SET stock_quantity = stock_quantity + ? WHERE id = ?",
+                        [$item['quantity'], $item['product_id']]
+                    );
+                }
+            }
+
+            // Update order status to cancelled
+            $db->query(
+                "UPDATE orders SET status = 'cancelled' WHERE id = ?",
+                [$order_id]
+            );
+
+            // Commit transaction
+            $db->commit();
+
+            sendSuccess([], 'Order cancelled successfully and stock has been restored');
+        } catch (Exception $e) {
+            // Rollback on error
+            $db->rollback();
+            throw $e;
+        }
     }
 
     // Invalid action
