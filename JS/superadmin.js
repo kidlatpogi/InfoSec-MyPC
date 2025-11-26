@@ -4,6 +4,41 @@
  */
 
 // ========================================
+// CONFIRMATION DIALOG HELPER
+// ========================================
+
+function showConfirmDialog(message, onConfirm) {
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    
+    confirmMessage.textContent = message;
+    confirmModal.classList.add('open');
+    
+    // Create new button to avoid event listener accumulation
+    const newDeleteBtn = confirmDeleteBtn.cloneNode(true);
+    confirmDeleteBtn.parentNode.replaceChild(newDeleteBtn, confirmDeleteBtn);
+    
+    newDeleteBtn.addEventListener('click', async () => {
+        confirmModal.classList.remove('open');
+        await onConfirm();
+    });
+    
+    // Close button
+    const closeBtn = confirmModal.querySelector('.modal-close');
+    const cancelBtn = confirmModal.querySelector('[data-action="cancel"]');
+    
+    const closeHandler = () => confirmModal.classList.remove('open');
+    
+    if (closeBtn) {
+        closeBtn.onclick = closeHandler;
+    }
+    if (cancelBtn) {
+        cancelBtn.onclick = closeHandler;
+    }
+}
+
+// ========================================
 // TAB NAVIGATION
 // ========================================
 
@@ -285,7 +320,7 @@ function editAdmin(adminId, email) {
             modalTitle.textContent = `Edit Admin: ${admin.email}`;
             
             // Show modal
-            adminModal.classList.add('active');
+            adminModal.classList.add('open');
             
             // Handle form submission
             adminForm.onsubmit = async (e) => {
@@ -308,7 +343,7 @@ function editAdmin(adminId, email) {
                 try {
                     await ManagementAPI.updateAdmin(adminId, updates);
                     alert('Admin updated successfully');
-                    adminModal.classList.remove('active');
+                    adminModal.classList.remove('open');
                     loadAdmins();
                 } catch (error) {
                     alert('Error updating admin: ' + error.message);
@@ -319,15 +354,15 @@ function editAdmin(adminId, email) {
 }
 
 async function deleteAdmin(adminId) {
-    if (!confirm('Are you sure you want to delete this admin?')) return;
-    
-    try {
-        await ManagementAPI.deleteAdmin(adminId);
-        alert('Admin deleted successfully');
-        loadAdmins();
-    } catch (error) {
-        alert('Error deleting admin: ' + error.message);
-    }
+    showConfirmDialog('Are you sure you want to delete this admin?', async () => {
+        try {
+            await ManagementAPI.deleteAdmin(adminId);
+            alert('Admin deleted successfully');
+            loadAdmins();
+        } catch (error) {
+            alert('Error deleting admin: ' + error.message);
+        }
+    });
 }
 
 // ========================================
@@ -359,7 +394,7 @@ function editUser(userId, email) {
             modalTitle.textContent = `Edit User: ${user.email}`;
             
             // Show modal
-            userModal.classList.add('active');
+            userModal.classList.add('open');
             
             // Handle form submission
             userForm.onsubmit = async (e) => {
@@ -382,7 +417,7 @@ function editUser(userId, email) {
                 try {
                     await ManagementAPI.updateUser(userId, updates);
                     alert('User updated successfully');
-                    userModal.classList.remove('active');
+                    userModal.classList.remove('open');
                     loadUsers();
                 } catch (error) {
                     alert('Error updating user: ' + error.message);
@@ -393,15 +428,15 @@ function editUser(userId, email) {
 }
 
 async function deleteUser(userId) {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    
-    try {
-        await ManagementAPI.deleteUser(userId);
-        alert('User deleted successfully');
-        loadUsers();
-    } catch (error) {
-        alert('Error deleting user: ' + error.message);
-    }
+    showConfirmDialog('Are you sure you want to delete this user?', async () => {
+        try {
+            await ManagementAPI.deleteUser(userId);
+            alert('User deleted successfully');
+            loadUsers();
+        } catch (error) {
+            alert('Error deleting user: ' + error.message);
+        }
+    });
 }
 
 // ========================================
@@ -433,7 +468,7 @@ function editEmployee(employeeId, email) {
             modalTitle.textContent = `Edit Employee: ${employee.email}`;
             
             // Show modal
-            employeeModal.classList.add('active');
+            employeeModal.classList.add('open');
             
             // Handle form submission
             employeeForm.onsubmit = async (e) => {
@@ -456,7 +491,7 @@ function editEmployee(employeeId, email) {
                 try {
                     await ManagementAPI.updateEmployee(employeeId, updates);
                     alert('Employee updated successfully');
-                    employeeModal.classList.remove('active');
+                    employeeModal.classList.remove('open');
                     loadEmployees();
                 } catch (error) {
                     alert('Error updating employee: ' + error.message);
@@ -467,15 +502,15 @@ function editEmployee(employeeId, email) {
 }
 
 async function deleteEmployee(employeeId) {
-    if (!confirm('Are you sure you want to delete this employee?')) return;
-    
-    try {
-        await ManagementAPI.deleteEmployee(employeeId);
-        alert('Employee deleted successfully');
-        loadEmployees();
-    } catch (error) {
-        alert('Error deleting employee: ' + error.message);
-    }
+    showConfirmDialog('Are you sure you want to delete this employee?', async () => {
+        try {
+            await ManagementAPI.deleteEmployee(employeeId);
+            alert('Employee deleted successfully');
+            loadEmployees();
+        } catch (error) {
+            alert('Error deleting employee: ' + error.message);
+        }
+    });
 }
 
 // ========================================

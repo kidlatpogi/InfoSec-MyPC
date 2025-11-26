@@ -289,72 +289,141 @@ async function loadAddresses() {
 
 function initAddressManagement() {
     const addAddressBtn = document.querySelector('#addresses .primary');
+    const addressModal = document.getElementById('address-modal');
+    const addressForm = document.getElementById('address-form');
+    const modalTitle = document.getElementById('address-modal-title');
+    let editingAddressId = null;
+    
     if (addAddressBtn) {
         addAddressBtn.addEventListener('click', () => {
-            const label = prompt('Address label (e.g., Home, Office):');
-            const recipientName = prompt('Recipient name:');
-            if (!recipientName) return;
-            
-            const phone = prompt('Phone number:');
-            if (!phone) return;
-            
-            const addressLine1 = prompt('Address line 1:');
-            if (!addressLine1) return;
-            
-            const addressLine2 = prompt('Address line 2 (optional):');
-            const city = prompt('City:');
-            if (!city) return;
-            
-            const postalCode = prompt('Postal code:');
-            if (!postalCode) return;
-            
-            const isDefault = confirm('Set as default address?');
-            
-            AddressesAPI.addAddress(recipientName, phone, addressLine1, city, postalCode, addressLine2, label, isDefault)
-                .then(() => {
-                    alert('Address added successfully');
-                    loadAddresses();
-                })
-                .catch(error => alert('Error adding address: ' + error.message));
+            editingAddressId = null;
+            modalTitle.textContent = 'Add New Address';
+            document.getElementById('address-label').value = '';
+            document.getElementById('address-recipient').value = '';
+            document.getElementById('address-phone').value = '';
+            document.getElementById('address-line1').value = '';
+            document.getElementById('address-line2').value = '';
+            document.getElementById('address-city').value = '';
+            document.getElementById('address-postal').value = '';
+            document.getElementById('address-default').checked = false;
+            addressModal.classList.add('open');
         });
     }
+    
+    // Handle form submission
+    addressForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const label = document.getElementById('address-label').value.trim();
+        const recipientName = document.getElementById('address-recipient').value.trim();
+        const phone = document.getElementById('address-phone').value.trim();
+        const addressLine1 = document.getElementById('address-line1').value.trim();
+        const addressLine2 = document.getElementById('address-line2').value.trim();
+        const city = document.getElementById('address-city').value.trim();
+        const postalCode = document.getElementById('address-postal').value.trim();
+        const isDefault = document.getElementById('address-default').checked;
+        
+        try {
+            if (editingAddressId) {
+                // Update existing address
+                await AddressesAPI.updateAddress(editingAddressId, {
+                    label,
+                    recipient_name: recipientName,
+                    phone,
+                    address: addressLine1,
+                    address_line_2: addressLine2,
+                    city,
+                    postal_code: postalCode,
+                    is_default: isDefault
+                });
+                alert('Address updated successfully');
+            } else {
+                // Add new address
+                await AddressesAPI.addAddress(recipientName, phone, addressLine1, city, postalCode, addressLine2, label, isDefault);
+                alert('Address added successfully');
+            }
+            addressModal.classList.remove('open');
+            loadAddresses();
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    };
+    
+    // Close modal button
+    document.querySelectorAll('#address-modal .modal-close, #address-modal [data-action="cancel"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            addressModal.classList.remove('open');
+        });
+    });
     
     // Initial load
     loadAddresses();
 }
 
 async function editAddress(addressId) {
-    // For now, delete and re-add. A full implementation would load and edit.
-    const recipientName = prompt('Recipient name:');
-    if (!recipientName) return;
+    const addressModal = document.getElementById('address-modal');
+    const addressForm = document.getElementById('address-form');
+    const modalTitle = document.getElementById('address-modal-title');
     
-    const phone = prompt('Phone number:');
-    if (!phone) return;
+    // Fetch current address data
+    const addresses = await AddressesAPI.getAddresses();
+    const address = addresses.find(a => a.id == addressId);
     
-    const addressLine1 = prompt('Address line 1:');
-    if (!addressLine1) return;
-    
-    const addressLine2 = prompt('Address line 2 (optional):');
-    const city = prompt('City:');
-    if (!city) return;
-    
-    const postalCode = prompt('Postal code:');
-    if (!postalCode) return;
-    
-    try {
-        await AddressesAPI.updateAddress(addressId, {
-            recipient_name: recipientName,
-            phone,
-            address_line1: addressLine1,
-            address_line2: addressLine2,
-            city,
-            postal_code: postalCode
-        });
-        alert('Address updated successfully');
-        loadAddresses();
-    } catch (error) {
-        alert('Error updating address: ' + error.message);
+    if (!address) {
+        alert('Address not found');
+        return;
     }
+    
+    // Populate form with current data
+    document.getElementById('address-label').value = address.label || '';
+    document.getElementById('address-recipient').value = address.recipient_name || '';
+    document.getElementById('address-phone').value = address.phone || '';
+    document.getElementById('address-line1').value = address.address || '';
+    document.getElementById('address-line2').value = address.address_line_2 || '';
+    document.getElementById('address-city').value = address.city || '';
+    document.getElementById('address-postal').value = address.postal_code || '';
+    document.getElementById('address-default').checked = address.is_default || false;
+    
+    // Set modal title
+    modalTitle.textContent = `Edit Address: ${address.label}`;
+    
+    // Show modal
+    addressModal.classList.add('open');
+    
+    // Create a new form handler for this edit
+    const newForm = addressForm.cloneNode(true);
+    addressForm.parentNode.replaceChild(newForm, addressForm);
+    
+    newForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const label = document.getElementById('address-label').value.trim();
+        const recipientName = document.getElementById('address-recipient').value.trim();
+        const phone = document.getElementById('address-phone').value.trim();
+        const addressLine1 = document.getElementById('address-line1').value.trim();
+        const addressLine2 = document.getElementById('address-line2').value.trim();
+        const city = document.getElementById('address-city').value.trim();
+        const postalCode = document.getElementById('address-postal').value.trim();
+        const isDefault = document.getElementById('address-default').checked;
+        
+        try {
+            await AddressesAPI.updateAddress(addressId, {
+                label,
+                recipient_name: recipientName,
+                phone,
+                address: addressLine1,
+                address_line_2: addressLine2,
+                city,
+                postal_code: postalCode,
+                is_default: isDefault
+            });
+            alert('Address updated successfully');
+            addressModal.classList.remove('open');
+            loadAddresses();
+        } catch (error) {
+            alert('Error updating address: ' + error.message);
+        }
+    };
 }
 
 async function deleteAddress(addressId) {

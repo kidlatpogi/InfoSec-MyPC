@@ -59,12 +59,22 @@ async function doLogout(ask = true) {
             if (!window.confirm("Are you sure you want to logout?")) return false;
         }
 
-        await AuthAPI.logout();
+        // Clear session immediately for responsive UI
         clearUserSession();
         updateAuthNav();
         syncAuthButton();
 
-        if (window.router) window.router.navigateTo("/");
+        // Call logout API in background (don't wait for it)
+        AuthAPI.logout().catch(error => {
+            console.error("Logout API call failed", error);
+        });
+
+        // Navigate after UI is updated
+        setTimeout(() => {
+            if (window.router) window.router.navigateTo("/");
+            else window.location.href = "/";
+        }, 100);
+        
         return true;
     } catch (error) {
         console.error("Logout failed", error);
