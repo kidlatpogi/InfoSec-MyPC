@@ -17,8 +17,27 @@
 
 <main class="container admin-container">
     <div class="admin-header">
-        <h1>Employee Dashboard</h1>
-        <p id="employee-welcome">Welcome, Employee</p>
+        <div style="display: flex; justify-content: space-between; align-items: center">
+            <div>
+                <h1>Employee Dashboard</h1>
+                <p id="employee-welcome">Welcome, Employee</p>
+            </div>
+            <button
+                id="employee-logout-btn"
+                class="primary"
+                style="
+                  padding: 0.6rem 1.2rem;
+                  cursor: pointer;
+                  border: none;
+                  border-radius: 8px;
+                  background: var(--accent);
+                  color: #fff;
+                  font-weight: 600;
+                "
+            >
+                Logout
+            </button>
+        </div>
     </div>
 
     <div class="admin-tabs">
