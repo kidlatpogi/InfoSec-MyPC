@@ -246,7 +246,7 @@ async function loadOrders() {
 // ========================================
 
 function viewProduct(productId) {
-    ProductsAPI.getProducts()
+    ProductsAPI.getAllProducts()
         .then(data => {
             const product = data.products.find(p => p.id == productId);
             if (!product) {
@@ -289,7 +289,7 @@ function editProduct(productId) {
         const modalTitle = document.getElementById('product-modal-title');
         
         // Fetch the product data
-        ProductsAPI.getProducts()
+        ProductsAPI.getAllProducts()
             .then(data => {
                 const product = data.products.find(p => p.id == productId);
                 if (!product) {
