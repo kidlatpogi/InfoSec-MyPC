@@ -145,7 +145,7 @@ function initModals() {
     // Close modal buttons
     document.querySelectorAll('.modal-close, [data-action="cancel"]').forEach(btn => {
         btn.addEventListener('click', () => {
-            btn.closest('.modal')?.classList.remove('active');
+            btn.closest('.modal')?.classList.remove('open');
         });
     });
 
