@@ -177,7 +177,7 @@ async function loadProducts() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
-        const data = await ProductsAPI.getProducts();
+        const data = await ProductsAPI.getAllProducts();
 
         if (!data.products || data.products.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
