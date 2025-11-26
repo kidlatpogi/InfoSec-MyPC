@@ -233,6 +233,33 @@ try {
         ]);
     }
     
+    // Verify password for sensitive operations
+    elseif ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'verifyPassword') {
+        if (!isset($_SESSION['user_id'])) {
+            sendError('Not logged in', 401);
+        }
+        
+        if (!isset($_POST['password'])) {
+            sendError('Password is required');
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        $password = $_POST['password'];
+        
+        // Get user's password hash
+        $user = $db->fetchOne("SELECT password_hash FROM users WHERE id = ?", [$user_id]);
+        if (!$user) {
+            sendError('User not found', 404);
+        }
+        
+        // Verify password
+        if (password_verify($password, $user['password_hash'])) {
+            sendSuccess(['message' => 'Password verified']);
+        } else {
+            sendError('Invalid password');
+        }
+    }
+    
     // Invalid action
     else {
         sendError('Invalid action', 400);
