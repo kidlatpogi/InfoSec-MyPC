@@ -203,7 +203,8 @@ async function loadProducts() {
         });
     } catch (error) {
         console.error('Failed to load products:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
+        const errorMsg = error.message || 'Unknown error';
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
 }
 
