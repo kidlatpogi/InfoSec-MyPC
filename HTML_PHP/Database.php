@@ -53,6 +53,13 @@ class Database {
             throw new Exception("Database query failed");
         }
     }
+
+    /**
+     * Alias for query() - for backward compatibility
+     */
+    public function execute($sql, $params = []) {
+        return $this->query($sql, $params);
+    }
     
     /**
      * Fetch all rows
