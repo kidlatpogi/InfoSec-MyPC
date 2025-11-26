@@ -153,6 +153,73 @@ function initAdminTabs() {
 
     // Load initial tab data
     loadTabData('users');
+
+    // Setup search and filter listeners
+    initAdminSearch();
+}
+
+// ========================================
+// SEARCH AND FILTERS
+// ========================================
+
+function initAdminSearch() {
+    // Product search
+    const productSearch = document.getElementById('product-search');
+    if (productSearch) {
+        productSearch.addEventListener('input', () => {
+            filterProductsTable();
+        });
+    }
+
+    // Order search
+    const orderSearch = document.getElementById('order-search');
+    if (orderSearch) {
+        orderSearch.addEventListener('input', () => {
+            filterOrdersTable();
+        });
+    }
+}
+
+function filterProductsTable() {
+    const searchInput = document.getElementById('product-search');
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#products-tbody tr');
+
+    rows.forEach(row => {
+        const id = row.cells[0]?.textContent.toLowerCase() || '';
+        const name = row.cells[1]?.textContent.toLowerCase() || '';
+        const category = row.cells[2]?.textContent.toLowerCase() || '';
+        const price = row.cells[3]?.textContent.toLowerCase() || '';
+        const stock = row.cells[4]?.textContent.toLowerCase() || '';
+
+        const matches = id.includes(query) || name.includes(query) || 
+                       category.includes(query) || price.includes(query) ||
+                       stock.includes(query);
+
+        row.style.display = matches ? '' : 'none';
+    });
+}
+
+function filterOrdersTable() {
+    const searchInput = document.getElementById('order-search');
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#orders-tbody tr');
+
+    rows.forEach(row => {
+        const orderId = row.cells[0]?.textContent.toLowerCase() || '';
+        const email = row.cells[1]?.textContent.toLowerCase() || '';
+        const total = row.cells[2]?.textContent.toLowerCase() || '';
+        const status = row.cells[3]?.textContent.toLowerCase() || '';
+
+        const matches = orderId.includes(query) || email.includes(query) || 
+                       total.includes(query) || status.includes(query);
+
+        row.style.display = matches ? '' : 'none';
+    });
 }
 
 // ========================================

@@ -153,6 +153,89 @@ function initSuperadminTabs() {
 
     // Load initial tab data
     loadTabData('admins');
+
+    // Setup search and filter listeners
+    initSuperadminSearch();
+}
+
+// ========================================
+// SEARCH AND FILTERS
+// ========================================
+
+function initSuperadminSearch() {
+    // Admin search
+    const adminSearch = document.getElementById('admin-search');
+    if (adminSearch) {
+        adminSearch.addEventListener('input', () => {
+            filterTable('admins-tbody');
+        });
+    }
+
+    // User search
+    const userSearch = document.getElementById('user-search');
+    if (userSearch) {
+        userSearch.addEventListener('input', () => {
+            filterTable('users-tbody');
+        });
+    }
+
+    // Employee search
+    const employeeSearch = document.getElementById('employee-search');
+    if (employeeSearch) {
+        employeeSearch.addEventListener('input', () => {
+            filterTable('employees-tbody');
+        });
+    }
+
+    // Product search
+    const productSearch = document.getElementById('product-search');
+    if (productSearch) {
+        productSearch.addEventListener('input', () => {
+            filterTable('products-tbody');
+        });
+    }
+
+    // Order search
+    const orderSearch = document.getElementById('order-search');
+    if (orderSearch) {
+        orderSearch.addEventListener('input', () => {
+            filterTable('orders-tbody');
+        });
+    }
+}
+
+function filterTable(tableBodyId) {
+    const tbody = document.getElementById(tableBodyId);
+    if (!tbody) return;
+
+    // Determine which search input to use based on table
+    let searchInput = null;
+    if (tableBodyId === 'admins-tbody') {
+        searchInput = document.getElementById('admin-search');
+    } else if (tableBodyId === 'users-tbody') {
+        searchInput = document.getElementById('user-search');
+    } else if (tableBodyId === 'employees-tbody') {
+        searchInput = document.getElementById('employee-search');
+    } else if (tableBodyId === 'products-tbody') {
+        searchInput = document.getElementById('product-search');
+    } else if (tableBodyId === 'orders-tbody') {
+        searchInput = document.getElementById('order-search');
+    }
+
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase();
+    const rows = tbody.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        // Get all text content from all cells
+        const rowText = Array.from(row.cells)
+            .map(cell => cell.textContent.toLowerCase())
+            .join(' ');
+
+        const matches = rowText.includes(query);
+        row.style.display = matches ? '' : 'none';
+    });
 }
 
 // ========================================
