@@ -522,55 +522,131 @@ function initModals() {
 
     // Add buttons with simple prompts
     document.getElementById('add-user-btn')?.addEventListener('click', () => {
-        const email = prompt('Enter user email:');
-        if (!email) return;
+        const userModal = document.getElementById('user-modal');
+        const userForm = document.getElementById('user-form');
+        const modalTitle = document.getElementById('user-modal-title');
         
-        const password = prompt('Enter password (min 6 characters):');
-        if (!password || password.length < 6) {
-            alert('Password must be at least 6 characters');
-            return;
-        }
+        // Reset form for new entry
+        userForm.reset();
+        document.getElementById('user-email').disabled = false;
+        modalTitle.textContent = 'Add New User';
         
-        const firstName = prompt('Enter first name:');
-        if (!firstName) return;
+        userModal.classList.add('open');
         
-        const lastName = prompt('Enter last name:');
-        if (!lastName) return;
-        
-        ManagementAPI.createUser(email, password, firstName, lastName)
-            .then(() => {
+        // Handle form submission
+        userForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('user-email').value.trim();
+            const fullName = document.getElementById('user-name').value.trim();
+            const password = document.getElementById('user-password').value;
+            
+            if (!password) {
+                alert('Password is required for new user');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            const nameParts = fullName.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ') || '';
+            
+            try {
+                await ManagementAPI.createUser(email, password, firstName, lastName);
                 alert('User created successfully');
+                userModal.classList.remove('open');
                 loadUsers();
-            })
-            .catch(error => alert('Error: ' + error.message));
+            } catch (error) {
+                alert('Error creating user: ' + error.message);
+            }
+        };
     });
 
     document.getElementById('add-employee-btn')?.addEventListener('click', () => {
-        const email = prompt('Enter employee email:');
-        if (!email) return;
+        const employeeModal = document.getElementById('employee-modal');
+        const employeeForm = document.getElementById('employee-form');
+        const modalTitle = document.getElementById('employee-modal-title');
         
-        const password = prompt('Enter password (min 6 characters):');
-        if (!password || password.length < 6) {
-            alert('Password must be at least 6 characters');
-            return;
-        }
+        // Reset form for new entry
+        employeeForm.reset();
+        document.getElementById('employee-email').disabled = false;
+        modalTitle.textContent = 'Add New Employee';
         
-        const firstName = prompt('Enter first name:');
-        if (!firstName) return;
+        employeeModal.classList.add('open');
         
-        const lastName = prompt('Enter last name:');
-        if (!lastName) return;
-        
-        ManagementAPI.createEmployee(email, password, firstName, lastName)
-            .then(() => {
+        // Handle form submission
+        employeeForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('employee-email').value.trim();
+            const fullName = document.getElementById('employee-name').value.trim();
+            const password = document.getElementById('employee-password').value;
+            
+            if (!password) {
+                alert('Password is required for new employee');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            const nameParts = fullName.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ') || '';
+            
+            try {
+                await ManagementAPI.createEmployee(email, password, firstName, lastName);
                 alert('Employee created successfully');
+                employeeModal.classList.remove('open');
                 loadEmployees();
-            })
-            .catch(error => alert('Error: ' + error.message));
+            } catch (error) {
+                alert('Error creating employee: ' + error.message);
+            }
+        };
     });
 
     document.getElementById('add-product-btn')?.addEventListener('click', () => {
-        alert('Add product feature not yet implemented');
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const modalTitle = document.getElementById('product-modal-title');
+        
+        // Reset form for new entry
+        productForm.reset();
+        modalTitle.textContent = 'Add New Product';
+        
+        productModal.classList.add('open');
+        
+        // Handle form submission
+        productForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('product-title').value.trim();
+            const category = document.getElementById('product-category').value.trim();
+            const basePrice = parseFloat(document.getElementById('product-price').value);
+            let variants = [];
+            
+            const variantsStr = document.getElementById('product-variants').value.trim();
+            if (variantsStr) {
+                try {
+                    variants = JSON.parse(variantsStr);
+                } catch (e) {
+                    alert('Invalid JSON format for variants');
+                    return;
+                }
+            }
+            
+            try {
+                await ProductsAPI.createProduct(name, category, basePrice, variants);
+                alert('Product created successfully');
+                productModal.classList.remove('open');
+                loadProducts();
+            } catch (error) {
+                alert('Error creating product: ' + error.message);
+            }
+        };
     });
 }
 
