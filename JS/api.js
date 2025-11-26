@@ -435,3 +435,15 @@ window.CartAPI = CartAPI;
 window.OrdersAPI = OrdersAPI;
 window.ManagementAPI = ManagementAPI;
 window.AddressesAPI = AddressesAPI;
+
+// ========================================
+// AUDIT API (Superadmin only)
+// ========================================
+
+const AuditAPI = {
+    async getAuditLogs(limit = 100, offset = 0) {
+        return await apiCall(`management.php?action=getAuditLogs&limit=${limit}&offset=${offset}`);
+    }
+};
+
+window.AuditAPI = AuditAPI;

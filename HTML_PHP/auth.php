@@ -148,6 +148,91 @@ try {
         sendSuccess(['user' => $user]);
     }
     
+    // Update user profile
+    elseif ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'updateProfile') {
+        if (!isset($_SESSION['user_id'])) {
+            sendError('Not logged in', 401);
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        
+        // Get input data
+        $first_name = isset($_POST['first_name']) ? sanitizeInput($_POST['first_name']) : null;
+        $last_name = isset($_POST['last_name']) ? sanitizeInput($_POST['last_name']) : null;
+        $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
+        $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : null;
+        $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
+        
+        // Get current user data
+        $user = $db->fetchOne("SELECT password_hash FROM users WHERE id = ?", [$user_id]);
+        if (!$user) {
+            sendError('User not found', 404);
+        }
+        
+        // If changing password, verify current password
+        if (!empty($new_password)) {
+            if (empty($current_password)) {
+                sendError('Current password is required to set new password');
+            }
+            
+            if (!password_verify($current_password, $user['password_hash'])) {
+                sendError('Current password is incorrect');
+            }
+            
+            if (strlen($new_password) < 6) {
+                sendError('Password must be at least 6 characters long');
+            }
+            
+            $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
+        } else {
+            $password_hash = null;
+        }
+        
+        // Build update query
+        $updates = [];
+        $params = [];
+        
+        if ($first_name !== null) {
+            $updates[] = 'first_name = ?';
+            $params[] = $first_name;
+        }
+        
+        if ($last_name !== null) {
+            $updates[] = 'last_name = ?';
+            $params[] = $last_name;
+        }
+        
+        if ($phone !== null) {
+            $updates[] = 'phone = ?';
+            $params[] = $phone;
+        }
+        
+        if ($password_hash !== null) {
+            $updates[] = 'password_hash = ?';
+            $params[] = $password_hash;
+        }
+        
+        if (empty($updates)) {
+            sendError('No fields to update');
+        }
+        
+        $params[] = $user_id;
+        $query = "UPDATE users SET " . implode(', ', $updates) . " WHERE id = ?";
+        $db->query($query, $params);
+        
+        // Return updated user data
+        $updated_user = $db->fetchOne(
+            "SELECT id, email, first_name, last_name, role, phone, status 
+             FROM users WHERE id = ?",
+            [$user_id]
+        );
+        
+        sendSuccess([
+            'message' => 'Profile updated successfully',
+            'user' => $updated_user
+        ]);
+    }
+    
     // Invalid action
     else {
         sendError('Invalid action', 400);

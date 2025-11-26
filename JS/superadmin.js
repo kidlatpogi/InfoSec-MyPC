@@ -53,6 +53,12 @@ async function loadTabData(tabName) {
         case 'orders':
             await loadOrders();
             break;
+        case 'audit':
+            await loadAuditLogs();
+            break;
+        case 'profile':
+            await loadProfileData();
+            break;
     }
 }
 
@@ -451,12 +457,184 @@ function initModals() {
 // LOGOUT
 // ========================================
 
+async function loadAuditLogs() {
+    const tbody = document.getElementById('audit-tbody');
+    if (!tbody) return;
+
+    try {
+        const data = await AuditAPI.getAuditLogs(1000);
+
+        if (!data.logs || data.logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        data.logs.forEach(log => {
+            const row = document.createElement('tr');
+            const timestamp = new Date(log.created_at).toLocaleString();
+            const actionBadgeColor = 
+                log.action === 'CREATE' ? '#10b981' :
+                log.action === 'UPDATE' ? '#3b82f6' :
+                log.action === 'DELETE' ? '#ef4444' :
+                '#6b7280';
+            
+            const userDisplay = log.email ? `${log.first_name} ${log.last_name} (${log.email})` : 'System';
+            const details = log.details ? (typeof log.details === 'string' ? JSON.parse(log.details) : log.details) : {};
+            const detailsDisplay = JSON.stringify(details).substring(0, 100);
+
+            row.innerHTML = `
+                <td>${timestamp}</td>
+                <td><span class="badge" style="background:${actionBadgeColor}">${log.action}</span></td>
+                <td>${log.entity_type}</td>
+                <td>${log.entity_id}</td>
+                <td>${userDisplay}</td>
+                <td><code style="font-size:0.85rem; color:#666;">${detailsDisplay}</code></td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading audit logs:', error);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444;">Error loading audit logs</td></tr>';
+    }
+}
+
+async function loadProfileData() {
+    const user = getUserData();
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Populate form with current user data
+    document.getElementById('profile-first-name').value = user.first_name || '';
+    document.getElementById('profile-last-name').value = user.last_name || '';
+    document.getElementById('profile-email').value = user.email || '';
+    document.getElementById('profile-phone').value = user.phone || '';
+    
+    // Clear password fields
+    document.getElementById('profile-current-password').value = '';
+    document.getElementById('profile-new-password').value = '';
+    document.getElementById('profile-confirm-password').value = '';
+}
+
+function resetProfileForm() {
+    document.getElementById('profile-edit-form').reset();
+    loadProfileData();
+}
+
+function handleProfileSubmit(e) {
+    e.preventDefault();
+
+    const firstName = document.getElementById('profile-first-name').value.trim();
+    const lastName = document.getElementById('profile-last-name').value.trim();
+    const currentPassword = document.getElementById('profile-current-password').value;
+    const newPassword = document.getElementById('profile-new-password').value;
+    const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+    if (!firstName || !lastName) {
+        alert('First name and last name are required');
+        return;
+    }
+
+    // If changing password, validate
+    if (newPassword || confirmPassword || currentPassword) {
+        if (!currentPassword) {
+            alert('Please enter your current password');
+            return;
+        }
+        if (!newPassword) {
+            alert('Please enter a new password');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            alert('New passwords do not match');
+            return;
+        }
+        if (newPassword.length < 6) {
+            alert('Password must be at least 6 characters long');
+            return;
+        }
+    }
+
+    const updates = {
+        first_name: firstName,
+        last_name: lastName,
+        phone: document.getElementById('profile-phone').value.trim()
+    };
+
+    if (newPassword) {
+        updates.current_password = currentPassword;
+        updates.new_password = newPassword;
+    }
+
+    updateUserProfile(updates);
+}
+
+async function updateUserProfile(updates) {
+    try {
+        const response = await fetch('auth.php?action=updateProfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                first_name: updates.first_name,
+                last_name: updates.last_name,
+                phone: updates.phone,
+                current_password: updates.current_password || '',
+                new_password: updates.new_password || ''
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update localStorage
+            const user = getUserData();
+            user.first_name = updates.first_name;
+            user.last_name = updates.last_name;
+            user.phone = updates.phone;
+            localStorage.setItem('user_data', JSON.stringify(user));
+            
+            alert('Profile updated successfully!');
+            document.getElementById('profile-edit-form').reset();
+            await loadProfileData();
+            
+            // Update welcome message
+            const welcomeEl = document.getElementById('superadmin-welcome');
+            if (welcomeEl) {
+                welcomeEl.textContent = `Welcome, ${user.first_name} ${user.last_name}`;
+            }
+        } else {
+            alert(data.message || 'Error updating profile');
+        }
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('Error updating profile');
+    }
+}
+
+// ========================================
+
 function initLogout() {
     document.getElementById('superadmin-logout-btn')?.addEventListener('click', () => {
-        if (confirm('Are you sure you want to logout?')) {
-            doLogout();
-        }
+        doLogout(false);
     });
+}
+
+function initProfileHandlers() {
+    const profileForm = document.getElementById('profile-edit-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileSubmit);
+    }
+
+    const refreshAuditBtn = document.getElementById('refresh-audit-btn');
+    if (refreshAuditBtn) {
+        refreshAuditBtn.addEventListener('click', () => {
+            loadAuditLogs();
+        });
+    }
 }
 
 // ========================================
@@ -476,6 +654,7 @@ function initSuperadminPage() {
     initSuperadminTabs();
     initModals();
     initLogout();
+    initProfileHandlers();
 }
 
 // Make functions globally available
@@ -490,6 +669,9 @@ window.deleteUser = deleteUser;
 window.editEmployee = editEmployee;
 window.deleteEmployee = deleteEmployee;
 window.viewOrder = viewOrder;
+window.resetProfileForm = resetProfileForm;
+window.handleProfileSubmit = handleProfileSubmit;
+window.loadAuditLogs = loadAuditLogs;
 
 // Auto-initialize
 if (document.readyState === 'loading') {

@@ -87,6 +87,7 @@ try {
              VALUES (?, ?, ?, ?, ?, 'admin', 'active')",
             [$email, $password_hash, $first_name, $last_name, $phone]
         );
+        logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'name' => "$first_name $last_name"]);
         
         sendSuccess(['admin_id' => $admin_id], 'Admin created successfully');
     }
@@ -133,6 +134,7 @@ try {
         $params[] = $admin_id;
         $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'admin'";
         $db->query($sql, $params);
+        logAuditEvent('UPDATE', 'admin', $admin_id, $user_id, $updates);
         
         sendSuccess([], 'Admin updated successfully');
     }
@@ -157,6 +159,7 @@ try {
         }
         
         $db->query("DELETE FROM users WHERE id = ? AND role = 'admin'", [$admin_id]);
+        logAuditEvent('DELETE', 'admin', $admin_id, $user_id, ['action' => 'delete_admin']);
         sendSuccess([], 'Admin deleted successfully');
     }
     
@@ -285,6 +288,7 @@ try {
         }
         
         $db->query("DELETE FROM users WHERE id = ? AND role = 'customer'", [$target_user_id]);
+        logAuditEvent('DELETE', 'user', $target_user_id, $user_id, ['action' => 'delete_user']);
         sendSuccess([], 'User deleted successfully');
     }
     
@@ -413,6 +417,7 @@ try {
         }
         
         $db->query("DELETE FROM users WHERE id = ? AND role = 'employee'", [$employee_id]);
+        logAuditEvent('DELETE', 'employee', $employee_id, $user_id, ['action' => 'delete_employee']);
         sendSuccess([], 'Employee deleted successfully');
     }
     
@@ -571,6 +576,30 @@ try {
         
         $db->query("DELETE FROM addresses WHERE id = ?", [$address_id]);
         sendSuccess([], 'Address deleted successfully');
+    }
+    
+    // ========================================
+    // AUDIT LOGS (Superadmin only)
+    // ========================================
+    
+    elseif ($action === 'getAuditLogs') {
+        if ($current_user['role'] !== 'superadmin') {
+            sendError('Unauthorized: Only superadmins can view audit logs', 403);
+        }
+        
+        $limit = $_GET['limit'] ?? 100;
+        $offset = $_GET['offset'] ?? 0;
+        
+        $logs = $db->fetchAll(
+            "SELECT al.*, u.email, u.first_name, u.last_name 
+             FROM audit_logs al
+             LEFT JOIN users u ON al.user_id = u.id
+             ORDER BY al.created_at DESC
+             LIMIT ? OFFSET ?",
+            [$limit, $offset]
+        );
+        
+        sendSuccess(['audit_logs' => $logs]);
     }
     
     else {
