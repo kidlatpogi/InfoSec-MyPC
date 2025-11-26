@@ -681,8 +681,14 @@ function initAdminPage() {
     initLogout();
 }
 
+// Wrapper function for router compatibility
+function initializeAdmin() {
+    return initAdminPage();
+}
+
 // Make functions globally available
 window.initAdminPage = initAdminPage;
+window.initializeAdmin = initializeAdmin;
 window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;

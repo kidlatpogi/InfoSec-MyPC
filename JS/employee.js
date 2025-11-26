@@ -482,9 +482,14 @@ function initEmployeePage() {
     initLogout();
 }
 
+// Wrapper function for router compatibility
+function initializeEmployee() {
+    return initEmployeePage();
+}
+
 // Make functions globally available
 window.initEmployeePage = initEmployeePage;
-window.viewProduct = viewProduct;
+window.initializeEmployee = initializeEmployee;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.viewOrder = viewOrder;
