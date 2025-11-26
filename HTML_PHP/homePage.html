@@ -84,3 +84,23 @@
     <footer class="site-footer">
         <div class="container">© MyPC — Premium PC Component Store</div>
     </footer>
+    <!-- Fallback script loader: if this page is opened directly (not via SPA router),
+         load frontend scripts and initialize. Prevents missing event wiring. -->
+    <script>
+        (function(){
+            try {
+                if (!window.router) {
+                    var apiScript = document.createElement('script');
+                    apiScript.src = '/JS/api.js?v=' + Date.now();
+                    apiScript.defer = false;
+                    document.body.appendChild(apiScript);
+
+                    var script = document.createElement('script');
+                    script.src = '/JS/script.js?v=' + Date.now();
+                    script.defer = false;
+                    script.onload = function(){ if (window.initializePageScript) { window.initializePageScript(); } };
+                    document.body.appendChild(script);
+                }
+            } catch (e) { console.warn('Fallback loader error', e); }
+        })();
+    </script>

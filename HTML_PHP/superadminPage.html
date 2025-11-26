@@ -31,6 +31,8 @@
     <button class="tab-btn" data-tab="employees">Manage Employees</button>
     <button class="tab-btn" data-tab="products">Manage Products</button>
     <button class="tab-btn" data-tab="orders">Manage Orders</button>
+    <button class="tab-btn" data-tab="audit">Audit Logs</button>
+    <button class="tab-btn" data-tab="profile">My Profile</button>
   </div>
 
   <!-- Admins Management Tab -->
@@ -219,6 +221,101 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Audit Logs Tab -->
+  <div id="audit-tab" class="tab-content">
+    <div class="tab-header">
+      <h2>Audit Logs</h2>
+      <button id="refresh-audit-btn" class="primary">Refresh</button>
+    </div>
+
+    <div class="search-filter">
+      <input
+        type="text"
+        id="audit-search"
+        placeholder="Search audit logs..."
+      />
+    </div>
+
+    <div class="table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Entity ID</th>
+            <th>User</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="audit-tbody">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 2rem">
+              Loading audit logs...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Profile Tab -->
+  <div id="profile-tab" class="tab-content">
+    <div class="tab-header">
+      <h2>My Profile</h2>
+    </div>
+
+    <div class="form-wrapper" style="max-width: 600px; margin: 2rem auto;">
+      <form id="profile-edit-form" novalidate>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="profile-first-name" required />
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="profile-last-name" required />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="profile-email" readonly style="background-color: #f5f5f5; cursor: not-allowed;" />
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="profile-phone" />
+        </div>
+
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Change Password</h3>
+
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="profile-current-password" />
+        </div>
+
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="profile-new-password" />
+        </div>
+
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="profile-confirm-password" />
+        </div>
+
+        <div class="form-actions" style="margin-top: 2rem;">
+          <button type="button" class="secondary" onclick="resetProfileForm()">
+            Cancel
+          </button>
+          <button type="submit" class="primary">
+            Save Changes
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </main>

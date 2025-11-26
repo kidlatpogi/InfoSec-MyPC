@@ -17,8 +17,27 @@
 
 <main class="container admin-container">
     <div class="admin-header">
-        <h1>Employee Dashboard</h1>
-        <p id="employee-welcome">Welcome, Employee</p>
+        <div style="display: flex; justify-content: space-between; align-items: center">
+            <div>
+                <h1>Employee Dashboard</h1>
+                <p id="employee-welcome">Welcome, Employee</p>
+            </div>
+            <button
+                id="employee-logout-btn"
+                class="primary"
+                style="
+                  padding: 0.6rem 1.2rem;
+                  cursor: pointer;
+                  border: none;
+                  border-radius: 8px;
+                  background: var(--accent);
+                  color: #fff;
+                  font-weight: 600;
+                "
+            >
+                Logout
+            </button>
+        </div>
     </div>
 
     <div class="admin-tabs">
@@ -45,12 +64,13 @@
                         <th>Title</th>
                         <th>Category</th>
                         <th>Price</th>
+                        <th>Stock</th>
                         <th>Variants</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="products-tbody">
-                    <tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -164,6 +184,30 @@
         <div class="form-actions">
             <button type="button" class="secondary" data-action="cancel">Close</button>
         </div>
+    </div>
+</div>
+
+<!-- Edit Stock Modal -->
+<div id="stock-modal" class="modal">
+    <div class="modal-content modal-small">
+        <div class="modal-header">
+            <h2 id="stock-modal-title">Edit Product Stock</h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <form id="stock-form" novalidate>
+            <div class="form-group">
+                <label>Current Stock</label>
+                <p id="current-stock-display" style="font-size:1.1rem;font-weight:600;color:#333;margin:0.5rem 0">0</p>
+            </div>
+            <div class="form-group">
+                <label>New Stock Quantity</label>
+                <input type="number" id="stock-input" min="0" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="secondary" data-action="cancel">Cancel</button>
+                <button type="submit" class="primary">Save Stock</button>
+            </div>
+        </form>
     </div>
 </div>
 

@@ -91,4 +91,21 @@ function validateRequired($fields, $data) {
 function sanitizeInput($input) {
     return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Log audit event
+ */
+function logAuditEvent($action, $entityType, $entityId, $userId, $details = null) {
+    try {
+        $db = getDB();
+        $db->insert(
+            "INSERT INTO audit_logs (action, entity_type, entity_id, user_id, details, created_at) 
+             VALUES (?, ?, ?, ?, ?, NOW())",
+            [$action, $entityType, $entityId, $userId, $details ? json_encode($details) : null]
+        );
+    } catch (Exception $e) {
+        // Silently fail - don't break main operation
+        error_log("Audit logging failed: " . $e->getMessage());
+    }
+}
 ?>

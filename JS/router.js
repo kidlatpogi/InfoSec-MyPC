@@ -118,7 +118,7 @@ class Router {
     loadPage(page) {
         const app = document.getElementById('app');
 
-        fetch(this.baseRoot + `${this.templatesDir}/${page}Page.html`)
+        fetch(this.baseRoot + `/HTML_PHP/${page}Page.html`)
             .then(response => {
                 if (!response.ok) throw new Error(`Failed to load ${page}Page.html`);
                 return response.text();
@@ -179,6 +179,70 @@ class Router {
                 authScript.dataset.page = page;
                 authScript.defer = false;
                 document.body.appendChild(authScript);
+            }, 100);
+        }
+
+        // Load profile script for profile page
+        if (page === 'profile') {
+            setTimeout(() => {
+                const profileScript = document.createElement('script');
+                profileScript.src = this.baseRoot + '/JS/profile.js?v=' + Date.now();
+                profileScript.dataset.page = page;
+                profileScript.defer = false;
+                profileScript.onload = () => {
+                    if (window.initProfilePage) {
+                        window.initProfilePage();
+                    }
+                };
+                document.body.appendChild(profileScript);
+            }, 100);
+        }
+
+        // Load admin script for admin page
+        if (page === 'admin') {
+            setTimeout(() => {
+                const adminScript = document.createElement('script');
+                adminScript.src = this.baseRoot + '/JS/admin.js?v=' + Date.now();
+                adminScript.dataset.page = page;
+                adminScript.defer = false;
+                adminScript.onload = () => {
+                    if (window.initAdminPage) {
+                        window.initAdminPage();
+                    }
+                };
+                document.body.appendChild(adminScript);
+            }, 100);
+        }
+
+        // Load employee script for employee page
+        if (page === 'employee') {
+            setTimeout(() => {
+                const employeeScript = document.createElement('script');
+                employeeScript.src = this.baseRoot + '/JS/employee.js?v=' + Date.now();
+                employeeScript.dataset.page = page;
+                employeeScript.defer = false;
+                employeeScript.onload = () => {
+                    if (window.initEmployeePage) {
+                        window.initEmployeePage();
+                    }
+                };
+                document.body.appendChild(employeeScript);
+            }, 100);
+        }
+
+        // Load superadmin script for superadmin page
+        if (page === 'superadmin') {
+            setTimeout(() => {
+                const superadminScript = document.createElement('script');
+                superadminScript.src = this.baseRoot + '/JS/superadmin.js?v=' + Date.now();
+                superadminScript.dataset.page = page;
+                superadminScript.defer = false;
+                superadminScript.onload = () => {
+                    if (window.initSuperadminPage) {
+                        window.initSuperadminPage();
+                    }
+                };
+                document.body.appendChild(superadminScript);
             }, 100);
         }
 

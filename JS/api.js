@@ -129,6 +129,62 @@ const ProductsAPI = {
     // Get all categories
     async getCategories() {
         return await apiCall('products.php?action=categories');
+    },
+
+    // Get all products (for admin/employee dashboards)
+    async getAllProducts() {
+        return await apiCall('management.php?action=getProducts');
+    },
+
+    // Create new product
+    async createProduct(name, category, basePrice, variants = []) {
+        const body = toFormData({
+            action: 'createProduct',
+            name,
+            category,
+            base_price: basePrice,
+            variants: JSON.stringify(variants)
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // Update product
+    async updateProduct(productId, name, category, basePrice, variants = []) {
+        const body = toFormData({
+            action: 'updateProduct',
+            product_id: productId,
+            name,
+            category,
+            base_price: basePrice,
+            variants: JSON.stringify(variants)
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // Delete product
+    async deleteProduct(productId) {
+        return await apiCall(`management.php?action=deleteProduct&product_id=${productId}`, {
+            method: 'POST'
+        });
+    },
+
+    // Update product stock
+    async updateProductStock(productId, stockQuantity) {
+        const body = toFormData({
+            action: 'updateProductStock',
+            product_id: productId,
+            stock_quantity: stockQuantity
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
     }
 };
 
@@ -241,8 +297,209 @@ const OrdersAPI = {
     }
 };
 
+// ========================================
+// MANAGEMENT API (Admin/Superadmin)
+// ========================================
+
+const ManagementAPI = {
+    // ===== ADMINS =====
+    async getAdmins() {
+        return await apiCall('management.php?action=getAdmins');
+    },
+
+    async createAdmin(email, password, firstName, lastName, phone = '') {
+        const body = toFormData({
+            action: 'createAdmin',
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+            phone
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async updateAdmin(adminId, updates) {
+        const body = toFormData({
+            action: 'updateAdmin',
+            admin_id: adminId,
+            ...updates
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async deleteAdmin(adminId) {
+        const body = toFormData({
+            action: 'deleteAdmin',
+            admin_id: adminId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // ===== USERS =====
+    async getUsers() {
+        return await apiCall('management.php?action=getUsers');
+    },
+
+    async createUser(email, password, firstName, lastName, phone = '') {
+        const body = toFormData({
+            action: 'createUser',
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+            phone
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async updateUser(userId, updates) {
+        const body = toFormData({
+            action: 'updateUser',
+            user_id: userId,
+            ...updates
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async deleteUser(userId) {
+        const body = toFormData({
+            action: 'deleteUser',
+            user_id: userId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    // ===== EMPLOYEES =====
+    async getEmployees() {
+        return await apiCall('management.php?action=getEmployees');
+    },
+
+    async createEmployee(email, password, firstName, lastName, phone = '') {
+        const body = toFormData({
+            action: 'createEmployee',
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+            phone
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async updateEmployee(employeeId, updates) {
+        const body = toFormData({
+            action: 'updateEmployee',
+            employee_id: employeeId,
+            ...updates
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async deleteEmployee(employeeId) {
+        const body = toFormData({
+            action: 'deleteEmployee',
+            employee_id: employeeId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    }
+};
+
+// ========================================
+// ADDRESSES API
+// ========================================
+
+const AddressesAPI = {
+    async getAddresses(userId = null) {
+        const query = userId ? `?action=getAddresses&user_id=${userId}` : '?action=getAddresses';
+        return await apiCall(`management.php${query}`);
+    },
+
+    async addAddress(recipientName, phone, addressLine1, city, postalCode, addressLine2 = '', label = '', isDefault = false) {
+        const body = toFormData({
+            action: 'addAddress',
+            label,
+            recipient_name: recipientName,
+            phone,
+            address_line1: addressLine1,
+            address_line2: addressLine2,
+            city,
+            postal_code: postalCode,
+            is_default: isDefault ? 1 : 0
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async updateAddress(addressId, updates) {
+        const body = toFormData({
+            action: 'updateAddress',
+            address_id: addressId,
+            ...updates
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
+    async deleteAddress(addressId) {
+        const body = toFormData({
+            action: 'deleteAddress',
+            address_id: addressId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    }
+};
+
 // Export for use in other scripts
 window.AuthAPI = AuthAPI;
 window.ProductsAPI = ProductsAPI;
 window.CartAPI = CartAPI;
 window.OrdersAPI = OrdersAPI;
+window.ManagementAPI = ManagementAPI;
+window.AddressesAPI = AddressesAPI;
+
+// ========================================
+// AUDIT API (Superadmin only)
+// ========================================
+
+const AuditAPI = {
+    async getAuditLogs(limit = 100, offset = 0) {
+        return await apiCall(`management.php?action=getAuditLogs&limit=${limit}&offset=${offset}`);
+    }
+};
+
+window.AuditAPI = AuditAPI;
