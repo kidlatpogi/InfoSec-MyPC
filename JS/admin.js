@@ -477,7 +477,6 @@ function editEmployee(employeeId) {
             .catch(error => alert('Error loading employee: ' + error.message));
     });
 }
-}
 
 async function deleteEmployee(employeeId) {
     const verified = await verifyPassword();

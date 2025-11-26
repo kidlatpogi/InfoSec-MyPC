@@ -272,7 +272,10 @@ function renderPagination(page, total) {
 // CART MANAGEMENT
 // ========================================
 
-let CART_DATA = { items: [], subtotal: 0 };
+if (typeof CART_DATA === 'undefined') {
+    window.CART_DATA = { items: [], subtotal: 0 };
+}
+let CART_DATA = window.CART_DATA;
 
 async function loadCartFromBackend() {
     try {
