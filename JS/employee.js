@@ -11,25 +11,25 @@ function showConfirmDialog(message, onConfirm) {
     const confirmModal = document.getElementById('confirm-modal');
     const confirmMessage = document.getElementById('confirm-message');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    
+
     confirmMessage.textContent = message;
     confirmModal.classList.add('open');
-    
+
     // Create new button to avoid event listener accumulation
     const newDeleteBtn = confirmDeleteBtn.cloneNode(true);
     confirmDeleteBtn.parentNode.replaceChild(newDeleteBtn, confirmDeleteBtn);
-    
+
     newDeleteBtn.addEventListener('click', async () => {
         confirmModal.classList.remove('open');
         await onConfirm();
     });
-    
+
     // Close button
     const closeBtn = confirmModal.querySelector('.modal-close');
     const cancelBtn = confirmModal.querySelector('[data-action="cancel"]');
-    
+
     const closeHandler = () => confirmModal.classList.remove('open');
-    
+
     if (closeBtn) {
         closeBtn.onclick = closeHandler;
     }
@@ -57,7 +57,7 @@ async function verifyPassword() {
         passwordModal.style.alignItems = 'center';
         passwordModal.style.justifyContent = 'center';
         passwordModal.style.zIndex = '9999';
-        
+
         passwordModal.innerHTML = `
             <div style="background: white; padding: 2rem; border-radius: 8px; min-width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                 <h3>Verify Password</h3>
@@ -69,17 +69,17 @@ async function verifyPassword() {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(passwordModal);
-        
+
         const passwordInput = document.getElementById('password-verify-input');
         const verifyBtn = document.getElementById('password-verify-btn');
-        
+
         // Handle Enter key
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') verifyBtn.click();
         });
-        
+
         // Handle cancel
         passwordModal.addEventListener('click', (e) => {
             if (e.target === passwordModal) {
@@ -87,7 +87,7 @@ async function verifyPassword() {
                 resolve(false);
             }
         });
-        
+
         // Handle verify button
         verifyBtn.addEventListener('click', async () => {
             const password = passwordInput.value;
@@ -95,7 +95,7 @@ async function verifyPassword() {
                 alert('Please enter your password');
                 return;
             }
-            
+
             // Verify password via API
             fetch('/HTML_PHP/auth.php?action=verifyPassword', {
                 method: 'POST',
@@ -106,22 +106,22 @@ async function verifyPassword() {
                     password: password
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                passwordModal.remove();
-                if (data.success) {
-                    resolve(true);
-                } else {
-                    alert('Incorrect password');
+                .then(res => res.json())
+                .then(data => {
+                    passwordModal.remove();
+                    if (data.success) {
+                        resolve(true);
+                    } else {
+                        alert('Incorrect password');
+                        resolve(false);
+                    }
+                })
+                .catch(error => {
+                    passwordModal.remove();
+                    console.error('Password verification failed:', error);
+                    alert('Error verifying password');
                     resolve(false);
-                }
-            })
-            .catch(error => {
-                passwordModal.remove();
-                console.error('Password verification failed:', error);
-                alert('Error verifying password');
-                resolve(false);
-            });
+                });
         });
     });
 }
@@ -195,9 +195,9 @@ function filterProductsTable() {
         const stock = row.cells[4]?.textContent.toLowerCase() || '';
         const variants = row.cells[5]?.textContent.toLowerCase() || '';
 
-        const matches = id.includes(query) || name.includes(query) || 
-                       category.includes(query) || price.includes(query) ||
-                       stock.includes(query) || variants.includes(query);
+        const matches = id.includes(query) || name.includes(query) ||
+            category.includes(query) || price.includes(query) ||
+            stock.includes(query) || variants.includes(query);
 
         row.style.display = matches ? '' : 'none';
     });
@@ -217,9 +217,9 @@ function filterOrdersTable() {
         const total = row.cells[3]?.textContent.toLowerCase() || '';
         const status = row.cells[4]?.textContent.toLowerCase() || '';
 
-        const matches = orderId.includes(query) || email.includes(query) || 
-                       name.includes(query) || total.includes(query) || 
-                       status.includes(query);
+        const matches = orderId.includes(query) || email.includes(query) ||
+            name.includes(query) || total.includes(query) ||
+            status.includes(query);
 
         row.style.display = matches ? '' : 'none';
     });
@@ -326,11 +326,11 @@ function viewProduct(productId) {
                 alert('Product not found');
                 return;
             }
-            
+
             const viewModal = document.getElementById('product-view-modal');
             const viewContent = document.getElementById('product-view-content');
             const viewTitle = document.getElementById('product-view-title');
-            
+
             viewTitle.textContent = product.name;
             viewContent.innerHTML = `
                 <div style="margin-bottom: 1.5rem;">
@@ -347,7 +347,7 @@ function viewProduct(productId) {
                     ` : ''}
                 </div>
             `;
-            
+
             viewModal.classList.add('open');
         })
         .catch(error => alert('Error loading product: ' + error.message));
@@ -356,11 +356,11 @@ function viewProduct(productId) {
 function editProduct(productId) {
     verifyPassword().then(verified => {
         if (!verified) return;
-        
+
         const productModal = document.getElementById('product-modal');
         const productForm = document.getElementById('product-form');
         const modalTitle = document.getElementById('product-modal-title');
-        
+
         // Fetch the product data
         ProductsAPI.getAllProducts()
             .then(data => {
@@ -369,19 +369,19 @@ function editProduct(productId) {
                     alert('Product not found');
                     return;
                 }
-                
+
                 // Populate form
                 document.getElementById('product-title').value = product.name;
                 document.getElementById('product-category').value = product.category_name || '';
                 document.getElementById('product-price').value = product.base_price;
                 document.getElementById('product-variants').value = product.variants ? JSON.stringify(product.variants, null, 2) : '';
-                
+
                 // Set modal title
                 modalTitle.textContent = `Edit Product: ${product.name}`;
-                
+
                 // Show modal
                 productModal.classList.add('open');
-                
+
                 // Handle form submission
                 productForm.onsubmit = async (e) => {
                     e.preventDefault();
@@ -389,7 +389,7 @@ function editProduct(productId) {
                     const category = document.getElementById('product-category').value.trim();
                     const basePrice = parseFloat(document.getElementById('product-price').value);
                     let variants = [];
-                    
+
                     const variantsStr = document.getElementById('product-variants').value.trim();
                     if (variantsStr) {
                         try {
@@ -399,7 +399,7 @@ function editProduct(productId) {
                             return;
                         }
                     }
-                    
+
                     try {
                         await ProductsAPI.updateProduct(productId, name, category, basePrice, variants);
                         alert('Product updated successfully');
@@ -420,26 +420,26 @@ function editStock(productId, currentStock) {
     const stockInput = document.getElementById('stock-input');
     const currentStockDisplay = document.getElementById('current-stock-display');
     const modalTitle = document.getElementById('stock-modal-title');
-    
+
     // Set current stock display and input
     currentStockDisplay.textContent = currentStock;
     stockInput.value = currentStock;
     modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
-    
+
     // Show modal
     stockModal.classList.add('open');
-    
+
     // Handle form submission
     stockForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
         const newStock = parseInt(stockInput.value, 10);
-        
+
         if (isNaN(newStock) || newStock < 0) {
             alert('Please enter a valid stock quantity');
             return;
         }
-        
+
         try {
             await ProductsAPI.updateProductStock(productId, newStock);
             stockModal.classList.remove('open');
@@ -455,7 +455,7 @@ function editStock(productId, currentStock) {
 async function deleteProduct(productId) {
     const verified = await verifyPassword();
     if (!verified) return;
-    
+
     showConfirmDialog('Are you sure you want to delete this product?', async () => {
         try {
             await ProductsAPI.deleteProduct(productId);
@@ -479,11 +479,11 @@ function viewOrder(orderId) {
                 alert('Order not found');
                 return;
             }
-            
+
             const viewModal = document.getElementById('order-modal');
             const viewContent = document.getElementById('order-modal-content');
             const viewTitle = document.getElementById('order-modal-title');
-            
+
             viewTitle.textContent = `Order #${order.order_number}`;
             viewContent.innerHTML = `
                 <div style="margin-bottom: 1.5rem;">
@@ -501,7 +501,7 @@ function viewOrder(orderId) {
                     ` : ''}
                 </div>
             `;
-            
+
             viewModal.classList.add('open');
         })
         .catch(error => alert('Error loading order: ' + error.message));
@@ -537,13 +537,13 @@ function initModals() {
         const productModal = document.getElementById('product-modal');
         const productForm = document.getElementById('product-form');
         const modalTitle = document.getElementById('product-modal-title');
-        
+
         // Reset form for new entry
         productForm.reset();
         modalTitle.textContent = 'Add New Product';
-        
+
         productModal.classList.add('open');
-        
+
         // Handle form submission
         productForm.onsubmit = async (e) => {
             e.preventDefault();
@@ -551,7 +551,7 @@ function initModals() {
             const category = document.getElementById('product-category').value.trim();
             const basePrice = parseFloat(document.getElementById('product-price').value);
             let variants = [];
-            
+
             const variantsStr = document.getElementById('product-variants').value.trim();
             if (variantsStr) {
                 try {
@@ -561,7 +561,7 @@ function initModals() {
                     return;
                 }
             }
-            
+
             try {
                 await ProductsAPI.createProduct(name, category, basePrice, variants);
                 alert('Product created successfully');
@@ -606,15 +606,4 @@ window.editStock = editStock;
 window.deleteProduct = deleteProduct;
 window.viewOrder = viewOrder;
 
-// Auto-initialize
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.querySelector('.admin-container') && document.getElementById('employee-welcome')) {
-            initEmployeePage();
-        }
-    });
-} else {
-    if (document.querySelector('.admin-container') && document.getElementById('employee-welcome')) {
-        initEmployeePage();
-    }
-}
+// Auto-init removed to prevent double initialization by router

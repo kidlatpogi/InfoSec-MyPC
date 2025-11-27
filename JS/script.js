@@ -12,6 +12,19 @@ function formatPHP(n) {
     return "₱" + parseFloat(n).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Debounce helper to prevent excessive API calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 // ========================================
 // USER SESSION MANAGEMENT
 // ========================================
@@ -56,7 +69,9 @@ function clearUserSession() {
 async function doLogout(ask = true) {
     try {
         if (ask) {
-            if (!window.confirm("Are you sure you want to logout?")) return false;
+            if (!window.confirm("Are you sure you want to logout?")) {
+                return false;
+            }
         }
 
         // Clear session immediately for responsive UI
@@ -64,17 +79,20 @@ async function doLogout(ask = true) {
         updateAuthNav();
         syncAuthButton();
 
-        // Call logout API in background (don't wait for it)
-        AuthAPI.logout().catch(error => {
-            console.error("Logout API call failed", error);
-        });
+        // Call logout API and wait for it (with timeout)
+        try {
+            await Promise.race([
+                AuthAPI.logout(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Logout timeout')), 2000))
+            ]);
+        } catch (error) {
+            console.warn("Logout API call failed or timed out:", error);
+        }
 
-        // Navigate after UI is updated
-        setTimeout(() => {
-            if (window.router) window.router.navigateTo("/");
-            else window.location.href = "/";
-        }, 100);
-        
+        // Navigate after API call
+        // Force navigation to landing page
+        window.location.href = "/index.html";
+
         return true;
     } catch (error) {
         console.error("Logout failed", error);
@@ -200,7 +218,48 @@ function applySort(list, sort) {
     if (sort === "price-asc") return list.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") return list.sort((a, b) => b.price - a.price);
     if (sort === "alpha") return list.sort((a, b) => a.title.localeCompare(b.title));
-    return list; // relevance
+
+    // Intelligent Relevance Sort
+    if (sort === "relevance" && STATE.query) {
+        const q = STATE.query.toLowerCase().trim();
+        if (!q) return list;
+
+        return list.sort((a, b) => {
+            const titleA = a.title.toLowerCase();
+            const titleB = b.title.toLowerCase();
+            const catA = a.category.toLowerCase();
+            const catB = b.category.toLowerCase();
+
+            // 1. Exact Title Match (Highest Priority)
+            if (titleA === q && titleB !== q) return -1;
+            if (titleB === q && titleA !== q) return 1;
+
+            // 2. Title Starts With Query
+            const startA = titleA.startsWith(q);
+            const startB = titleB.startsWith(q);
+            if (startA && !startB) return -1;
+            if (!startA && startB) return 1;
+
+            // 3. Category Match
+            const catMatchA = catA.includes(q);
+            const catMatchB = catB.includes(q);
+            if (catMatchA && !catMatchB) return -1;
+            if (!catMatchA && catMatchB) return 1;
+
+            // 4. Title Contains Query (Earlier position is better)
+            const idxA = titleA.indexOf(q);
+            const idxB = titleB.indexOf(q);
+            if (idxA !== -1 && idxB !== -1) {
+                return idxA - idxB;
+            }
+            if (idxA !== -1) return -1;
+            if (idxB !== -1) return 1;
+
+            return 0;
+        });
+    }
+
+    return list;
 }
 
 async function renderProducts() {
@@ -210,11 +269,19 @@ async function renderProducts() {
         return;
     }
 
+    // Show loading state
+    grid.style.opacity = "0.5";
+    grid.style.pointerEvents = "none";
+
     // Load products from backend
     console.log("[renderProducts] Calling loadProducts");
     const data = await loadProducts();
     console.log("[renderProducts] loadProducts returned:", data);
-    
+
+    // Remove loading state
+    grid.style.opacity = "1";
+    grid.style.pointerEvents = "auto";
+
     let list = window.PRODUCTS.slice();
     console.log("[renderProducts] PRODUCTS array before sort:", list);
 
@@ -286,28 +353,28 @@ function renderPagination(page, total) {
 // CART MANAGEMENT
 // ========================================
 
-if (typeof CART_DATA === 'undefined') {
+if (typeof window.CART_DATA === 'undefined') {
     window.CART_DATA = { items: [], subtotal: 0 };
 }
-let CART_DATA = window.CART_DATA;
+// Removed local let CART_DATA to avoid TDZ issues and shadowing
 
 async function loadCartFromBackend() {
     try {
         const user = getUserData();
         if (!user) {
-            CART_DATA = { items: [], subtotal: 0 };
+            window.CART_DATA = { items: [], subtotal: 0 };
             updateCartCount();
             return;
         }
 
         const data = await CartAPI.getCart();
         if (data.cart) {
-            CART_DATA = data.cart;
+            window.CART_DATA = data.cart;
             updateCartCount();
         }
     } catch (error) {
         console.error("Failed to load cart:", error);
-        CART_DATA = { items: [], subtotal: 0 };
+        window.CART_DATA = { items: [], subtotal: 0 };
     }
 }
 
@@ -315,7 +382,7 @@ function updateCartCount() {
     const countEl = document.getElementById("cart-count");
     if (!countEl) return;
 
-    const qty = CART_DATA.items?.reduce((s, i) => s + parseInt(i.quantity || 0), 0) || 0;
+    const qty = window.CART_DATA.items?.reduce((s, i) => s + parseInt(i.quantity || 0), 0) || 0;
     countEl.textContent = qty;
 }
 
@@ -373,13 +440,13 @@ async function renderCartItems() {
 
     itemsEl.innerHTML = "";
 
-    if (!CART_DATA.items || CART_DATA.items.length === 0) {
+    if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
         itemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Your cart is empty</p>';
         if (totalEl) totalEl.textContent = formatPHP(0);
         return;
     }
 
-    CART_DATA.items.forEach((item) => {
+    window.CART_DATA.items.forEach((item) => {
         const row = document.createElement("div");
         row.className = "cart-item";
         row.innerHTML = `
@@ -402,12 +469,12 @@ async function renderCartItems() {
         itemsEl.appendChild(row);
     });
 
-    if (totalEl) totalEl.textContent = formatPHP(CART_DATA.subtotal || 0);
+    if (totalEl) totalEl.textContent = formatPHP(window.CART_DATA.subtotal || 0);
 }
 
 async function changeCartQty(cartItemId, delta) {
     try {
-        const item = CART_DATA.items.find(i => i.cart_item_id == cartItemId);
+        const item = window.CART_DATA.items.find(i => i.cart_item_id == cartItemId);
         if (!item) return;
 
         const newQty = parseInt(item.quantity) + delta;
@@ -440,7 +507,7 @@ function openCart() {
     const drawer = document.getElementById("cart-drawer");
     const backdrop = document.getElementById("cart-backdrop");
     console.log("[openCart] Drawer:", drawer, "Backdrop:", backdrop);
-    
+
     if (!drawer) {
         console.error("[openCart] cart-drawer element not found");
         return;
@@ -473,57 +540,65 @@ function closeCart() {
 // EVENT DELEGATION
 // ========================================
 
-document.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-action]");
-    if (!t) return;
+if (!window.scriptClickListenersAttached) {
+    window.scriptClickListenersAttached = true;
 
-    const action = t.getAttribute("data-action");
-    const id = t.getAttribute("data-id");
-    const cartItemId = t.getAttribute("data-cart-item-id");
+    document.addEventListener("click", (e) => {
+        const t = e.target.closest("[data-action]");
+        if (!t) return;
 
-    console.log("[Click Handler] Action:", action, "ID:", id, "CartItemID:", cartItemId);
+        const action = t.getAttribute("data-action");
+        const id = t.getAttribute("data-id");
+        const cartItemId = t.getAttribute("data-cart-item-id");
 
-    if (action === "add") addToCart(id, 1);
-    if (action === "add-from-modal") {
-        // Get quantity from modal input
-        const qtyInput = document.getElementById(`modal-qty-${id}`);
-        const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-        console.log("[Add from Modal] Product ID:", id, "Quantity:", qty);
-        addToCart(id, qty);
-        closeProductDetail();
-    }
-    if (action === "inc" && cartItemId) changeCartQty(cartItemId, 1);
-    if (action === "dec" && cartItemId) changeCartQty(cartItemId, -1);
-    if (action === "rem" && cartItemId) removeFromCart(cartItemId);
-    if (action === "view") {
-        console.log("[View Button Clicked] Product ID:", id);
-        openProductDetail(id);
-    }
-});
+        console.log("[Click Handler] Action:", action, "ID:", id, "CartItemID:", cartItemId);
+
+        if (action === "add") addToCart(id, 1);
+        if (action === "add-from-modal") {
+            // Get quantity from modal input
+            const qtyInput = document.getElementById(`modal-qty-${id}`);
+            const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+            console.log("[Add from Modal] Product ID:", id, "Quantity:", qty);
+            addToCart(id, qty);
+            closeProductDetail();
+        }
+        if (action === "inc" && cartItemId) changeCartQty(cartItemId, 1);
+        if (action === "dec" && cartItemId) changeCartQty(cartItemId, -1);
+        if (action === "rem" && cartItemId) removeFromCart(cartItemId);
+        if (action === "view") {
+            console.log("[View Button Clicked] Product ID:", id);
+            openProductDetail(id);
+        }
+    });
+}
 
 // Variant price change
-document.addEventListener("change", (e) => {
-    const sel = e.target;
-    if (sel.matches(".variant-select")) {
-        const id = sel.getAttribute("data-id");
-        const prod = PRODUCTS.find((p) => p.id === id);
-        if (!prod) return;
+if (!window.scriptChangeListenersAttached) {
+    window.scriptChangeListenersAttached = true;
 
-        const base = prod.price;
-        const variant = prod.variants && prod.variants[parseInt(sel.value, 10)];
-        const priceAdj = variant ? parseFloat(variant.price_adjustment || 0) : 0;
-        
-        // Update price in product card
-        const priceEl = sel.closest(".product")?.querySelector(".price");
-        if (priceEl) priceEl.textContent = formatPHP(base + priceAdj);
-        
-        // Update price in product detail modal
-        const modalPriceEl = document.querySelector(".product-detail-price");
-        if (modalPriceEl && modalPriceEl.getAttribute("data-base")) {
-            modalPriceEl.textContent = formatPHP(base + priceAdj);
+    document.addEventListener("change", (e) => {
+        const sel = e.target;
+        if (sel.matches(".variant-select")) {
+            const id = sel.getAttribute("data-id");
+            const prod = PRODUCTS.find((p) => p.id === id);
+            if (!prod) return;
+
+            const base = prod.price;
+            const variant = prod.variants && prod.variants[parseInt(sel.value, 10)];
+            const priceAdj = variant ? parseFloat(variant.price_adjustment || 0) : 0;
+
+            // Update price in product card
+            const priceEl = sel.closest(".product")?.querySelector(".price");
+            if (priceEl) priceEl.textContent = formatPHP(base + priceAdj);
+
+            // Update price in product detail modal
+            const modalPriceEl = document.querySelector(".product-detail-price");
+            if (modalPriceEl && modalPriceEl.getAttribute("data-base")) {
+                modalPriceEl.textContent = formatPHP(base + priceAdj);
+            }
         }
-    }
-});
+    });
+}
 
 // ========================================
 // PRODUCT DETAIL MODAL
@@ -532,10 +607,10 @@ document.addEventListener("change", (e) => {
 function openProductDetail(productId) {
     console.log("[openProductDetail] Looking for product ID:", productId);
     console.log("[openProductDetail] PRODUCTS array:", window.PRODUCTS);
-    
+
     const product = window.PRODUCTS.find((p) => p.id === productId);
     console.log("[openProductDetail] Found product:", product);
-    
+
     if (!product) {
         console.error("[openProductDetail] Product not found with ID:", productId);
         return;
@@ -601,7 +676,7 @@ function closeProductDetail() {
 
 async function initializePageScript() {
     console.log("[initializePageScript] Starting page initialization");
-    
+
     // Check user session
     await checkUserSession();
     updateAuthNav();
@@ -676,7 +751,7 @@ async function initializePageScript() {
     } else {
         console.warn("[initializePageScript] product-modal-backdrop not found");
     }
-    
+
     console.log("[initializePageScript] Page initialization complete");
 
     // Category filter
@@ -702,10 +777,23 @@ async function initializePageScript() {
     // Search
     const search = document.getElementById("search-input");
     if (search) {
-        search.addEventListener("input", (e) => {
-            STATE.query = e.target.value;
+        const debouncedSearch = debounce(async (query) => {
+            console.log("[Search] Triggered with query:", query);
+            STATE.query = query;
             STATE.page = 1;
-            renderProducts();
+
+            // Auto-switch to relevance sort when searching to show best matches
+            if (query.length > 0) {
+                STATE.sort = "relevance";
+                const sortSel = document.getElementById("sort-select");
+                if (sortSel) sortSel.value = "relevance";
+            }
+
+            await renderProducts();
+        }, 300);
+
+        search.addEventListener("input", (e) => {
+            debouncedSearch(e.target.value);
         });
     }
 }

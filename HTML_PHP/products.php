@@ -24,17 +24,24 @@ try {
 
     // Get single product by ID or slug
     elseif ($method === 'GET' && isset($_GET['id'])) {
-        $id = sanitizeInput($_GET['id']);
+        $identifier = sanitizeInput($_GET['id']);
 
-        // Try to get by ID first, then by slug
-        $product = $db->fetchOne(
-            "SELECT p.id, p.sku, p.name, p.slug, p.description, p.base_price, 
-                    p.stock_quantity, p.image_url, c.name as category_name, c.slug as category_slug
-             FROM products p 
-             LEFT JOIN categories c ON p.category_id = c.id 
-             WHERE p.is_active = 1 AND (p.id = ? OR p.slug = ?)",
-            [$id, $id]
-        );
+        // Check if it's numeric (ID) or string (slug)
+        if (is_numeric($identifier)) {
+            $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                    FROM products p 
+                    LEFT JOIN categories c ON p.category_id = c.id 
+                    WHERE p.id = ? AND p.is_active = 1";
+            $params = [intval($identifier)];
+        } else {
+            $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                    FROM products p 
+                    LEFT JOIN categories c ON p.category_id = c.id 
+                    WHERE p.slug = ? AND p.is_active = 1";
+            $params = [$identifier];
+        }
+
+        $product = $db->fetchOne($sql, $params);
 
         if (!$product) {
             sendError('Product not found', 404);
@@ -101,10 +108,16 @@ try {
         }
 
         if ($search) {
-            $sql .= " AND (p.name LIKE ? OR p.description LIKE ?)";
-            $searchTerm = "%{$search}%";
-            $params[] = $searchTerm;
-            $params[] = $searchTerm;
+            // Split search into words for better matching
+            $words = explode(' ', trim($search));
+            foreach ($words as $word) {
+                if (empty($word)) continue;
+                $sql .= " AND (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?)";
+                $term = "%{$word}%";
+                $params[] = $term;
+                $params[] = $term;
+                $params[] = $term;
+            }
         }
 
         $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
@@ -137,9 +150,15 @@ try {
         }
 
         if ($search) {
-            $countSql .= " AND (p.name LIKE ? OR p.description LIKE ?)";
-            $countParams[] = $searchTerm;
-            $countParams[] = $searchTerm;
+            $words = explode(' ', trim($search));
+            foreach ($words as $word) {
+                if (empty($word)) continue;
+                $countSql .= " AND (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?)";
+                $term = "%{$word}%";
+                $countParams[] = $term;
+                $countParams[] = $term;
+                $countParams[] = $term;
+            }
         }
 
         $totalResult = $db->fetchOne($countSql, $countParams);
@@ -154,69 +173,6 @@ try {
                 'pages' => ceil($total / $limit)
             ]
         ]);
-    }
-
-    // Get single product by ID or slug
-    elseif ($method === 'GET' && isset($_GET['id'])) {
-        $identifier = sanitizeInput($_GET['id']);
-
-        // Check if it's numeric (ID) or string (slug)
-        if (is_numeric($identifier)) {
-            $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                    FROM products p 
-                    LEFT JOIN categories c ON p.category_id = c.id 
-                    WHERE p.id = ? AND p.is_active = 1";
-            $params = [intval($identifier)];
-        } else {
-            $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                    FROM products p 
-                    LEFT JOIN categories c ON p.category_id = c.id 
-                    WHERE p.slug = ? AND p.is_active = 1";
-            $params = [$identifier];
-        }
-
-        $product = $db->fetchOne($sql, $params);
-
-        if (!$product) {
-            sendError('Product not found', 404);
-        }
-
-        // Get product variants
-        $variants = $db->fetchAll(
-            "SELECT id, label, price_adjustment, stock_quantity, sku_suffix 
-             FROM product_variants 
-             WHERE product_id = ? AND is_active = 1 
-             ORDER BY price_adjustment ASC",
-            [$product['id']]
-        );
-
-        $product['variants'] = $variants;
-
-        // Get product reviews
-        $reviews = $db->fetchAll(
-            "SELECT r.*, u.first_name, u.last_name 
-             FROM reviews r 
-             LEFT JOIN users u ON r.user_id = u.id 
-             WHERE r.product_id = ? 
-             ORDER BY r.created_at DESC 
-             LIMIT 10",
-            [$product['id']]
-        );
-
-        $product['reviews'] = $reviews;
-
-        // Calculate average rating
-        $ratingResult = $db->fetchOne(
-            "SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
-             FROM reviews 
-             WHERE product_id = ?",
-            [$product['id']]
-        );
-
-        $product['avg_rating'] = $ratingResult['avg_rating'] ? round($ratingResult['avg_rating'], 1) : 0;
-        $product['review_count'] = $ratingResult['review_count'];
-
-        sendSuccess(['product' => $product]);
     }
 
     // Invalid action

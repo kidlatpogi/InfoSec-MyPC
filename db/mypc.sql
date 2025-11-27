@@ -377,8 +377,12 @@ INSERT INTO `product_variants` (`product_id`, `label`, `price_adjustment`, `stoc
 
 -- Insert sample admin user (password: admin123)
 INSERT INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `phone`, `role`, `status`) VALUES
-('admin@mypc.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'User', '09123456789', 'admin', 'active'),
-('customer@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'John', 'Doe', '09987654321', 'customer', 'active');
+('admin@mypc.com', '$2y$10$7RdQdsqtS9Q3sB1xf.6GNuB8gYX5W2xagEHe5mO1TVlPoKEkz5OZu', 'Admin', 'User', '09123456789', 'admin', 'active'),
+('superadmin@mypc.com', '$2y$10$lQPztIYzPbRFMZfjsEAh3O/6YpdQkaOKA2xXU8vw0Ndq23nR8V.cq', 'Super', 'Admin', '09123456789', 'superadmin', 'active'),
+('employee@mypc.com', '$2y$10$qEJ7pRV3/eLmt/Gg9Hw4G.wMbiHKwHKqKt33RTgnvKNfzDdjUbvKC', 'Employee', 'One', '09123456789', 'employee', 'active'),
+('staff@mypc.com', '$2y$10$Vj4Ix7UukJIBoRCacP68weqL5Y3EuQ4xQn2pMWD8sEGxAuNslhnhO', 'Staff', 'Member', '09123456789', 'employee', 'active'),
+('customer@test.com', '$2y$10$7RdQdsqtS9Q3sB1xf.6GNuB8gYX5W2xagEHe5mO1TVlPoKEkz5OZu', 'John', 'Doe', '09987654321', 'customer', 'active'),
+('test@example.com', '$2y$10$RlILZcEYwrLdgobUUPtRhe88IykVWGy3eSAQM57WH65ViRRi1TS1O', 'Test', 'Customer', '09123456789', 'customer', 'active');
 
 -- Insert sample address for test customer
 INSERT INTO `addresses` (`user_id`, `label`, `recipient_name`, `phone`, `address_line1`, `city`, `postal_code`, `is_default`) VALUES

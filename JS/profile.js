@@ -247,7 +247,7 @@ async function loadAddresses() {
     try {
         const data = await AddressesAPI.getAddresses();
         const addressesList = document.querySelector('#addresses .addresses-list');
-        
+
         if (!addressesList) return;
 
         if (!data.addresses || data.addresses.length === 0) {
@@ -293,7 +293,7 @@ function initAddressManagement() {
     const addressForm = document.getElementById('address-form');
     const modalTitle = document.getElementById('address-modal-title');
     let editingAddressId = null;
-    
+
     if (addAddressBtn) {
         addAddressBtn.addEventListener('click', () => {
             editingAddressId = null;
@@ -309,11 +309,11 @@ function initAddressManagement() {
             addressModal.classList.add('open');
         });
     }
-    
+
     // Handle form submission
     addressForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
         const label = document.getElementById('address-label').value.trim();
         const recipientName = document.getElementById('address-recipient').value.trim();
         const phone = document.getElementById('address-phone').value.trim();
@@ -322,7 +322,7 @@ function initAddressManagement() {
         const city = document.getElementById('address-city').value.trim();
         const postalCode = document.getElementById('address-postal').value.trim();
         const isDefault = document.getElementById('address-default').checked;
-        
+
         try {
             if (editingAddressId) {
                 // Update existing address
@@ -348,14 +348,14 @@ function initAddressManagement() {
             alert('Error: ' + error.message);
         }
     };
-    
+
     // Close modal button
     document.querySelectorAll('#address-modal .modal-close, #address-modal [data-action="cancel"]').forEach(btn => {
         btn.addEventListener('click', () => {
             addressModal.classList.remove('open');
         });
     });
-    
+
     // Initial load
     loadAddresses();
 }
@@ -364,16 +364,16 @@ async function editAddress(addressId) {
     const addressModal = document.getElementById('address-modal');
     const addressForm = document.getElementById('address-form');
     const modalTitle = document.getElementById('address-modal-title');
-    
+
     // Fetch current address data
     const addresses = await AddressesAPI.getAddresses();
     const address = addresses.find(a => a.id == addressId);
-    
+
     if (!address) {
         alert('Address not found');
         return;
     }
-    
+
     // Populate form with current data
     document.getElementById('address-label').value = address.label || '';
     document.getElementById('address-recipient').value = address.recipient_name || '';
@@ -383,20 +383,20 @@ async function editAddress(addressId) {
     document.getElementById('address-city').value = address.city || '';
     document.getElementById('address-postal').value = address.postal_code || '';
     document.getElementById('address-default').checked = address.is_default || false;
-    
+
     // Set modal title
     modalTitle.textContent = `Edit Address: ${address.label}`;
-    
+
     // Show modal
     addressModal.classList.add('open');
-    
+
     // Create a new form handler for this edit
     const newForm = addressForm.cloneNode(true);
     addressForm.parentNode.replaceChild(newForm, addressForm);
-    
+
     newForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
         const label = document.getElementById('address-label').value.trim();
         const recipientName = document.getElementById('address-recipient').value.trim();
         const phone = document.getElementById('address-phone').value.trim();
@@ -405,7 +405,7 @@ async function editAddress(addressId) {
         const city = document.getElementById('address-city').value.trim();
         const postalCode = document.getElementById('address-postal').value.trim();
         const isDefault = document.getElementById('address-default').checked;
-        
+
         try {
             await AddressesAPI.updateAddress(addressId, {
                 label,
@@ -428,7 +428,7 @@ async function editAddress(addressId) {
 
 async function deleteAddress(addressId) {
     if (!confirm('Delete this address?')) return;
-    
+
     try {
         await AddressesAPI.deleteAddress(addressId);
         alert('Address deleted successfully');
@@ -506,15 +506,4 @@ window.editAddress = editAddress;
 window.deleteAddress = deleteAddress;
 window.loadAddresses = loadAddresses;
 
-// Auto-initialize if profile page is detected
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.querySelector('.profile-wrapper')) {
-            initProfilePage();
-        }
-    });
-} else {
-    if (document.querySelector('.profile-wrapper')) {
-        initProfilePage();
-    }
-}
+// Auto-init removed to prevent double initialization by router
