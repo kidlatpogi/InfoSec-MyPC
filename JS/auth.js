@@ -90,34 +90,62 @@ function initSignupPage() {
         // Validation
         let hasError = false;
 
+        // 1. Validate First Name (No numbers or special characters)
+        if (!firstName) {
+            document.getElementById('first-name-error').textContent = 'First name is required';
+            hasError = true;
+        } else if (!/^[a-zA-Z\s]+$/.test(firstName)) {
+            document.getElementById('first-name-error').textContent = 'First name must contain only letters';
+            hasError = true;
+        }
+
+        // 2. Validate Last Name (No numbers or special characters)
+        if (!lastName) {
+            document.getElementById('last-name-error').textContent = 'Last name is required';
+            hasError = true;
+        } else if (!/^[a-zA-Z\s]+$/.test(lastName)) {
+            document.getElementById('last-name-error').textContent = 'Last name must contain only letters';
+            hasError = true;
+        }
+
+        // 3. Validate Email (Strict format)
         if (!email) {
             document.getElementById('email-error').textContent = 'Email is required';
             hasError = true;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
             document.getElementById('email-error').textContent = 'Invalid email format';
             hasError = true;
         }
 
+        // 4. Validate Phone (Only numbers allowed)
+        if (phone && !/^\d+$/.test(phone)) {
+            document.getElementById('phone-error').textContent = 'Phone number must contain only numbers';
+            hasError = true;
+        }
+
+        // 5. Validate Password (Min 6 chars, 1 upper, 1 lower, 1 special)
         if (!password) {
             document.getElementById('password-error').textContent = 'Password is required';
             hasError = true;
-        } else if (password.length < 6) {
-            document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
-            hasError = true;
+        } else {
+            if (password.length < 6) {
+                document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
+                hasError = true;
+            } else if (!/[A-Z]/.test(password)) {
+                document.getElementById('password-error').textContent = 'Password must contain at least one uppercase letter';
+                hasError = true;
+            } else if (!/[a-z]/.test(password)) {
+                document.getElementById('password-error').textContent = 'Password must contain at least one lowercase letter';
+                hasError = true;
+            } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                document.getElementById('password-error').textContent = 'Password must contain at least one special character';
+                hasError = true;
+            }
         }
 
+        // 6. Confirm Password
         if (confirmPassword !== undefined && password !== confirmPassword) {
             document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
-            hasError = true;
-        }
-
-        if (!firstName) {
-            document.getElementById('first-name-error').textContent = 'First name is required';
-            hasError = true;
-        }
-
-        if (!lastName) {
-            document.getElementById('last-name-error').textContent = 'Last name is required';
             hasError = true;
         }
 

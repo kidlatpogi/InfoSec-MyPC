@@ -11,25 +11,25 @@ function showConfirmDialog(message, onConfirm) {
     const confirmModal = document.getElementById('confirm-modal');
     const confirmMessage = document.getElementById('confirm-message');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    
+
     confirmMessage.textContent = message;
     confirmModal.classList.add('open');
-    
+
     // Create new button to avoid event listener accumulation
     const newDeleteBtn = confirmDeleteBtn.cloneNode(true);
     confirmDeleteBtn.parentNode.replaceChild(newDeleteBtn, confirmDeleteBtn);
-    
+
     newDeleteBtn.addEventListener('click', async () => {
         confirmModal.classList.remove('open');
         await onConfirm();
     });
-    
+
     // Close button
     const closeBtn = confirmModal.querySelector('.modal-close');
     const cancelBtn = confirmModal.querySelector('[data-action="cancel"]');
-    
+
     const closeHandler = () => confirmModal.classList.remove('open');
-    
+
     if (closeBtn) {
         closeBtn.onclick = closeHandler;
     }
@@ -57,7 +57,7 @@ async function verifyPassword() {
         passwordModal.style.alignItems = 'center';
         passwordModal.style.justifyContent = 'center';
         passwordModal.style.zIndex = '9999';
-        
+
         passwordModal.innerHTML = `
             <div style="background: white; padding: 2rem; border-radius: 8px; min-width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                 <h3>Verify Password</h3>
@@ -69,17 +69,17 @@ async function verifyPassword() {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(passwordModal);
-        
+
         const passwordInput = document.getElementById('password-verify-input');
         const verifyBtn = document.getElementById('password-verify-btn');
-        
+
         // Handle Enter key
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') verifyBtn.click();
         });
-        
+
         // Handle cancel
         passwordModal.addEventListener('click', (e) => {
             if (e.target === passwordModal) {
@@ -87,7 +87,7 @@ async function verifyPassword() {
                 resolve(false);
             }
         });
-        
+
         // Handle verify button
         verifyBtn.addEventListener('click', async () => {
             const password = passwordInput.value;
@@ -95,7 +95,7 @@ async function verifyPassword() {
                 alert('Please enter your password');
                 return;
             }
-            
+
             // Verify password via API
             fetch('/HTML_PHP/auth.php?action=verifyPassword', {
                 method: 'POST',
@@ -106,22 +106,22 @@ async function verifyPassword() {
                     password: password
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                passwordModal.remove();
-                if (data.success) {
-                    resolve(true);
-                } else {
-                    alert('Incorrect password');
+                .then(res => res.json())
+                .then(data => {
+                    passwordModal.remove();
+                    if (data.success) {
+                        resolve(true);
+                    } else {
+                        alert('Incorrect password');
+                        resolve(false);
+                    }
+                })
+                .catch(error => {
+                    passwordModal.remove();
+                    console.error('Password verification failed:', error);
+                    alert('Error verifying password');
                     resolve(false);
-                }
-            })
-            .catch(error => {
-                passwordModal.remove();
-                console.error('Password verification failed:', error);
-                alert('Error verifying password');
-                resolve(false);
-            });
+                });
         });
     });
 }
@@ -194,9 +194,9 @@ function filterProductsTable() {
         const price = row.cells[3]?.textContent.toLowerCase() || '';
         const stock = row.cells[4]?.textContent.toLowerCase() || '';
 
-        const matches = id.includes(query) || name.includes(query) || 
-                       category.includes(query) || price.includes(query) ||
-                       stock.includes(query);
+        const matches = id.includes(query) || name.includes(query) ||
+            category.includes(query) || price.includes(query) ||
+            stock.includes(query);
 
         row.style.display = matches ? '' : 'none';
     });
@@ -215,8 +215,8 @@ function filterOrdersTable() {
         const total = row.cells[2]?.textContent.toLowerCase() || '';
         const status = row.cells[3]?.textContent.toLowerCase() || '';
 
-        const matches = orderId.includes(query) || email.includes(query) || 
-                       total.includes(query) || status.includes(query);
+        const matches = orderId.includes(query) || email.includes(query) ||
+            total.includes(query) || status.includes(query);
 
         row.style.display = matches ? '' : 'none';
     });
@@ -407,11 +407,11 @@ function editUser(userId) {
     // Require password verification
     verifyPassword().then(verified => {
         if (!verified) return;
-        
+
         const userModal = document.getElementById('user-modal');
         const userForm = document.getElementById('user-form');
         const modalTitle = document.getElementById('user-modal-title');
-        
+
         // Fetch the user data
         ManagementAPI.getUsers()
             .then(data => {
@@ -420,20 +420,20 @@ function editUser(userId) {
                     alert('User not found');
                     return;
                 }
-                
+
                 // Populate form
                 document.getElementById('user-email').value = user.email;
                 document.getElementById('user-email').disabled = true;
                 document.getElementById('user-name').value = `${user.first_name} ${user.last_name}`;
                 document.getElementById('user-password').value = '';
                 document.getElementById('user-password').placeholder = 'Leave empty to keep current';
-                
+
                 // Set modal title
                 modalTitle.textContent = `Edit User: ${user.email}`;
-                
+
                 // Show modal
                 userModal.classList.add('open');
-                
+
                 // Handle form submission
                 userForm.onsubmit = async (e) => {
                     e.preventDefault();
@@ -442,16 +442,16 @@ function editUser(userId) {
                     const firstName = nameParts[0];
                     const lastName = nameParts.slice(1).join(' ') || '';
                     const password = document.getElementById('user-password').value;
-                    
+
                     const updates = {
                         first_name: firstName,
                         last_name: lastName
                     };
-                    
+
                     if (password) {
                         updates.password = password;
                     }
-                    
+
                     try {
                         await ManagementAPI.updateUser(userId, updates);
                         alert('User updated successfully');
@@ -469,7 +469,7 @@ function editUser(userId) {
 async function deleteUser(userId) {
     const verified = await verifyPassword();
     if (!verified) return;
-    
+
     showConfirmDialog('Are you sure you want to delete this user?', async () => {
         try {
             await ManagementAPI.deleteUser(userId);
@@ -489,11 +489,11 @@ function editEmployee(employeeId) {
     // Require password verification
     verifyPassword().then(verified => {
         if (!verified) return;
-        
+
         const employeeModal = document.getElementById('employee-modal');
         const employeeForm = document.getElementById('employee-form');
         const modalTitle = document.getElementById('employee-modal-title');
-        
+
         // Fetch the employee data
         ManagementAPI.getEmployees()
             .then(data => {
@@ -502,20 +502,20 @@ function editEmployee(employeeId) {
                     alert('Employee not found');
                     return;
                 }
-                
+
                 // Populate form
                 document.getElementById('employee-email').value = employee.email;
                 document.getElementById('employee-email').disabled = true;
                 document.getElementById('employee-name').value = `${employee.first_name} ${employee.last_name}`;
                 document.getElementById('employee-password').value = '';
                 document.getElementById('employee-password').placeholder = 'Leave empty to keep current';
-                
+
                 // Set modal title
                 modalTitle.textContent = `Edit Employee: ${employee.email}`;
-                
+
                 // Show modal
                 employeeModal.classList.add('open');
-                
+
                 // Handle form submission
                 employeeForm.onsubmit = async (e) => {
                     e.preventDefault();
@@ -524,16 +524,16 @@ function editEmployee(employeeId) {
                     const firstName = nameParts[0];
                     const lastName = nameParts.slice(1).join(' ') || '';
                     const password = document.getElementById('employee-password').value;
-                    
+
                     const updates = {
                         first_name: firstName,
                         last_name: lastName
                     };
-                    
+
                     if (password) {
                         updates.password = password;
                     }
-                    
+
                     try {
                         await ManagementAPI.updateEmployee(employeeId, updates);
                         alert('Employee updated successfully');
@@ -551,7 +551,7 @@ function editEmployee(employeeId) {
 async function deleteEmployee(employeeId) {
     const verified = await verifyPassword();
     if (!verified) return;
-    
+
     showConfirmDialog('Are you sure you want to delete this employee?', async () => {
         try {
             await ManagementAPI.deleteEmployee(employeeId);
@@ -577,26 +577,26 @@ function editStock(productId, currentStock) {
     const stockInput = document.getElementById('stock-input');
     const currentStockDisplay = document.getElementById('current-stock-display');
     const modalTitle = document.getElementById('stock-modal-title');
-    
+
     // Set current stock display and input
     currentStockDisplay.textContent = currentStock;
     stockInput.value = currentStock;
     modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
-    
+
     // Show modal
     stockModal.classList.add('open');
-    
+
     // Handle form submission
     stockForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
         const newStock = parseInt(stockInput.value, 10);
-        
+
         if (isNaN(newStock) || newStock < 0) {
             alert('Please enter a valid stock quantity');
             return;
         }
-        
+
         try {
             await ProductsAPI.updateProductStock(productId, newStock);
             stockModal.classList.remove('open');
@@ -632,35 +632,35 @@ function initModals() {
         const userModal = document.getElementById('user-modal');
         const userForm = document.getElementById('user-form');
         const modalTitle = document.getElementById('user-modal-title');
-        
+
         // Reset form for new entry
         userForm.reset();
         document.getElementById('user-email').disabled = false;
         modalTitle.textContent = 'Add New User';
-        
+
         userModal.classList.add('open');
-        
+
         // Handle form submission
         userForm.onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('user-email').value.trim();
             const fullName = document.getElementById('user-name').value.trim();
             const password = document.getElementById('user-password').value;
-            
+
             if (!password) {
                 alert('Password is required for new user');
                 return;
             }
-            
+
             if (password.length < 6) {
                 alert('Password must be at least 6 characters');
                 return;
             }
-            
+
             const nameParts = fullName.split(' ');
             const firstName = nameParts[0];
             const lastName = nameParts.slice(1).join(' ') || '';
-            
+
             try {
                 await ManagementAPI.createUser(email, password, firstName, lastName);
                 alert('User created successfully');
@@ -676,35 +676,35 @@ function initModals() {
         const employeeModal = document.getElementById('employee-modal');
         const employeeForm = document.getElementById('employee-form');
         const modalTitle = document.getElementById('employee-modal-title');
-        
+
         // Reset form for new entry
         employeeForm.reset();
         document.getElementById('employee-email').disabled = false;
         modalTitle.textContent = 'Add New Employee';
-        
+
         employeeModal.classList.add('open');
-        
+
         // Handle form submission
         employeeForm.onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('employee-email').value.trim();
             const fullName = document.getElementById('employee-name').value.trim();
             const password = document.getElementById('employee-password').value;
-            
+
             if (!password) {
                 alert('Password is required for new employee');
                 return;
             }
-            
+
             if (password.length < 6) {
                 alert('Password must be at least 6 characters');
                 return;
             }
-            
+
             const nameParts = fullName.split(' ');
             const firstName = nameParts[0];
             const lastName = nameParts.slice(1).join(' ') || '';
-            
+
             try {
                 await ManagementAPI.createEmployee(email, password, firstName, lastName);
                 alert('Employee created successfully');
@@ -720,13 +720,13 @@ function initModals() {
         const productModal = document.getElementById('product-modal');
         const productForm = document.getElementById('product-form');
         const modalTitle = document.getElementById('product-modal-title');
-        
+
         // Reset form for new entry
         productForm.reset();
         modalTitle.textContent = 'Add New Product';
-        
+
         productModal.classList.add('open');
-        
+
         // Handle form submission
         productForm.onsubmit = async (e) => {
             e.preventDefault();
@@ -734,7 +734,7 @@ function initModals() {
             const category = document.getElementById('product-category').value.trim();
             const basePrice = parseFloat(document.getElementById('product-price').value);
             let variants = [];
-            
+
             const variantsStr = document.getElementById('product-variants').value.trim();
             if (variantsStr) {
                 try {
@@ -744,7 +744,7 @@ function initModals() {
                     return;
                 }
             }
-            
+
             try {
                 await ProductsAPI.createProduct(name, category, basePrice, variants);
                 alert('Product created successfully');
@@ -763,9 +763,7 @@ function initModals() {
 
 function initLogout() {
     document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
-        if (confirm('Are you sure you want to logout?')) {
-            doLogout();
-        }
+        doLogout(true);
     });
 }
 
@@ -806,15 +804,4 @@ window.editEmployee = editEmployee;
 window.deleteEmployee = deleteEmployee;
 window.viewOrder = viewOrder;
 
-// Auto-initialize
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.querySelector('.admin-container')) {
-            initAdminPage();
-        }
-    });
-} else {
-    if (document.querySelector('.admin-container')) {
-        initAdminPage();
-    }
-}
+// Auto-init removed to prevent double initialization by router
