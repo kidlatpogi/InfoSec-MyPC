@@ -33,17 +33,25 @@ try {
         // Get cart items with product details
         $items = $db->fetchAll(
             "SELECT ci.id as cart_item_id, ci.quantity, ci.added_at,
-                    p.id as product_id, p.name, p.slug, p.base_price, p.stock_quantity, p.image_url,
-                    pv.id as variant_id, pv.label as variant_label, pv.price_adjustment,
-                    (p.base_price + COALESCE(pv.price_adjustment, 0)) as unit_price,
-                    (p.base_price + COALESCE(pv.price_adjustment, 0)) * ci.quantity as line_total
+                    p.id as product_id, p.name, p.slug,
+                    pv.id as variant_id, pv.title as variant_title, pv.price,
+                    pv.price as unit_price,
+                    pv.price * ci.quantity as line_total,
+                    (SELECT url FROM product_images WHERE product_id = p.id ORDER BY `order` ASC LIMIT 1) as image_url
              FROM cart_items ci
-             JOIN products p ON ci.product_id = p.id
-             LEFT JOIN product_variants pv ON ci.variant_id = pv.id
+             JOIN product_variants pv ON ci.variant_id = pv.id
+             JOIN products p ON pv.product_id = p.id
              WHERE ci.cart_id = ?
              ORDER BY ci.added_at DESC",
             [$cart_id]
         );
+
+        // Fix image URLs
+        foreach ($items as &$item) {
+            if ($item['image_url'] && strpos($item['image_url'], '/assets/') === 0) {
+                $item['image_url'] = '/InfoSec-MyPC' . $item['image_url'];
+            }
+        }
 
         // Calculate totals
         $subtotal = 0;
@@ -70,30 +78,21 @@ try {
             sendError('Invalid product or quantity');
         }
 
-        // Verify product exists and is active
-        $product = $db->fetchOne(
-            "SELECT id, stock_quantity FROM products WHERE id = ? AND is_active = 1",
-            [$product_id]
+        // Verify variant exists
+        $variant = $db->fetchOne(
+            "SELECT pv.id, pv.stock, p.id as product_id FROM product_variants pv 
+             JOIN products p ON pv.product_id = p.id 
+             WHERE pv.id = ? AND p.active = 1",
+            [$variant_id]
         );
 
-        if (!$product) {
-            sendError('Product not found', 404);
+        if (!$variant) {
+            sendError('Product variant not found', 404);
         }
 
         // Check stock availability
-        $available_stock = $product['stock_quantity'];
-        if ($variant_id) {
-            $variant = $db->fetchOne(
-                "SELECT stock_quantity FROM product_variants WHERE id = ? AND product_id = ?",
-                [$variant_id, $product_id]
-            );
-            if ($variant) {
-                $available_stock = $variant['stock_quantity'];
-            }
-        }
-
-        if ($quantity > $available_stock) {
-            sendError("Only {$available_stock} items available in stock");
+        if ($quantity > $variant['stock']) {
+            sendError("Only {$variant['stock']} items available in stock");
         }
 
         // Get or create cart

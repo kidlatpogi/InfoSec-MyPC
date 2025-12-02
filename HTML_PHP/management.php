@@ -18,7 +18,7 @@ try {
     
     $user_id = $_SESSION['user_id'];
     $current_user = $db->fetchOne(
-        "SELECT id, role FROM users WHERE id = ?",
+        "SELECT id, is_admin FROM users WHERE id = ?",
         [$user_id]
     );
     
@@ -26,6 +26,13 @@ try {
         sendError('User not found', 404);
     }
     
+    // Determine role for logic
+    $current_user_role = $current_user['is_admin'] ? 'admin' : 'customer';
+    // Note: Superadmin check might need specific email or another flag if not in DB schema
+    // Assuming superadmin is an admin with specific email for now or is_admin=1
+    // If schema doesn't distinguish superadmin, we might need to check email
+    $is_superadmin = ($current_user['id'] == 1 || $current_user['email'] === 'superadmin@mypc.com'); // Example check
+
     $action = $_GET['action'] ?? $_POST['action'] ?? null;
     
     // ========================================
@@ -33,13 +40,15 @@ try {
     // ========================================
     
     if ($action === 'getAdmins') {
-        if ($current_user['role'] !== 'superadmin') {
-            sendError('Unauthorized: Only superadmins can manage admins', 403);
+        // Only superadmin can manage other admins? Or maybe just list them?
+        // Let's assume is_admin=1 can list other admins
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized', 403);
         }
         
         $admins = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, status, created_at 
-             FROM users WHERE role = 'admin' ORDER BY created_at DESC"
+            "SELECT id, email, full_name, phone, created_at 
+             FROM users WHERE is_admin = 1 ORDER BY created_at DESC"
         );
         
         sendSuccess(['admins' => $admins]);
@@ -47,8 +56,8 @@ try {
     
     // Create new admin
     elseif ($action === 'createAdmin') {
-        if ($current_user['role'] !== 'superadmin') {
-            sendError('Unauthorized: Only superadmins can create admins', 403);
+        if (!$current_user['is_admin']) {
+             sendError('Unauthorized', 403);
         }
         
         if ($method !== 'POST') {
@@ -65,6 +74,7 @@ try {
         $password = $_POST['password'];
         $first_name = sanitizeInput($_POST['first_name']);
         $last_name = sanitizeInput($_POST['last_name']);
+        $full_name = $first_name . ' ' . $last_name;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         
         if (!validateEmail($email)) {
@@ -83,18 +93,18 @@ try {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         
         $admin_id = $db->insert(
-            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, status) 
-             VALUES (?, ?, ?, ?, ?, 'admin', 'active')",
-            [$email, $password_hash, $first_name, $last_name, $phone]
+            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
+             VALUES (?, ?, ?, ?, 1)",
+            [$email, $password_hash, $full_name, $phone]
         );
-        logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'name' => "$first_name $last_name"]);
+        logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'name' => $full_name]);
         
         sendSuccess(['admin_id' => $admin_id], 'Admin created successfully');
     }
     
     // Update admin
     elseif ($action === 'updateAdmin') {
-        if ($current_user['role'] !== 'superadmin') {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -110,29 +120,38 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['first_name'])) {
-            $updates[] = "first_name = ?";
-            $params[] = sanitizeInput($_POST['first_name']);
-        }
-        if (isset($_POST['last_name'])) {
-            $updates[] = "last_name = ?";
-            $params[] = sanitizeInput($_POST['last_name']);
+        if (isset($_POST['first_name']) || isset($_POST['last_name'])) {
+            // Need to fetch current name if only one part is updated, but let's assume full update or handle simpler
+            // For simplicity, let's assume full_name is passed or constructed from inputs if available
+            // If the frontend sends first/last, we might need to fetch existing to merge, or just update full_name if provided
+            if (isset($_POST['full_name'])) {
+                 $updates[] = "full_name = ?";
+                 $params[] = sanitizeInput($_POST['full_name']);
+            } else {
+                 // Fallback if frontend sends split names (might overwrite if not careful)
+                 // Ideally frontend should send full_name
+                 $first = $_POST['first_name'] ?? '';
+                 $last = $_POST['last_name'] ?? '';
+                 if ($first && $last) {
+                     $updates[] = "full_name = ?";
+                     $params[] = sanitizeInput($first . ' ' . $last);
+                 }
+            }
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
             $params[] = sanitizeInput($_POST['phone']);
         }
-        if (isset($_POST['status'])) {
-            $updates[] = "status = ?";
-            $params[] = $_POST['status'];
-        }
+        // Status column removed from mypc.sql users table?
+        // mypc.sql users: id, email, password_hash, full_name, phone, is_admin, created_at, updated_at
+        // No status column.
         
         if (empty($updates)) {
             sendError('No fields to update');
         }
         
         $params[] = $admin_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'admin'";
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 1";
         $db->query($sql, $params);
         logAuditEvent('UPDATE', 'admin', $admin_id, $user_id, $updates);
         
@@ -141,7 +160,7 @@ try {
     
     // Delete admin
     elseif ($action === 'deleteAdmin') {
-        if ($current_user['role'] !== 'superadmin') {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -158,7 +177,7 @@ try {
             sendError('Cannot delete yourself');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND role = 'admin'", [$admin_id]);
+        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 1", [$admin_id]);
         logAuditEvent('DELETE', 'admin', $admin_id, $user_id, ['action' => 'delete_admin']);
         sendSuccess([], 'Admin deleted successfully');
     }
@@ -168,13 +187,13 @@ try {
     // ========================================
     
     elseif ($action === 'getUsers') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
         $users = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, role, status, created_at 
-             FROM users WHERE role = 'customer' ORDER BY created_at DESC"
+            "SELECT id, email, full_name, phone, is_admin, created_at 
+             FROM users WHERE is_admin = 0 ORDER BY created_at DESC"
         );
         
         sendSuccess(['users' => $users]);
@@ -182,7 +201,7 @@ try {
     
     // Create new user (for admin)
     elseif ($action === 'createUser') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -216,11 +235,12 @@ try {
         }
         
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $full_name = $first_name . ' ' . $last_name;
         
         $user_id_new = $db->insert(
-            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, status) 
-             VALUES (?, ?, ?, ?, ?, 'customer', 'active')",
-            [$email, $password_hash, $first_name, $last_name, $phone]
+            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
+             VALUES (?, ?, ?, ?, 0)",
+            [$email, $password_hash, $full_name, $phone]
         );
         
         sendSuccess(['user_id' => $user_id_new], 'User created successfully');
@@ -228,7 +248,7 @@ try {
     
     // Update user
     elseif ($action === 'updateUser') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -244,21 +264,13 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['first_name'])) {
-            $updates[] = "first_name = ?";
-            $params[] = sanitizeInput($_POST['first_name']);
-        }
-        if (isset($_POST['last_name'])) {
-            $updates[] = "last_name = ?";
-            $params[] = sanitizeInput($_POST['last_name']);
+        if (isset($_POST['full_name'])) {
+            $updates[] = "full_name = ?";
+            $params[] = sanitizeInput($_POST['full_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
             $params[] = sanitizeInput($_POST['phone']);
-        }
-        if (isset($_POST['status'])) {
-            $updates[] = "status = ?";
-            $params[] = $_POST['status'];
         }
         
         if (empty($updates)) {
@@ -266,7 +278,7 @@ try {
         }
         
         $params[] = $target_user_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'customer'";
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 0";
         $db->query($sql, $params);
         
         sendSuccess([], 'User updated successfully');
@@ -274,7 +286,7 @@ try {
     
     // Delete user
     elseif ($action === 'deleteUser') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -287,138 +299,9 @@ try {
             sendError('User ID required');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND role = 'customer'", [$target_user_id]);
+        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 0", [$target_user_id]);
         logAuditEvent('DELETE', 'user', $target_user_id, $user_id, ['action' => 'delete_user']);
         sendSuccess([], 'User deleted successfully');
-    }
-    
-    // ========================================
-    // EMPLOYEES MANAGEMENT (Superadmin & Admin)
-    // ========================================
-    
-    elseif ($action === 'getEmployees') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
-            sendError('Unauthorized', 403);
-        }
-        
-        $employees = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, status, created_at 
-             FROM users WHERE role = 'employee' ORDER BY created_at DESC"
-        );
-        
-        sendSuccess(['employees' => $employees]);
-    }
-    
-    // Create new employee
-    elseif ($action === 'createEmployee') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
-            sendError('Unauthorized', 403);
-        }
-        
-        if ($method !== 'POST') {
-            sendError('Invalid request method', 400);
-        }
-        
-        $required = ['email', 'password', 'first_name', 'last_name'];
-        $missing = validateRequired($required, $_POST);
-        if (!empty($missing)) {
-            sendError('Missing required fields: ' . implode(', ', $missing));
-        }
-        
-        $email = sanitizeInput($_POST['email']);
-        $password = $_POST['password'];
-        $first_name = sanitizeInput($_POST['first_name']);
-        $last_name = sanitizeInput($_POST['last_name']);
-        $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
-        
-        if (!validateEmail($email)) {
-            sendError('Invalid email format');
-        }
-        
-        if (strlen($password) < 6) {
-            sendError('Password must be at least 6 characters');
-        }
-        
-        $existing = $db->fetchOne("SELECT id FROM users WHERE email = ?", [$email]);
-        if ($existing) {
-            sendError('Email already exists');
-        }
-        
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
-        
-        $employee_id = $db->insert(
-            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, status) 
-             VALUES (?, ?, ?, ?, ?, 'employee', 'active')",
-            [$email, $password_hash, $first_name, $last_name, $phone]
-        );
-        
-        sendSuccess(['employee_id' => $employee_id], 'Employee created successfully');
-    }
-    
-    // Update employee
-    elseif ($action === 'updateEmployee') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
-            sendError('Unauthorized', 403);
-        }
-        
-        if ($method !== 'POST') {
-            sendError('Invalid request method', 400);
-        }
-        
-        $employee_id = $_POST['employee_id'] ?? null;
-        if (!$employee_id) {
-            sendError('Employee ID required');
-        }
-        
-        $updates = [];
-        $params = [];
-        
-        if (isset($_POST['first_name'])) {
-            $updates[] = "first_name = ?";
-            $params[] = sanitizeInput($_POST['first_name']);
-        }
-        if (isset($_POST['last_name'])) {
-            $updates[] = "last_name = ?";
-            $params[] = sanitizeInput($_POST['last_name']);
-        }
-        if (isset($_POST['phone'])) {
-            $updates[] = "phone = ?";
-            $params[] = sanitizeInput($_POST['phone']);
-        }
-        if (isset($_POST['status'])) {
-            $updates[] = "status = ?";
-            $params[] = $_POST['status'];
-        }
-        
-        if (empty($updates)) {
-            sendError('No fields to update');
-        }
-        
-        $params[] = $employee_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'employee'";
-        $db->query($sql, $params);
-        
-        sendSuccess([], 'Employee updated successfully');
-    }
-    
-    // Delete employee
-    elseif ($action === 'deleteEmployee') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
-            sendError('Unauthorized', 403);
-        }
-        
-        if ($method !== 'POST') {
-            sendError('Invalid request method', 400);
-        }
-        
-        $employee_id = $_POST['employee_id'] ?? null;
-        if (!$employee_id) {
-            sendError('Employee ID required');
-        }
-        
-        $db->query("DELETE FROM users WHERE id = ? AND role = 'employee'", [$employee_id]);
-        logAuditEvent('DELETE', 'employee', $employee_id, $user_id, ['action' => 'delete_employee']);
-        sendSuccess([], 'Employee deleted successfully');
     }
     
     // ========================================
@@ -429,13 +312,13 @@ try {
         $target_user_id = $_GET['user_id'] ?? $user_id;
         
         // Users can only fetch their own addresses unless admin/superadmin
-        if ($target_user_id != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if ($target_user_id != $user_id && !$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
         $addresses = $db->fetchAll(
-            "SELECT id, label, recipient_name, phone, address_line1, address_line2, city, postal_code, is_default, created_at 
-             FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC",
+            "SELECT id, label, line1, line2, city, state, postal_code, country, phone, created_at 
+             FROM addresses WHERE user_id = ? ORDER BY created_at DESC",
             [$target_user_id]
         );
         
@@ -450,34 +333,29 @@ try {
         $target_user_id = $_POST['user_id'] ?? $user_id;
         
         // Users can only add addresses for themselves unless admin/superadmin
-        if ($target_user_id != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if ($target_user_id != $user_id && !$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
-        $required = ['recipient_name', 'phone', 'address_line1', 'city', 'postal_code'];
+        $required = ['line1', 'city', 'postal_code', 'country'];
         $missing = validateRequired($required, $_POST);
         if (!empty($missing)) {
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
         $label = isset($_POST['label']) ? sanitizeInput($_POST['label']) : null;
-        $recipient_name = sanitizeInput($_POST['recipient_name']);
-        $phone = sanitizeInput($_POST['phone']);
-        $address_line1 = sanitizeInput($_POST['address_line1']);
-        $address_line2 = isset($_POST['address_line2']) ? sanitizeInput($_POST['address_line2']) : null;
+        $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
+        $line1 = sanitizeInput($_POST['line1']);
+        $line2 = isset($_POST['line2']) ? sanitizeInput($_POST['line2']) : null;
         $city = sanitizeInput($_POST['city']);
+        $state = isset($_POST['state']) ? sanitizeInput($_POST['state']) : null;
         $postal_code = sanitizeInput($_POST['postal_code']);
-        $is_default = isset($_POST['is_default']) ? (int)$_POST['is_default'] : 0;
-        
-        // If setting as default, unset other defaults
-        if ($is_default) {
-            $db->query("UPDATE addresses SET is_default = 0 WHERE user_id = ?", [$target_user_id]);
-        }
+        $country = sanitizeInput($_POST['country']);
         
         $address_id = $db->insert(
-            "INSERT INTO addresses (user_id, label, recipient_name, phone, address_line1, address_line2, city, postal_code, is_default) 
+            "INSERT INTO addresses (user_id, label, line1, line2, city, state, postal_code, country, phone) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [$target_user_id, $label, $recipient_name, $phone, $address_line1, $address_line2, $city, $postal_code, $is_default]
+            [$target_user_id, $label, $line1, $line2, $city, $state, $postal_code, $country, $phone]
         );
         
         sendSuccess(['address_id' => $address_id], 'Address added successfully');
@@ -499,7 +377,7 @@ try {
             sendError('Address not found', 404);
         }
         
-        if ($address['user_id'] != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if ($address['user_id'] != $user_id && !$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -510,37 +388,33 @@ try {
             $updates[] = "label = ?";
             $params[] = sanitizeInput($_POST['label']);
         }
-        if (isset($_POST['recipient_name'])) {
-            $updates[] = "recipient_name = ?";
-            $params[] = sanitizeInput($_POST['recipient_name']);
-        }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
             $params[] = sanitizeInput($_POST['phone']);
         }
-        if (isset($_POST['address_line1'])) {
-            $updates[] = "address_line1 = ?";
-            $params[] = sanitizeInput($_POST['address_line1']);
+        if (isset($_POST['line1'])) {
+            $updates[] = "line1 = ?";
+            $params[] = sanitizeInput($_POST['line1']);
         }
-        if (isset($_POST['address_line2'])) {
-            $updates[] = "address_line2 = ?";
-            $params[] = sanitizeInput($_POST['address_line2']);
+        if (isset($_POST['line2'])) {
+            $updates[] = "line2 = ?";
+            $params[] = sanitizeInput($_POST['line2']);
         }
         if (isset($_POST['city'])) {
             $updates[] = "city = ?";
             $params[] = sanitizeInput($_POST['city']);
         }
+        if (isset($_POST['state'])) {
+            $updates[] = "state = ?";
+            $params[] = sanitizeInput($_POST['state']);
+        }
         if (isset($_POST['postal_code'])) {
             $updates[] = "postal_code = ?";
             $params[] = sanitizeInput($_POST['postal_code']);
         }
-        if (isset($_POST['is_default'])) {
-            $is_default = (int)$_POST['is_default'];
-            if ($is_default) {
-                $db->query("UPDATE addresses SET is_default = 0 WHERE user_id = ?", [$address['user_id']]);
-            }
-            $updates[] = "is_default = ?";
-            $params[] = $is_default;
+        if (isset($_POST['country'])) {
+            $updates[] = "country = ?";
+            $params[] = sanitizeInput($_POST['country']);
         }
         
         if (empty($updates)) {
@@ -570,7 +444,7 @@ try {
             sendError('Address not found', 404);
         }
         
-        if ($address['user_id'] != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if ($address['user_id'] != $user_id && !$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -583,15 +457,15 @@ try {
     // ========================================
     
     elseif ($action === 'getAuditLogs') {
-        if ($current_user['role'] !== 'superadmin') {
-            sendError('Unauthorized: Only superadmins can view audit logs', 403);
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized: Only admins can view audit logs', 403);
         }
         
         $limit = $_GET['limit'] ?? 100;
         $offset = $_GET['offset'] ?? 0;
         
         $logs = $db->fetchAll(
-            "SELECT al.*, u.email, u.first_name, u.last_name 
+            "SELECT al.*, u.email, u.full_name 
              FROM audit_logs al
              LEFT JOIN users u ON al.user_id = u.id
              ORDER BY al.created_at DESC
@@ -608,22 +482,22 @@ try {
     
     // Get all products (for dashboards)
     elseif ($action === 'getProducts') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
         $products = $db->fetchAll(
-            "SELECT p.id, p.name, p.slug, p.base_price, p.category_id, c.name as category_name, p.created_at
+            "SELECT p.id, p.name, p.slug, p.category_id, c.name as category_name, p.created_at
              FROM products p
              LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.is_active = 1
+             WHERE p.active = 1
              ORDER BY p.created_at DESC"
         );
         
         // Get variants for each product
         foreach ($products as &$product) {
             $variants = $db->fetchAll(
-                "SELECT id, label, price_adjustment FROM product_variants WHERE product_id = ? AND is_active = 1",
+                "SELECT id, title, price, stock FROM product_variants WHERE product_id = ?",
                 [$product['id']]
             );
             $product['variants'] = $variants;
@@ -634,7 +508,7 @@ try {
     
     // Create new product
     elseif ($action === 'createProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -644,7 +518,6 @@ try {
         
         $name = $_POST['name'] ?? null;
         $category = $_POST['category'] ?? null;
-        $basePrice = $_POST['base_price'] ?? 0;
         $variants = isset($_POST['variants']) ? json_decode($_POST['variants'], true) : [];
         
         if (!$name || !$category) {
@@ -658,8 +531,8 @@ try {
         // Create product
         $slug = strtolower(str_replace(' ', '-', $name)) . '-' . time();
         $db->execute(
-            "INSERT INTO products (name, slug, base_price, category_id, is_active) VALUES (?, ?, ?, ?, 1)",
-            [$name, $slug, $basePrice, $categoryId]
+            "INSERT INTO products (name, slug, category_id, active) VALUES (?, ?, ?, 1)",
+            [$name, $slug, $categoryId]
         );
         
         $productId = $db->lastInsertId();
@@ -668,21 +541,21 @@ try {
         if (!empty($variants)) {
             foreach ($variants as $variant) {
                 $db->execute(
-                    "INSERT INTO product_variants (product_id, label, price_adjustment, is_active) VALUES (?, ?, ?, 1)",
-                    [$productId, $variant['label'] ?? '', $variant['priceDelta'] ?? 0]
+                    "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
+                    [$productId, $variant['title'] ?? 'Standard', $variant['price'] ?? 0, $variant['stock'] ?? 0]
                 );
             }
         }
         
         // Log audit
-        logAuditEvent($db, 'CREATE', 'product', $productId, $current_user['id'], json_encode(['name' => $name]));
+        logAuditEvent('CREATE', 'product', $productId, $current_user['id'], ['name' => $name]);
         
         sendSuccess(['product_id' => $productId]);
     }
     
     // Update product
     elseif ($action === 'updateProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -693,7 +566,6 @@ try {
         $productId = $_POST['product_id'] ?? null;
         $name = $_POST['name'] ?? null;
         $category = $_POST['category'] ?? null;
-        $basePrice = $_POST['base_price'] ?? 0;
         $variants = isset($_POST['variants']) ? json_decode($_POST['variants'], true) : [];
         
         if (!$productId || !$name) {
@@ -706,8 +578,8 @@ try {
         
         // Update product
         $db->execute(
-            "UPDATE products SET name = ?, base_price = ?, category_id = ? WHERE id = ?",
-            [$name, $basePrice, $categoryId, $productId]
+            "UPDATE products SET name = ?, category_id = ? WHERE id = ?",
+            [$name, $categoryId, $productId]
         );
         
         // Delete old variants and create new ones
@@ -715,21 +587,21 @@ try {
         if (!empty($variants)) {
             foreach ($variants as $variant) {
                 $db->execute(
-                    "INSERT INTO product_variants (product_id, label, price_adjustment, is_active) VALUES (?, ?, ?, 1)",
-                    [$productId, $variant['label'] ?? '', $variant['priceDelta'] ?? 0]
+                    "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
+                    [$productId, $variant['title'] ?? 'Standard', $variant['price'] ?? 0, $variant['stock'] ?? 0]
                 );
             }
         }
         
         // Log audit
-        logAuditEvent($db, 'UPDATE', 'product', $productId, $current_user['id'], json_encode(['name' => $name]));
+        logAuditEvent('UPDATE', 'product', $productId, $current_user['id'], ['name' => $name]);
         
         sendSuccess(['message' => 'Product updated']);
     }
 
-    // Update product stock
-    elseif ($action === 'updateProductStock') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+    // Update variant stock
+    elseif ($action === 'updateVariantStock') {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -737,47 +609,44 @@ try {
             sendError('Invalid request method', 400);
         }
         
-        $productId = $_POST['product_id'] ?? null;
-        $stockQuantity = isset($_POST['stock_quantity']) ? intval($_POST['stock_quantity']) : null;
+        $variantId = $_POST['variant_id'] ?? null;
+        $stock = isset($_POST['stock']) ? intval($_POST['stock']) : null;
         
-        if (!$productId || $stockQuantity === null) {
-            sendError('Product ID and stock quantity are required');
+        if (!$variantId || $stock === null) {
+            sendError('Variant ID and stock are required');
         }
 
-        if ($stockQuantity < 0) {
-            sendError('Stock quantity cannot be negative');
+        if ($stock < 0) {
+            sendError('Stock cannot be negative');
         }
         
         // Get current stock for audit logging
-        $currentProduct = $db->fetchOne(
-            "SELECT stock_quantity FROM products WHERE id = ?",
-            [$productId]
+        $currentVariant = $db->fetchOne(
+            "SELECT stock FROM product_variants WHERE id = ?",
+            [$variantId]
         );
 
-        if (!$currentProduct) {
-            sendError('Product not found', 404);
+        if (!$currentVariant) {
+            sendError('Variant not found', 404);
         }
 
         // Update stock
         $db->execute(
-            "UPDATE products SET stock_quantity = ? WHERE id = ?",
-            [$stockQuantity, $productId]
+            "UPDATE product_variants SET stock = ? WHERE id = ?",
+            [$stock, $variantId]
         );
         
         // Log audit
-        logAuditEvent($db, 'UPDATE', 'product_stock', $productId, $current_user['id'], 
-            json_encode([
-                'previous_stock' => $currentProduct['stock_quantity'],
-                'new_stock' => $stockQuantity
-            ])
+        logAuditEvent('UPDATE', 'variant_stock', $variantId, $current_user['id'], 
+            ['previous_stock' => $currentVariant['stock'], 'new_stock' => $stock]
         );
         
-        sendSuccess(['message' => 'Product stock updated successfully', 'stock_quantity' => $stockQuantity]);
+        sendSuccess(['message' => 'Stock updated successfully', 'stock' => $stock]);
     }
     
     // Delete product
     elseif ($action === 'deleteProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+        if (!$current_user['is_admin']) {
             sendError('Unauthorized', 403);
         }
         
@@ -788,10 +657,10 @@ try {
         }
         
         // Soft delete - mark as inactive
-        $db->execute("UPDATE products SET is_active = 0 WHERE id = ?", [$productId]);
+        $db->execute("UPDATE products SET active = 0 WHERE id = ?", [$productId]);
         
         // Log audit
-        logAuditEvent($db, 'DELETE', 'product', $productId, $current_user['id'], json_encode(['product_id' => $productId]));
+        logAuditEvent('DELETE', 'product', $productId, $current_user['id'], ['product_id' => $productId]);
         
         sendSuccess(['message' => 'Product deleted']);
     }

@@ -175,10 +175,10 @@ async function loadProducts(filters = {}) {
                 id: p.slug || p.id,
                 title: p.name,
                 category: p.category_name || 'Uncategorized',
-                price: parseFloat(p.base_price),
+                price: parseFloat(p.price || 0),
                 img: p.image_url || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%23666%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EProduct%3C/text%3E%3C/svg%3E',
                 variants: p.variants || [],
-                stock: p.stock_quantity || 0,
+                stock: p.stock || 0,
                 dbId: p.id // Store database ID for cart operations
             }));
 
@@ -296,6 +296,8 @@ async function renderProducts() {
         return;
     }
 
+    const fragment = document.createDocumentFragment();
+    
     list.forEach((p) => {
         const el = document.createElement("article");
         el.className = "product";
@@ -303,13 +305,12 @@ async function renderProducts() {
         // Build variant options
         const variantOptions = (p.variants || [])
             .map((v, idx) => {
-                const priceAdj = parseFloat(v.price_adjustment || 0);
-                return `<option value="${idx}">${v.label}${priceAdj ? " (" + (priceAdj > 0 ? "+" : "") + formatPHP(priceAdj) + ")" : ""}</option>`;
+                return `<option value="${idx}">${v.title || 'Option ' + (idx + 1)} - ${formatPHP(v.price)}</option>`;
             })
             .join("");
 
         el.innerHTML = `
-      <img src="${p.img}" alt="${p.title}">
+      <img src="${p.img}" alt="${p.title}" loading="lazy">
       <h3>${p.title}</h3>
       <div class="meta">${p.category}</div>
       <div class="price" data-base="${p.price}">${formatPHP(p.price)}</div>
@@ -325,8 +326,10 @@ async function renderProducts() {
       </div>
     `;
         console.log("[renderProducts] Rendering product:", p.id, p.title, "with data-id on buttons");
-        grid.appendChild(el);
+        fragment.appendChild(el);
     });
+    
+    grid.appendChild(fragment);
 
     renderPagination(data.pagination?.page || 1, data.pagination?.pages || 1);
     console.log("[renderProducts] Rendering complete");
@@ -583,18 +586,19 @@ if (!window.scriptChangeListenersAttached) {
             const prod = PRODUCTS.find((p) => p.id === id);
             if (!prod) return;
 
-            const base = prod.price;
             const variant = prod.variants && prod.variants[parseInt(sel.value, 10)];
-            const priceAdj = variant ? parseFloat(variant.price_adjustment || 0) : 0;
+            if (!variant) return;
+            
+            const variantPrice = parseFloat(variant.price || 0);
 
             // Update price in product card
             const priceEl = sel.closest(".product")?.querySelector(".price");
-            if (priceEl) priceEl.textContent = formatPHP(base + priceAdj);
+            if (priceEl) priceEl.textContent = formatPHP(variantPrice);
 
             // Update price in product detail modal
             const modalPriceEl = document.querySelector(".product-detail-price");
-            if (modalPriceEl && modalPriceEl.getAttribute("data-base")) {
-                modalPriceEl.textContent = formatPHP(base + priceAdj);
+            if (modalPriceEl) {
+                modalPriceEl.textContent = formatPHP(variantPrice);
             }
         }
     });
@@ -629,8 +633,7 @@ function openProductDetail(productId) {
 
     const variantOptions = (product.variants || [])
         .map((v, idx) => {
-            const priceAdj = parseFloat(v.price_adjustment || 0);
-            return `<option value="${idx}">${v.label}${priceAdj ? " (" + (priceAdj > 0 ? "+" : "") + formatPHP(priceAdj) + ")" : ""}</option>`;
+            return `<option value="${idx}">${v.title || 'Option ' + (idx + 1)} - ${formatPHP(v.price)}</option>`;
         })
         .join("");
 
@@ -670,6 +673,127 @@ function closeProductDetail() {
     if (backdrop) backdrop.classList.remove("open");
 }
 
+async function loadSingleProduct() {
+    const id = window.CURRENT_PRODUCT_ID;
+    if (!id) return;
+
+    console.log("[loadSingleProduct] Loading product:", id);
+
+    try {
+        const response = await fetch(`/InfoSec-MyPC/HTML_PHP/products.php?id=${id}`);
+        if (!response.ok) throw new Error("Failed to load product");
+        const product = await response.json();
+
+        if (!product) throw new Error("Product not found");
+
+        // Populate DOM
+        const img = document.getElementById("prod-img");
+        if (img) {
+            img.src = product.image_url || product.img || '/InfoSec-MyPC/assets/placeholder.jpg';
+            img.alt = product.title;
+        }
+
+        const setText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text || "";
+        };
+
+        setText("prod-title", product.title);
+        setText("prod-category", product.category_name);
+        setText("prod-desc", product.description);
+        
+        // Price and Variants
+        const priceEl = document.getElementById("prod-price");
+        let currentPrice = parseFloat(product.price);
+        if (priceEl) priceEl.textContent = formatPHP(currentPrice);
+
+        // Handle variants if they exist
+        if (product.variants && product.variants.length > 0) {
+             const qtyContainer = document.querySelector(".purchase-controls");
+             if (qtyContainer) {
+                 let variantContainer = document.getElementById("prod-variants-container");
+                 if (!variantContainer) {
+                     variantContainer = document.createElement("div");
+                     variantContainer.id = "prod-variants-container";
+                     variantContainer.style.marginBottom = "1rem";
+                     qtyContainer.parentNode.insertBefore(variantContainer, qtyContainer);
+                 }
+                 
+                 const options = product.variants.map((v, idx) => {
+                     return `<option value="${idx}" data-price="${v.price}" data-id="${v.id}">${v.title} - ${formatPHP(v.price)}</option>`;
+                 }).join("");
+                 
+                 variantContainer.innerHTML = `
+                    <label for="prod-variant-select" style="display:block;margin-bottom:0.5rem;font-weight:500;">Option</label>
+                    <select id="prod-variant-select" class="variant-select" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:4px;">
+                        ${options}
+                    </select>
+                 `;
+                 
+                 // Add change listener
+                 const select = document.getElementById("prod-variant-select");
+                 select.addEventListener("change", (e) => {
+                     const idx = e.target.value;
+                     const variant = product.variants[idx];
+                     if (variant) {
+                         if (priceEl) priceEl.textContent = formatPHP(variant.price);
+                         const qtyInput = document.getElementById("prod-qty");
+                         if (qtyInput) qtyInput.max = variant.stock;
+                     }
+                 });
+                 
+                 // Trigger initial change
+                 select.dispatchEvent(new Event('change'));
+             }
+        } else {
+             const qtyInput = document.getElementById("prod-qty");
+             if (qtyInput) qtyInput.max = product.stock;
+        }
+
+        // Add to cart button
+        const addBtn = document.getElementById("prod-add");
+        if (addBtn) {
+            // Remove old listeners
+            const newBtn = addBtn.cloneNode(true);
+            addBtn.parentNode.replaceChild(newBtn, addBtn);
+            
+            newBtn.onclick = async () => {
+                const qtyInput = document.getElementById("prod-qty");
+                const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+                
+                let variantId = null;
+                const variantSelect = document.getElementById("prod-variant-select");
+                if (variantSelect) {
+                    const idx = variantSelect.value;
+                    if (product.variants && product.variants[idx]) {
+                        variantId = product.variants[idx].id;
+                    }
+                }
+                
+                try {
+                    await CartAPI.addToCart(product.id, qty, variantId);
+                    await loadCartFromBackend();
+                    
+                    const originalText = newBtn.textContent;
+                    newBtn.textContent = "✓ Added!";
+                    newBtn.style.background = "#10b981";
+                    setTimeout(() => {
+                        newBtn.textContent = originalText;
+                        newBtn.style.background = "";
+                    }, 1500);
+                } catch (e) {
+                    alert(e.message || "Failed to add to cart");
+                }
+            };
+        }
+
+    } catch (e) {
+        console.error("Error loading product:", e);
+        const container = document.querySelector(".product-detail");
+        if (container) container.innerHTML = `<p class="error">Failed to load product details. ${e.message}</p>`;
+    }
+}
+
 // ========================================
 // PAGE INITIALIZATION
 // ========================================
@@ -705,6 +829,11 @@ async function initializePageScript() {
         await loadCategories(); // Load categories for filter dropdown
         await renderProducts();
         console.log("[initializePageScript] Products loaded, window.PRODUCTS:", window.PRODUCTS);
+    }
+
+    // Load single product if on product page
+    if (window.CURRENT_PRODUCT_ID) {
+        await loadSingleProduct();
     }
 
     // Setup cart
