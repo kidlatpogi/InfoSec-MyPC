@@ -15,7 +15,6 @@ try {
         $categories = $db->fetchAll(
             "SELECT id, name, slug, description 
              FROM categories 
-             WHERE is_active = 1 
              ORDER BY name ASC"
         );
 
@@ -31,13 +30,13 @@ try {
             $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
                     FROM products p 
                     LEFT JOIN categories c ON p.category_id = c.id 
-                    WHERE p.id = ? AND p.is_active = 1";
+                    WHERE p.id = ? AND p.active = 1";
             $params = [intval($identifier)];
         } else {
             $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
                     FROM products p 
                     LEFT JOIN categories c ON p.category_id = c.id 
-                    WHERE p.slug = ? AND p.is_active = 1";
+                    WHERE p.slug = ? AND p.active = 1";
             $params = [$identifier];
         }
 
@@ -49,18 +48,43 @@ try {
 
         // Get product variants
         $variants = $db->fetchAll(
-            "SELECT id, label, price_adjustment, stock_quantity, sku_suffix 
+            "SELECT id, variant_sku, title, price, stock 
              FROM product_variants 
-             WHERE product_id = ? AND is_active = 1 
-             ORDER BY price_adjustment ASC",
+             WHERE product_id = ? 
+             ORDER BY price ASC",
             [$product['id']]
         );
 
         $product['variants'] = $variants;
+        
+        // Calculate display price and stock
+        $product['price'] = !empty($variants) ? $variants[0]['price'] : 0;
+        $product['stock'] = array_reduce($variants, function($carry, $item) {
+            return $carry + $item['stock'];
+        }, 0);
+
+        // Get product images
+        $images = $db->fetchAll(
+            "SELECT id, url, alt_text, `order` 
+             FROM product_images 
+             WHERE product_id = ? 
+             ORDER BY `order` ASC",
+            [$product['id']]
+        );
+
+        // Fix image URLs
+        foreach ($images as &$img) {
+            if (strpos($img['url'], '/assets/') === 0) {
+                $img['url'] = '/InfoSec-MyPC' . $img['url'];
+            }
+        }
+
+        $product['images'] = $images;
+        $product['image_url'] = !empty($images) ? $images[0]['url'] : null;
 
         // Get product reviews
         $reviews = $db->fetchAll(
-            "SELECT r.*, u.first_name, u.last_name 
+            "SELECT r.*, u.full_name 
              FROM reviews r 
              LEFT JOIN users u ON r.user_id = u.id 
              WHERE r.product_id = ? 
@@ -94,11 +118,11 @@ try {
         $offset = ($page - 1) * $limit;
 
         // Build query
-        $sql = "SELECT p.id, p.sku, p.name, p.slug, p.description, p.base_price, 
-                       p.stock_quantity, p.image_url, c.name as category_name, c.slug as category_slug
+        $sql = "SELECT p.id, p.sku, p.name, p.slug, p.short_description, 
+                       p.long_description, c.name as category_name, c.slug as category_slug
                 FROM products p 
                 LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.is_active = 1";
+                WHERE p.active = 1";
 
         $params = [];
 
@@ -112,8 +136,9 @@ try {
             $words = explode(' ', trim($search));
             foreach ($words as $word) {
                 if (empty($word)) continue;
-                $sql .= " AND (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?)";
+                $sql .= " AND (p.name LIKE ? OR p.short_description LIKE ? OR p.long_description LIKE ? OR c.name LIKE ?)";
                 $term = "%{$word}%";
+                $params[] = $term;
                 $params[] = $term;
                 $params[] = $term;
                 $params[] = $term;
@@ -126,22 +151,53 @@ try {
 
         $products = $db->fetchAll($sql, $params);
 
-        // Get variants for each product
+        // Get variants and images for each product
         foreach ($products as &$product) {
             $variants = $db->fetchAll(
-                "SELECT id, label, price_adjustment, stock_quantity, sku_suffix 
+                "SELECT id, variant_sku, title, price, stock 
                  FROM product_variants 
-                 WHERE product_id = ? AND is_active = 1 
-                 ORDER BY price_adjustment ASC",
+                 WHERE product_id = ? 
+                 ORDER BY price ASC",
                 [$product['id']]
             );
             $product['variants'] = $variants;
+            
+            // Calculate display price (min price) and total stock
+            $product['price'] = !empty($variants) ? $variants[0]['price'] : 0;
+            $product['stock'] = array_reduce($variants, function($carry, $item) {
+                return $carry + $item['stock'];
+            }, 0);
+
+            $images = $db->fetchAll(
+                "SELECT id, url, alt_text, `order` 
+                 FROM product_images 
+                 WHERE product_id = ? 
+                 ORDER BY `order` ASC LIMIT 1",
+                [$product['id']]
+            );
+            
+            // Fix image URLs in the images array
+            foreach ($images as &$img) {
+                if (strpos($img['url'], '/assets/') === 0) {
+                    $img['url'] = '/InfoSec-MyPC' . $img['url'];
+                }
+            }
+            unset($img); // Break the reference
+            
+            $product['images'] = $images;
+            
+            // Set main image URL
+            if (!empty($images)) {
+                $product['image_url'] = $images[0]['url'];
+            } else {
+                $product['image_url'] = null;
+            }
         }
 
         // Get total count for pagination
         $countSql = "SELECT COUNT(*) as total FROM products p 
                      LEFT JOIN categories c ON p.category_id = c.id 
-                     WHERE p.is_active = 1";
+                     WHERE p.active = 1";
         $countParams = [];
 
         if ($category) {
@@ -153,8 +209,9 @@ try {
             $words = explode(' ', trim($search));
             foreach ($words as $word) {
                 if (empty($word)) continue;
-                $countSql .= " AND (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?)";
+                $countSql .= " AND (p.name LIKE ? OR p.short_description LIKE ? OR p.long_description LIKE ? OR c.name LIKE ?)";
                 $term = "%{$word}%";
+                $countParams[] = $term;
                 $countParams[] = $term;
                 $countParams[] = $term;
                 $countParams[] = $term;

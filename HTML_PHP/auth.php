@@ -24,6 +24,7 @@ try {
         $password = $_POST['password'];
         $first_name = sanitizeInput($_POST['first_name']);
         $last_name = sanitizeInput($_POST['last_name']);
+        $full_name = $first_name . ' ' . $last_name;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         
         // Validate email format
@@ -47,9 +48,9 @@ try {
         
         // Insert user
         $user_id = $db->insert(
-            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role) 
-             VALUES (?, ?, ?, ?, ?, 'customer')",
-            [$email, $password_hash, $first_name, $last_name, $phone]
+            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
+             VALUES (?, ?, ?, ?, 0)",
+            [$email, $password_hash, $full_name, $phone]
         );
         
         // Set session
@@ -61,8 +62,7 @@ try {
             'user' => [
                 'id' => $user_id,
                 'email' => $email,
-                'first_name' => $first_name,
-                'last_name' => $last_name,
+                'full_name' => $full_name,
                 'role' => 'customer'
             ]
         ], 'Registration successful');
@@ -87,7 +87,7 @@ try {
         
         // Get user from database
         $user = $db->fetchOne(
-            "SELECT id, email, password_hash, first_name, last_name, role, status 
+            "SELECT id, email, password_hash, full_name, is_admin 
              FROM users WHERE email = ?",
             [$email]
         );
@@ -96,28 +96,25 @@ try {
             sendError('Invalid email or password', 401);
         }
         
-        // Check if account is suspended
-        if ($user['status'] === 'suspended') {
-            sendError('Account has been suspended. Please contact support.', 403);
-        }
-        
         // Verify password
         if (!password_verify($password, $user['password_hash'])) {
             sendError('Invalid email or password', 401);
         }
         
+        // Determine role based on is_admin
+        $role = $user['is_admin'] ? 'admin' : 'customer';
+        
         // Set session
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['user_role'] = $role;
         
         sendSuccess([
             'user' => [
                 'id' => $user['id'],
                 'email' => $user['email'],
-                'first_name' => $user['first_name'],
-                'last_name' => $user['last_name'],
-                'role' => $user['role']
+                'full_name' => $user['full_name'],
+                'role' => $role
             ]
         ], 'Login successful');
     }
@@ -136,7 +133,7 @@ try {
         
         $user_id = $_SESSION['user_id'];
         $user = $db->fetchOne(
-            "SELECT id, email, first_name, last_name, role, phone, status 
+            "SELECT id, email, full_name, is_admin, phone 
              FROM users WHERE id = ?",
             [$user_id]
         );
@@ -144,6 +141,8 @@ try {
         if (!$user) {
             sendError('User not found', 404);
         }
+        
+        $user['role'] = $user['is_admin'] ? 'admin' : 'customer';
         
         sendSuccess(['user' => $user]);
     }
@@ -159,6 +158,7 @@ try {
         // Get input data
         $first_name = isset($_POST['first_name']) ? sanitizeInput($_POST['first_name']) : null;
         $last_name = isset($_POST['last_name']) ? sanitizeInput($_POST['last_name']) : null;
+        $full_name = ($first_name && $last_name) ? $first_name . ' ' . $last_name : null;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : null;
         $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
@@ -192,14 +192,9 @@ try {
         $updates = [];
         $params = [];
         
-        if ($first_name !== null) {
-            $updates[] = 'first_name = ?';
-            $params[] = $first_name;
-        }
-        
-        if ($last_name !== null) {
-            $updates[] = 'last_name = ?';
-            $params[] = $last_name;
+        if ($full_name !== null) {
+            $updates[] = 'full_name = ?';
+            $params[] = $full_name;
         }
         
         if ($phone !== null) {

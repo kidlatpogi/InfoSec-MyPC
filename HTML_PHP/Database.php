@@ -8,7 +8,7 @@ class Database {
     private $pdo;
     
     private $host = 'localhost';
-    private $dbname = 'mypc';
+    private $dbname = 'mypc_db';
     private $username = 'root';
     private $password = '';
     private $charset = 'utf8mb4';

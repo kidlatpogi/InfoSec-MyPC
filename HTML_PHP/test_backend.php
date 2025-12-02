@@ -66,9 +66,9 @@ class BackendTester
             $result = $this->db->fetchOne("SELECT 1 as test");
             $this->assert($result['test'] === 1, "Database connection successful");
 
-            // Check if mypc database exists
-            $dbCheck = $this->db->fetchOne("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'mypc'");
-            $this->assert($dbCheck !== false, "Database 'mypc' exists");
+            // Check if mypc_db database exists
+            $dbCheck = $this->db->fetchOne("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'mypc_db'");
+            $this->assert($dbCheck !== false, "Database 'mypc_db' exists");
 
         } catch (Exception $e) {
             $this->assert(false, "Database connection failed: " . $e->getMessage());
@@ -85,9 +85,9 @@ class BackendTester
             $passwordHash = password_hash('testpass123', PASSWORD_BCRYPT);
 
             $userId = $this->db->insert(
-                "INSERT INTO users (email, password_hash, first_name, last_name, role) 
-                 VALUES (?, ?, ?, ?, ?)",
-                [$testEmail, $passwordHash, 'Test', 'User', 'customer']
+                "INSERT INTO users (email, password_hash, full_name, is_admin) 
+                 VALUES (?, ?, ?, 0)",
+                [$testEmail, $passwordHash, 'Test User']
             );
 
             $this->assert($userId > 0, "User created successfully");
@@ -122,9 +122,9 @@ class BackendTester
             $passwordHash = password_hash('testpass123', PASSWORD_BCRYPT);
 
             $userId = $this->db->insert(
-                "INSERT INTO users (email, password_hash, first_name, last_name, role) 
-                 VALUES (?, ?, ?, ?, ?)",
-                [$testEmail, $passwordHash, 'Cart', 'Test', 'customer']
+                "INSERT INTO users (email, password_hash, full_name, is_admin) 
+                 VALUES (?, ?, ?, 0)",
+                [$testEmail, $passwordHash, 'Cart Test']
             );
 
             // Create cart
@@ -138,7 +138,7 @@ class BackendTester
             $this->assert($cart['updated_at'] !== null, "Cart updated_at is automatically set");
 
             // Add item to cart (requires a product)
-            $product = $this->db->fetchOne("SELECT id FROM products WHERE is_active = 1 LIMIT 1");
+            $product = $this->db->fetchOne("SELECT id FROM products WHERE active = 1 LIMIT 1");
 
             if ($product) {
                 $itemId = $this->db->insert(

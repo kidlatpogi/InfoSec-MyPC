@@ -4,7 +4,7 @@
  */
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=mypc;charset=utf8mb4', 'root', '');
+    $pdo = new PDO('mysql:host=localhost;dbname=mypc_db;charset=utf8mb4', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $email = 'zeus@superadmin.com';
@@ -21,22 +21,21 @@ try {
 
     // Create superadmin
     $stmt = $pdo->prepare(
-        "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, status) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
+         VALUES (?, ?, ?, ?, 1)"
     );
-    $stmt->execute([$email, $passwordHash, 'Zeus', 'Superadmin', '09123456789', 'superadmin', 'active']);
+    $stmt->execute([$email, $passwordHash, 'Zeus Superadmin', '09123456789']);
 
     echo "✓ Superadmin account created successfully!\n\n";
 
     // Verify
-    $stmt = $pdo->prepare("SELECT email, role, status, password_hash FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT email, is_admin, password_hash FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo "Verification:\n";
     echo "Email: {$user['email']}\n";
-    echo "Role: {$user['role']}\n";
-    echo "Status: {$user['status']}\n\n";
+    echo "Is Admin: {$user['is_admin']}\n\n";
 
     // Test password
     if (password_verify($password, $user['password_hash'])) {

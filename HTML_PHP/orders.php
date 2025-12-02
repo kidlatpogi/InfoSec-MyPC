@@ -48,9 +48,17 @@ try {
                 [$address_id, $user_id]
             );
 
+        // Get address if provided
+        $shipping_address_text = '';
+        if ($address_id > 0) {
+            $address = $db->fetchOne(
+                "SELECT * FROM addresses WHERE id = ? AND user_id = ?",
+                [$address_id, $user_id]
+            );
+
             if ($address) {
-                $shipping_address_text = $address['address_line1'] .
-                    ($address['address_line2'] ? ', ' . $address['address_line2'] : '') .
+                $shipping_address_text = $address['line1'] .
+                    ($address['line2'] ? ', ' . $address['line2'] : '') .
                     ', ' . $address['city'] . ' ' . $address['postal_code'];
             }
         }
@@ -66,12 +74,12 @@ try {
 
         // Get cart items
         $cart_items = $db->fetchAll(
-            "SELECT ci.product_id, ci.variant_id, ci.quantity,
-                    p.name, p.base_price, p.stock_quantity, p.sku,
-                    pv.label as variant_label, pv.price_adjustment, pv.stock_quantity as variant_stock
+            "SELECT ci.variant_id, ci.quantity,
+                    p.name, p.sku,
+                    pv.title, pv.price, pv.stock
              FROM cart_items ci
-             JOIN products p ON ci.product_id = p.id
-             LEFT JOIN product_variants pv ON ci.variant_id = pv.id
+             JOIN product_variants pv ON ci.variant_id = pv.id
+             JOIN products p ON pv.product_id = p.id
              WHERE ci.cart_id = ?",
             [$cart_id]
         );
@@ -87,42 +95,31 @@ try {
             // Calculate totals and validate stock
             $subtotal = 0;
             foreach ($cart_items as $item) {
-                $unit_price = $item['base_price'] + ($item['price_adjustment'] ?? 0);
-                $line_total = $unit_price * $item['quantity'];
+                $line_total = $item['price'] * $item['quantity'];
                 $subtotal += $line_total;
 
                 // Check stock availability
-                $available_stock = $item['variant_id'] ? $item['variant_stock'] : $item['stock_quantity'];
-                if ($item['quantity'] > $available_stock) {
+                if ($item['quantity'] > $item['stock']) {
                     throw new Exception("Insufficient stock for {$item['name']}");
                 }
             }
 
             // Calculate shipping (simple flat rate for now)
             $shipping_fee = $subtotal > 5000 ? 0 : 150;
-            $total = $subtotal + $shipping_fee;
-
-            // Generate order number
-            $order_number = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+            $tax = $subtotal * 0.12; // 12% VAT
+            $total = $subtotal + $shipping_fee + $tax;
 
             // Create order
             $order_id = $db->insert(
                 "INSERT INTO orders (
-                    order_number, user_id, address_id, customer_email, customer_name, customer_phone,
-                    shipping_address, status, payment_method, payment_status,
-                    subtotal, shipping_fee, total, notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'pending', ?, ?, ?, ?)",
+                    user_id, address_id, status, subtotal, shipping, tax, total, notes
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?)",
                 [
-                    $order_number,
                     $user_id,
                     $address_id > 0 ? $address_id : null,
-                    $user['email'],
-                    $user['name'],
-                    $user['phone'],
-                    $shipping_address_text,
-                    $payment_method,
                     $subtotal,
                     $shipping_fee,
+                    $tax,
                     $total,
                     $notes
                 ]
@@ -130,39 +127,29 @@ try {
 
             // Create order items and update stock
             foreach ($cart_items as $item) {
-                $unit_price = $item['base_price'] + ($item['price_adjustment'] ?? 0);
-                $line_total = $unit_price * $item['quantity'];
+                $line_total = $item['price'] * $item['quantity'];
 
                 // Insert order item
                 $db->insert(
                     "INSERT INTO order_items (
-                        order_id, product_id, product_name, variant_label, sku,
-                        unit_price, quantity, line_total
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        order_id, variant_id, product_name, variant_title, unit_price, quantity, line_total
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     [
                         $order_id,
-                        $item['product_id'],
+                        $item['variant_id'],
                         $item['name'],
-                        $item['variant_label'],
-                        $item['sku'],
-                        $unit_price,
+                        $item['title'],
+                        $item['price'],
                         $item['quantity'],
                         $line_total
                     ]
                 );
 
                 // Update stock
-                if ($item['variant_id']) {
-                    $db->query(
-                        "UPDATE product_variants SET stock_quantity = stock_quantity - ? WHERE id = ?",
-                        [$item['quantity'], $item['variant_id']]
-                    );
-                } else {
-                    $db->query(
-                        "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?",
-                        [$item['quantity'], $item['product_id']]
-                    );
-                }
+                $db->query(
+                    "UPDATE product_variants SET stock = stock - ? WHERE id = ?",
+                    [$item['quantity'], $item['variant_id']]
+                );
             }
 
             // Clear cart
@@ -173,7 +160,6 @@ try {
 
             sendSuccess([
                 'order_id' => $order_id,
-                'order_number' => $order_number,
                 'total' => $total
             ], 'Order created successfully');
 
@@ -187,18 +173,17 @@ try {
     // Get user's orders
     elseif ($method === 'GET' && !isset($_GET['id'])) {
         $orders = $db->fetchAll(
-            "SELECT id, order_number, status, payment_status, payment_method,
-                    subtotal, shipping_fee, total, created_at
+            "SELECT id, status, total, placed_at
              FROM orders
              WHERE user_id = ?
-             ORDER BY created_at DESC",
+             ORDER BY placed_at DESC",
             [$user_id]
         );
 
         // Get items for each order
         foreach ($orders as &$order) {
             $items = $db->fetchAll(
-                "SELECT product_name, variant_label, sku, unit_price, quantity, line_total
+                "SELECT product_name, variant_title, unit_price, quantity, line_total
                  FROM order_items
                  WHERE order_id = ?",
                 [$order['id']]
@@ -225,9 +210,10 @@ try {
 
         // Get order items
         $items = $db->fetchAll(
-            "SELECT oi.*, p.image_url, p.slug
+            "SELECT oi.*, p.slug
              FROM order_items oi
-             LEFT JOIN products p ON oi.product_id = p.id
+             LEFT JOIN product_variants pv ON oi.variant_id = pv.id
+             LEFT JOIN products p ON pv.product_id = p.id
              WHERE oi.order_id = ?",
             [$order_id]
         );
@@ -265,25 +251,17 @@ try {
         try {
             // Get order items to restore stock
             $order_items = $db->fetchAll(
-                "SELECT oi.product_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?",
+                "SELECT oi.variant_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?",
                 [$order_id]
             );
 
             // Restore stock for each item
             foreach ($order_items as $item) {
-                // Get product to check if it has variants
-                $product = $db->fetchOne(
-                    "SELECT id FROM products WHERE id = ?",
-                    [$item['product_id']]
+                // Restore to variant stock
+                $db->query(
+                    "UPDATE product_variants SET stock = stock + ? WHERE id = ?",
+                    [$item['quantity'], $item['variant_id']]
                 );
-
-                if ($product) {
-                    // Restore to main product stock
-                    $db->query(
-                        "UPDATE products SET stock_quantity = stock_quantity + ? WHERE id = ?",
-                        [$item['quantity'], $item['product_id']]
-                    );
-                }
             }
 
             // Update order status to cancelled
