@@ -72,15 +72,10 @@ try {
             [$product['id']]
         );
 
-        // Fix image URLs
-        foreach ($images as &$img) {
-            if (strpos($img['url'], '/assets/') === 0) {
-                $img['url'] = '/InfoSec-MyPC' . $img['url'];
-            }
-        }
-
+        // Image URLs are already correct (starting with /assets/)
+        // No prefix needed when running PHP dev server from project root
+        
         $product['images'] = $images;
-        $product['image_url'] = !empty($images) ? $images[0]['url'] : null;
 
         // Get product reviews
         $reviews = $db->fetchAll(
@@ -176,13 +171,8 @@ try {
                 [$product['id']]
             );
             
-            // Fix image URLs in the images array
-            foreach ($images as &$img) {
-                if (strpos($img['url'], '/assets/') === 0) {
-                    $img['url'] = '/InfoSec-MyPC' . $img['url'];
-                }
-            }
-            unset($img); // Break the reference
+            // Image URLs are already correct (starting with /assets/)
+            // No prefix needed when running PHP dev server from project root
             
             $product['images'] = $images;
             

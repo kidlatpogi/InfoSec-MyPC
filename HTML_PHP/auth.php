@@ -5,12 +5,52 @@
  */
 
 require_once 'db_config.php';
+
+// Secure session configuration
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
+ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.use_only_cookies', 1);
+
 session_start();
+
+// Regenerate session ID on login to prevent session fixation
+if (isset($_POST['action']) && $_POST['action'] === 'login' && !isset($_SESSION['user_id'])) {
+    session_regenerate_id(true);
+}
 
 $db = getDB();
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
+    // Rate limiting function
+    function checkRateLimit($action, $identifier, $maxAttempts = 5, $timeWindow = 300) {
+        if (!isset($_SESSION['rate_limit'])) {
+            $_SESSION['rate_limit'] = [];
+        }
+        
+        $key = $action . '_' . $identifier;
+        $now = time();
+        
+        if (isset($_SESSION['rate_limit'][$key])) {
+            $attempts = $_SESSION['rate_limit'][$key];
+            // Remove old attempts outside time window
+            $attempts = array_filter($attempts, function($timestamp) use ($now, $timeWindow) {
+                return ($now - $timestamp) < $timeWindow;
+            });
+            
+            if (count($attempts) >= $maxAttempts) {
+                sendError('Too many attempts. Please try again later.', 429);
+            }
+            
+            $_SESSION['rate_limit'][$key] = $attempts;
+        } else {
+            $_SESSION['rate_limit'][$key] = [];
+        }
+        
+        $_SESSION['rate_limit'][$key][] = $now;
+    }
+
     // Register new user
     if ($method === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
         // Validate required fields
@@ -26,6 +66,9 @@ try {
         $last_name = sanitizeInput($_POST['last_name']);
         $full_name = $first_name . ' ' . $last_name;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
+        
+        // Rate limit registration attempts by IP
+        checkRateLimit('register', $_SERVER['REMOTE_ADDR'], 3, 600);
         
         // Validate email format
         if (!validateEmail($email)) {
@@ -93,11 +136,15 @@ try {
         );
         
         if (!$user) {
+            // Rate limit failed login attempts
+            checkRateLimit('login', $email, 5, 300);
             sendError('Invalid email or password', 401);
         }
         
         // Verify password
         if (!password_verify($password, $user['password_hash'])) {
+            // Rate limit failed login attempts
+            checkRateLimit('login', $email, 5, 300);
             sendError('Invalid email or password', 401);
         }
         

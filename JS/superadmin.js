@@ -287,7 +287,7 @@ async function loadAdmins() {
             row.innerHTML = `
                 <td>${admin.id}</td>
                 <td>${admin.email}</td>
-                <td>${admin.first_name} ${admin.last_name}</td>
+                <td>${admin.full_name || 'N/A'}</td>
                 <td><span class="badge" style="background:${admin.status === 'active' ? '#10b981' : '#ef4444'}">${admin.status}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -322,7 +322,7 @@ async function loadUsers() {
             row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.email}</td>
-                <td>${user.first_name} ${user.last_name}</td>
+                <td>${user.full_name || 'N/A'}</td>
                 <td><span class="badge" style="background:${user.status === 'active' ? '#10b981' : '#ef4444'}">${user.status}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -357,7 +357,7 @@ async function loadEmployees() {
             row.innerHTML = `
                 <td>${emp.id}</td>
                 <td>${emp.email}</td>
-                <td>${emp.first_name} ${emp.last_name}</td>
+                <td>${emp.full_name || 'N/A'}</td>
                 <td><span class="badge" style="background:${emp.status === 'active' ? '#10b981' : '#ef4444'}">${emp.status}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -390,12 +390,18 @@ async function loadProducts() {
         tbody.innerHTML = '';
         data.products.forEach(product => {
             const row = document.createElement('tr');
+            // Calculate price and stock from variants
+            const variants = product.variants || [];
+            const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
+            const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+            
             row.innerHTML = `
                 <td>${product.id}</td>
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(product.base_price)}</td>
-                <td>${product.variants?.length || 0}</td>
+                <td>${formatPHP(minPrice)}</td>
+                <td>${totalStock}</td>
+                <td>${variants.length}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
@@ -487,7 +493,7 @@ function editAdmin(adminId, email) {
                 // Populate form
                 document.getElementById('admin-email').value = admin.email;
                 document.getElementById('admin-email').disabled = true;
-                document.getElementById('admin-name').value = `${admin.first_name} ${admin.last_name}`;
+                document.getElementById('admin-name').value = admin.full_name || '';
                 document.getElementById('admin-password').value = '';
                 document.getElementById('admin-password').placeholder = 'Leave empty to keep current';
 
@@ -501,14 +507,10 @@ function editAdmin(adminId, email) {
                 adminForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('admin-name').value.trim();
-                    const nameParts = fullName.split(' ');
-                    const firstName = nameParts[0];
-                    const lastName = nameParts.slice(1).join(' ') || '';
                     const password = document.getElementById('admin-password').value;
 
                     const updates = {
-                        first_name: firstName,
-                        last_name: lastName
+                        full_name: fullName
                     };
 
                     if (password) {
@@ -570,7 +572,7 @@ function editUser(userId, email) {
                 // Populate form
                 document.getElementById('user-email').value = user.email;
                 document.getElementById('user-email').disabled = true;
-                document.getElementById('user-name').value = `${user.first_name} ${user.last_name}`;
+                document.getElementById('user-name').value = user.full_name || '';
                 document.getElementById('user-password').value = '';
                 document.getElementById('user-password').placeholder = 'Leave empty to keep current';
 
@@ -584,14 +586,10 @@ function editUser(userId, email) {
                 userForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('user-name').value.trim();
-                    const nameParts = fullName.split(' ');
-                    const firstName = nameParts[0];
-                    const lastName = nameParts.slice(1).join(' ') || '';
                     const password = document.getElementById('user-password').value;
 
                     const updates = {
-                        first_name: firstName,
-                        last_name: lastName
+                        full_name: fullName
                     };
 
                     if (password) {
@@ -667,14 +665,10 @@ function editEmployee(employeeId, email) {
                 employeeForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('employee-name').value.trim();
-                    const nameParts = fullName.split(' ');
-                    const firstName = nameParts[0];
-                    const lastName = nameParts.slice(1).join(' ') || '';
                     const password = document.getElementById('employee-password').value;
 
                     const updates = {
-                        first_name: firstName,
-                        last_name: lastName
+                        full_name: fullName
                     };
 
                     if (password) {
@@ -1010,8 +1004,7 @@ function handleProfileSubmit(e) {
     }
 
     const updates = {
-        first_name: firstName,
-        last_name: lastName,
+        full_name: fullName,
         phone: document.getElementById('profile-phone').value.trim()
     };
 
@@ -1031,8 +1024,7 @@ async function updateUserProfile(updates) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                first_name: updates.first_name,
-                last_name: updates.last_name,
+                full_name: updates.full_name,
                 phone: updates.phone,
                 current_password: updates.current_password || '',
                 new_password: updates.new_password || ''
@@ -1044,7 +1036,7 @@ async function updateUserProfile(updates) {
         if (data.success) {
             // Update localStorage
             const user = getUserData();
-            user.first_name = updates.first_name;
+            user.full_name = updates.full_name;
             user.last_name = updates.last_name;
             user.phone = updates.phone;
             localStorage.setItem('user_data', JSON.stringify(user));

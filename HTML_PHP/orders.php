@@ -32,21 +32,13 @@ try {
 
         // Get user info
         $user = $db->fetchOne(
-            "SELECT email, CONCAT(first_name, ' ', last_name) as name, phone FROM users WHERE id = ?",
+            "SELECT email, full_name as name, phone FROM users WHERE id = ?",
             [$user_id]
         );
 
         if (!$user) {
             sendError('User not found', 404);
         }
-
-        // Get address if provided
-        $shipping_address_text = '';
-        if ($address_id > 0) {
-            $address = $db->fetchOne(
-                "SELECT * FROM addresses WHERE id = ? AND user_id = ?",
-                [$address_id, $user_id]
-            );
 
         // Get address if provided
         $shipping_address_text = '';

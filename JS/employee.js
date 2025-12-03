@@ -257,17 +257,22 @@ async function loadProducts() {
         tbody.innerHTML = '';
         data.products.forEach(product => {
             const row = document.createElement('tr');
+            // Calculate price and stock from variants
+            const variants = product.variants || [];
+            const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
+            const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+            
             row.innerHTML = `
                 <td>${product.id}</td>
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(product.base_price)}</td>
-                <td>${product.stock_quantity || 0}</td>
-                <td>${product.variants?.length || 0}</td>
+                <td>${formatPHP(minPrice)}</td>
+                <td>${totalStock}</td>
+                <td>${variants.length}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
-                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${product.stock_quantity || 0})">Stock</button>
+                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${totalStock})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
                 </td>
             `;
