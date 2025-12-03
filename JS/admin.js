@@ -262,8 +262,8 @@ async function loadUsers() {
             row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.email}</td>
-                <td>${user.first_name} ${user.last_name}</td>
-                <td><span class="badge" style="background:${user.status === 'active' ? '#10b981' : '#ef4444'}">${user.status}</span></td>
+                <td>${user.full_name || 'N/A'}</td>
+                <td><span class="badge" style="background:${user.status === 'active' ? '#10b981' : '#ef4444'}">${user.status || 'active'}</span></td>
                 <td>${createdDate}</td>
                 <td>
                     <button class="btn btn-sm" onclick="editUser(${user.id})">Edit</button>
@@ -297,8 +297,8 @@ async function loadEmployees() {
             row.innerHTML = `
                 <td>${emp.id}</td>
                 <td>${emp.email}</td>
-                <td>${emp.first_name} ${emp.last_name}</td>
-                <td><span class="badge" style="background:${emp.status === 'active' ? '#10b981' : '#ef4444'}">${emp.status}</span></td>
+                <td>${emp.full_name || 'N/A'}</td>
+                <td><span class="badge" style="background:${emp.status === 'active' ? '#10b981' : '#ef4444'}">${emp.status || 'active'}</span></td>
                 <td>${createdDate}</td>
                 <td>
                     <button class="btn btn-sm" onclick="editEmployee(${emp.id})">Edit</button>
@@ -330,17 +330,22 @@ async function loadProducts() {
         tbody.innerHTML = '';
         data.products.forEach(product => {
             const row = document.createElement('tr');
+            // Calculate price and stock from variants
+            const variants = product.variants || [];
+            const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
+            const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+            
             row.innerHTML = `
                 <td>${product.id}</td>
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(product.base_price)}</td>
-                <td>${product.stock_quantity || 0}</td>
-                <td>${product.variants?.length || 0}</td>
+                <td>${formatPHP(minPrice)}</td>
+                <td>${totalStock}</td>
+                <td>${variants.length}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
-                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${product.stock_quantity || 0})">Stock</button>
+                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${totalStock})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
                 </td>
             `;

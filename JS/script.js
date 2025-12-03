@@ -12,6 +12,17 @@ function formatPHP(n) {
     return "₱" + parseFloat(n).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Escape HTML to prevent XSS
+function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') return unsafe;
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 // Debounce helper to prevent excessive API calls
 function debounce(func, wait) {
     let timeout;
@@ -305,14 +316,14 @@ async function renderProducts() {
         // Build variant options
         const variantOptions = (p.variants || [])
             .map((v, idx) => {
-                return `<option value="${idx}">${v.title || 'Option ' + (idx + 1)} - ${formatPHP(v.price)}</option>`;
+                return `<option value="${idx}">${escapeHtml(v.title || 'Option ' + (idx + 1))} - ${formatPHP(v.price)}</option>`;
             })
             .join("");
 
         el.innerHTML = `
-      <img src="${p.img}" alt="${p.title}" loading="lazy">
-      <h3>${p.title}</h3>
-      <div class="meta">${p.category}</div>
+      <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.title)}" loading="lazy">
+      <h3>${escapeHtml(p.title)}</h3>
+      <div class="meta">${escapeHtml(p.category)}</div>
       <div class="price" data-base="${p.price}">${formatPHP(p.price)}</div>
       <div class="actions">
         <select class="variant-select" data-id="${p.id}">${variantOptions || '<option value="0">Standard</option>'}</select>

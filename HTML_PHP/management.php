@@ -18,7 +18,7 @@ try {
     
     $user_id = $_SESSION['user_id'];
     $current_user = $db->fetchOne(
-        "SELECT id, is_admin FROM users WHERE id = ?",
+        "SELECT id, email, is_admin FROM users WHERE id = ?",
         [$user_id]
     );
     
@@ -28,10 +28,8 @@ try {
     
     // Determine role for logic
     $current_user_role = $current_user['is_admin'] ? 'admin' : 'customer';
-    // Note: Superadmin check might need specific email or another flag if not in DB schema
-    // Assuming superadmin is an admin with specific email for now or is_admin=1
-    // If schema doesn't distinguish superadmin, we might need to check email
-    $is_superadmin = ($current_user['id'] == 1 || $current_user['email'] === 'superadmin@mypc.com'); // Example check
+    // Check if superadmin by email (or add a separate is_superadmin field to schema)
+    $is_superadmin = ($current_user['email'] === 'superadmin@mypc.com');
 
     $action = $_GET['action'] ?? $_POST['action'] ?? null;
     
@@ -120,31 +118,18 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['first_name']) || isset($_POST['last_name'])) {
-            // Need to fetch current name if only one part is updated, but let's assume full update or handle simpler
-            // For simplicity, let's assume full_name is passed or constructed from inputs if available
-            // If the frontend sends first/last, we might need to fetch existing to merge, or just update full_name if provided
-            if (isset($_POST['full_name'])) {
-                 $updates[] = "full_name = ?";
-                 $params[] = sanitizeInput($_POST['full_name']);
-            } else {
-                 // Fallback if frontend sends split names (might overwrite if not careful)
-                 // Ideally frontend should send full_name
-                 $first = $_POST['first_name'] ?? '';
-                 $last = $_POST['last_name'] ?? '';
-                 if ($first && $last) {
-                     $updates[] = "full_name = ?";
-                     $params[] = sanitizeInput($first . ' ' . $last);
-                 }
-            }
+        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
+            $updates[] = "full_name = ?";
+            $params[] = sanitizeInput($_POST['full_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
             $params[] = sanitizeInput($_POST['phone']);
         }
-        // Status column removed from mypc.sql users table?
-        // mypc.sql users: id, email, password_hash, full_name, phone, is_admin, created_at, updated_at
-        // No status column.
+        if (isset($_POST['password']) && trim($_POST['password']) !== '') {
+            $updates[] = "password_hash = ?";
+            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+        }
         
         if (empty($updates)) {
             sendError('No fields to update');
@@ -264,13 +249,17 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['full_name'])) {
+        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
             $updates[] = "full_name = ?";
             $params[] = sanitizeInput($_POST['full_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
             $params[] = sanitizeInput($_POST['phone']);
+        }
+        if (isset($_POST['password']) && trim($_POST['password']) !== '') {
+            $updates[] = "password_hash = ?";
+            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
         }
         
         if (empty($updates)) {
@@ -281,6 +270,7 @@ try {
         $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 0";
         $db->query($sql, $params);
         
+        logAuditEvent('UPDATE', 'user', $target_user_id, $user_id, ['fields' => array_keys($_POST)]);
         sendSuccess([], 'User updated successfully');
     }
     
@@ -302,6 +292,136 @@ try {
         $db->query("DELETE FROM users WHERE id = ? AND is_admin = 0", [$target_user_id]);
         logAuditEvent('DELETE', 'user', $target_user_id, $user_id, ['action' => 'delete_user']);
         sendSuccess([], 'User deleted successfully');
+    }
+    
+    // ========================================
+    // EMPLOYEES MANAGEMENT (Admin & Superadmin)
+    // ========================================
+    
+    elseif ($action === 'getEmployees') {
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized', 403);
+        }
+        
+        // In the new schema, employees could be marked with is_admin=0 but with a special flag
+        // For now, we'll return all non-admin users as potential employees
+        // You may want to add an 'is_employee' column if you need to distinguish
+        $employees = $db->fetchAll(
+            "SELECT id, email, full_name, phone, created_at 
+             FROM users WHERE is_admin = 0 ORDER BY created_at DESC"
+        );
+        
+        sendSuccess(['employees' => $employees]);
+    }
+    
+    // Create new employee
+    elseif ($action === 'createEmployee') {
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $required = ['email', 'password', 'first_name', 'last_name'];
+        $missing = validateRequired($required, $_POST);
+        if (!empty($missing)) {
+            sendError('Missing required fields: ' . implode(', ', $missing));
+        }
+        
+        $email = sanitizeInput($_POST['email']);
+        $password = $_POST['password'];
+        $first_name = sanitizeInput($_POST['first_name']);
+        $last_name = sanitizeInput($_POST['last_name']);
+        $full_name = $first_name . ' ' . $last_name;
+        $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
+        
+        if (!validateEmail($email)) {
+            sendError('Invalid email format');
+        }
+        
+        if (strlen($password) < 6) {
+            sendError('Password must be at least 6 characters');
+        }
+        
+        $existing = $db->fetchOne("SELECT id FROM users WHERE email = ?", [$email]);
+        if ($existing) {
+            sendError('Email already exists');
+        }
+        
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        
+        $employee_id = $db->insert(
+            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
+             VALUES (?, ?, ?, ?, 0)",
+            [$email, $password_hash, $full_name, $phone]
+        );
+        
+        sendSuccess(['employee_id' => $employee_id], 'Employee created successfully');
+    }
+    
+    // Update employee
+    elseif ($action === 'updateEmployee') {
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $employee_id = $_POST['employee_id'] ?? null;
+        if (!$employee_id) {
+            sendError('Employee ID required');
+        }
+        
+        $updates = [];
+        $params = [];
+        
+        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
+            $updates[] = "full_name = ?";
+            $params[] = sanitizeInput($_POST['full_name']);
+        }
+        if (isset($_POST['phone'])) {
+            $updates[] = "phone = ?";
+            $params[] = sanitizeInput($_POST['phone']);
+        }
+        if (isset($_POST['password']) && trim($_POST['password']) !== '') {
+            $updates[] = "password_hash = ?";
+            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+        }
+        
+        if (empty($updates)) {
+            sendError('No fields to update');
+        }
+        
+        $params[] = $employee_id;
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 0";
+        $db->query($sql, $params);
+        
+        logAuditEvent('UPDATE', 'employee', $employee_id, $user_id, ['fields' => array_keys($_POST)]);
+        sendSuccess([], 'Employee updated successfully');
+    }
+    
+    // Delete employee
+    elseif ($action === 'deleteEmployee') {
+        if (!$current_user['is_admin']) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $employee_id = $_POST['employee_id'] ?? null;
+        if (!$employee_id) {
+            sendError('Employee ID required');
+        }
+        
+        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 0", [$employee_id]);
+        logAuditEvent('DELETE', 'employee', $employee_id, $user_id, ['action' => 'delete_employee']);
+        sendSuccess([], 'Employee deleted successfully');
     }
     
     // ========================================

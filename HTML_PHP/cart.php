@@ -46,12 +46,8 @@ try {
             [$cart_id]
         );
 
-        // Fix image URLs
-        foreach ($items as &$item) {
-            if ($item['image_url'] && strpos($item['image_url'], '/assets/') === 0) {
-                $item['image_url'] = '/InfoSec-MyPC' . $item['image_url'];
-            }
-        }
+        // Image URLs are already correct (starting with /assets/)
+        // No prefix needed when running PHP dev server from project root
 
         // Calculate totals
         $subtotal = 0;
