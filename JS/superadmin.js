@@ -378,13 +378,13 @@ async function loadProducts() {
     const tbody = document.getElementById('products-tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
-        const data = await ProductsAPI.getProducts();
+        const data = await ProductsAPI.getAllProducts();
 
         if (!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
             return;
         }
 
@@ -401,11 +401,12 @@ async function loadProducts() {
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
-                <td>${totalStock}</td>
                 <td>${variants.length}</td>
+                <td>${totalStock}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${totalStock})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
                 </td>
             `;
@@ -413,7 +414,7 @@ async function loadProducts() {
         });
     } catch (error) {
         console.error('Failed to load products:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
     }
 }
 
@@ -456,17 +457,175 @@ async function loadOrders() {
 // ========================================
 
 function viewProduct(productId) {
-    alert(`View product ${productId} - Feature not yet implemented`);
+    ProductsAPI.getAllProducts()
+        .then(data => {
+            const product = data.products.find(p => p.id == productId);
+            if (!product) {
+                alert('Product not found');
+                return;
+            }
+
+            const viewModal = document.getElementById('product-view-modal');
+            const viewContent = document.getElementById('product-view-content');
+            const viewTitle = document.getElementById('product-view-title');
+
+            const variants = product.variants || [];
+            const variantsHTML = variants.length > 0
+                ? variants.map(v => `
+                    <div style="padding: 0.75rem; background: var(--surface); border-radius: 6px; margin-bottom: 0.5rem;">
+                        <strong>${v.title}</strong> - ${formatPHP(v.price)} (Stock: ${v.stock})
+                    </div>
+                `).join('')
+                : '<p style="color: var(--text-light);">No variants</p>';
+
+            viewContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3 style="margin-top: 0;">Product Information</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>ID:</strong> ${product.id}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Name:</strong> ${product.name || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Category:</strong> ${product.category_name || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Base Price:</strong> ${formatPHP(product.base_price || 0)}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>SKU:</strong> ${product.sku || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Created:</strong> ${new Date(product.created_at).toLocaleDateString() || 'N/A'}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0;">Variants (${variants.length})</h3>
+                        ${variantsHTML}
+                    </div>
+                </div>
+            `;
+
+            viewTitle.textContent = `Product Details: ${product.name}`;
+            viewModal.classList.add('open');
+        })
+        .catch(error => alert('Error loading product: ' + error.message));
 }
 
 function editProduct(productId) {
-    alert(`Edit product ${productId} - Feature not yet implemented`);
+    verifyPassword().then(verified => {
+        if (!verified) return;
+
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const modalTitle = document.getElementById('product-modal-title');
+
+        // Fetch the product data
+        ProductsAPI.getAllProducts()
+            .then(data => {
+                const product = data.products.find(p => p.id == productId);
+                if (!product) {
+                    alert('Product not found');
+                    return;
+                }
+
+                // Populate form
+                document.getElementById('product-title').value = product.name;
+                document.getElementById('product-category').value = product.category_name || '';
+                document.getElementById('product-price').value = product.base_price;
+                document.getElementById('product-variants').value = product.variants ? JSON.stringify(product.variants, null, 2) : '';
+
+                // Set modal title
+                modalTitle.textContent = `Edit Product: ${product.name}`;
+
+                // Show modal
+                productModal.classList.add('open');
+
+                // Handle form submission
+                productForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('product-title').value.trim();
+                    const category = document.getElementById('product-category').value.trim();
+                    const basePrice = parseFloat(document.getElementById('product-price').value);
+                    let variants = [];
+
+                    const variantsStr = document.getElementById('product-variants').value.trim();
+                    if (variantsStr) {
+                        try {
+                            variants = JSON.parse(variantsStr);
+                        } catch (e) {
+                            alert('Invalid JSON format for variants');
+                            return;
+                        }
+                    }
+
+                    try {
+                        await ProductsAPI.updateProduct(productId, name, category, basePrice, variants);
+                        alert('Product updated successfully');
+                        productModal.classList.remove('open');
+                        loadProducts();
+                    } catch (error) {
+                        alert('Error updating product: ' + error.message);
+                    }
+                };
+            })
+            .catch(error => alert('Error loading product: ' + error.message));
+    });
 }
 
-function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        alert(`Delete product ${productId} - Feature not yet implemented`);
-    }
+async function deleteProduct(productId) {
+    const verified = await verifyPassword();
+    if (!verified) return;
+
+    showConfirmDialog('Are you sure you want to delete this product? This action cannot be undone.', async () => {
+        try {
+            await ProductsAPI.deleteProduct(productId);
+            alert('Product deleted successfully');
+            loadProducts();
+        } catch (error) {
+            alert('Error deleting product: ' + error.message);
+        }
+    });
+}
+
+function editStock(productId, currentStock) {
+    const stockModal = document.getElementById('stock-modal');
+    const stockForm = document.getElementById('stock-form');
+    const stockInput = document.getElementById('stock-input');
+    const currentStockDisplay = document.getElementById('current-stock-display');
+    const modalTitle = document.getElementById('stock-modal-title');
+
+    // Set current stock display and input
+    currentStockDisplay.textContent = currentStock;
+    stockInput.value = currentStock;
+    modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
+
+    // Show modal
+    stockModal.classList.add('open');
+
+    // Handle form submission
+    stockForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const newStock = parseInt(stockInput.value, 10);
+
+        if (isNaN(newStock) || newStock < 0) {
+            alert('Please enter a valid stock quantity');
+            return;
+        }
+
+        try {
+            await ProductsAPI.updateProductStock(productId, newStock);
+            stockModal.classList.remove('open');
+            alert('Stock updated successfully');
+            // Reload products table
+            await loadProducts();
+        } catch (error) {
+            alert('Error updating stock: ' + error.message);
+        }
+    };
 }
 
 // ========================================
@@ -1117,6 +1276,7 @@ window.initSuperadminPage = initSuperadminPage;
 window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.editStock = editStock;
 window.editAdmin = editAdmin;
 window.deleteAdmin = deleteAdmin;
 window.editUser = editUser;

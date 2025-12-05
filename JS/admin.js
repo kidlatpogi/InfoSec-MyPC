@@ -317,13 +317,13 @@ async function loadProducts() {
     const tbody = document.getElementById('products-tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
         const data = await ProductsAPI.getAllProducts();
 
         if (!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
             return;
         }
 
@@ -340,8 +340,8 @@ async function loadProducts() {
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
-                <td>${totalStock}</td>
                 <td>${variants.length}</td>
+                <td>${totalStock}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
@@ -354,7 +354,7 @@ async function loadProducts() {
     } catch (error) {
         console.error('Failed to load products:', error);
         const errorMsg = error.message || 'Unknown error';
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
 }
 
@@ -397,11 +397,128 @@ async function loadOrders() {
 // ========================================
 
 function viewProduct(productId) {
-    alert(`View product ${productId} - Feature not yet implemented`);
+    const viewModal = document.getElementById('product-view-modal');
+    const viewContent = document.getElementById('product-view-content');
+    const viewTitle = document.getElementById('product-view-title');
+
+    // Fetch product data
+    ProductsAPI.getProduct(productId)
+        .then(product => {
+            if (!product || !product.id) {
+                alert('Product not found');
+                return;
+            }
+
+            // Display product details
+            const variants = product.variants || [];
+            const variantsHTML = variants.length > 0
+                ? variants.map(v => `
+                    <div style="padding: 0.75rem; background: var(--surface); border-radius: 6px; margin-bottom: 0.5rem;">
+                        <strong>${v.title}</strong> - ${formatPHP(v.price)} (Stock: ${v.stock})
+                    </div>
+                `).join('')
+                : '<p style="color: var(--text-light);">No variants</p>';
+
+            viewContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3 style="margin-top: 0;">Product Information</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>ID:</strong> ${product.id}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Name:</strong> ${product.name || product.title || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Category:</strong> ${product.category || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Base Price:</strong> ${formatPHP(product.price || product.base_price || 0)}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>SKU:</strong> ${product.sku || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Created:</strong> ${new Date(product.created_at).toLocaleDateString() || 'N/A'}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0;">Variants (${variants.length})</h3>
+                        ${variantsHTML}
+                    </div>
+                </div>
+            `;
+
+            viewTitle.textContent = `Product Details: ${product.name || product.title}`;
+            viewModal.classList.add('open');
+        })
+        .catch(error => alert('Error loading product: ' + error.message));
 }
 
 function editProduct(productId) {
-    alert(`Edit product ${productId} - Feature not yet implemented`);
+    verifyPassword().then(verified => {
+        if (!verified) return;
+
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const modalTitle = document.getElementById('product-modal-title');
+
+        // Fetch product data
+        ProductsAPI.getProduct(productId)
+            .then(product => {
+                if (!product || !product.id) {
+                    alert('Product not found');
+                    return;
+                }
+
+                // Populate form
+                document.getElementById('product-title').value = product.name || product.title || '';
+                document.getElementById('product-category').value = product.category || '';
+                document.getElementById('product-price').value = product.price || product.base_price || 0;
+                document.getElementById('product-variants').value = JSON.stringify(product.variants || [], null, 2);
+
+                // Set modal title
+                modalTitle.textContent = `Edit Product: ${product.name || product.title}`;
+
+                // Show modal
+                productModal.classList.add('open');
+
+                // Handle form submission
+                productForm.onsubmit = async (e) => {
+                    e.preventDefault();
+
+                    const title = document.getElementById('product-title').value.trim();
+                    const category = document.getElementById('product-category').value.trim();
+                    const price = parseFloat(document.getElementById('product-price').value);
+                    const variantsJSON = document.getElementById('product-variants').value.trim();
+
+                    if (!title || !category || !price) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+
+                    let variants = [];
+                    if (variantsJSON) {
+                        try {
+                            variants = JSON.parse(variantsJSON);
+                        } catch (err) {
+                            alert('Invalid JSON format for variants');
+                            return;
+                        }
+                    }
+
+                    try {
+                        await ProductsAPI.updateProduct(productId, title, category, price, variants);
+                        alert('Product updated successfully');
+                        productModal.classList.remove('open');
+                        loadProducts();
+                    } catch (error) {
+                        alert('Error updating product: ' + error.message);
+                    }
+                };
+            })
+            .catch(error => alert('Error loading product: ' + error.message));
+    });
 }
 
 // ========================================
@@ -614,10 +731,19 @@ function editStock(productId, currentStock) {
     };
 }
 
-function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        alert(`Delete product ${productId} - Feature not yet implemented`);
-    }
+async function deleteProduct(productId) {
+    const verified = await verifyPassword();
+    if (!verified) return;
+
+    showConfirmDialog('Are you sure you want to delete this product? This action cannot be undone.', async () => {
+        try {
+            await ProductsAPI.deleteProduct(productId);
+            alert('Product deleted successfully');
+            loadProducts();
+        } catch (error) {
+            alert('Error deleting product: ' + error.message);
+        }
+    });
 }
 
 // ========================================

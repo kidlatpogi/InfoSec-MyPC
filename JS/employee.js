@@ -244,13 +244,13 @@ async function loadProducts() {
     const tbody = document.getElementById('products-tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
         const data = await ProductsAPI.getAllProducts();
 
         if (!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
             return;
         }
 
@@ -267,8 +267,8 @@ async function loadProducts() {
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
-                <td>${totalStock}</td>
                 <td>${variants.length}</td>
+                <td>${totalStock}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
@@ -281,7 +281,7 @@ async function loadProducts() {
     } catch (error) {
         console.error('Failed to load products:', error);
         const errorMsg = error.message || 'Unknown error';
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
 }
 
