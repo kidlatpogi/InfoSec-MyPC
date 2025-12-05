@@ -44,7 +44,7 @@ try {
         }
         
         $admins = $db->fetchAll(
-            "SELECT id, email, full_name, phone, role, created_at 
+            "SELECT id, email, first_name, last_name, phone, role, created_at 
              FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
             [$user_id]
         );
@@ -91,11 +91,11 @@ try {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         
         $admin_id = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
-             VALUES (?, ?, ?, ?, 'admin', 1)",
-            [$email, $password_hash, $full_name, $phone]
+            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, ?, 'admin', 1)",
+            [$email, $password_hash, $first_name, $last_name, $phone]
         );
-        logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'name' => $full_name]);
+        logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'first_name' => $first_name, 'last_name' => $last_name]);
         
         sendSuccess(['admin_id' => $admin_id], 'Admin created successfully');
     }
@@ -118,9 +118,13 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
-            $updates[] = "full_name = ?";
-            $params[] = sanitizeInput($_POST['full_name']);
+        if (isset($_POST['first_name']) && trim($_POST['first_name']) !== '') {
+            $updates[] = "first_name = ?";
+            $params[] = sanitizeInput($_POST['first_name']);
+        }
+        if (isset($_POST['last_name']) && trim($_POST['last_name']) !== '') {
+            $updates[] = "last_name = ?";
+            $params[] = sanitizeInput($_POST['last_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
@@ -177,7 +181,7 @@ try {
         }
         
         $users = $db->fetchAll(
-            "SELECT id, email, full_name, phone, role, created_at 
+            "SELECT id, email, first_name, last_name, phone, role, created_at 
              FROM users WHERE role = 'user' ORDER BY created_at DESC"
         );
         
@@ -220,12 +224,11 @@ try {
         }
         
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
-        $full_name = $first_name . ' ' . $last_name;
         
         $user_id_new = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
-             VALUES (?, ?, ?, ?, 'user', 0)",
-            [$email, $password_hash, $full_name, $phone]
+            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, ?, 'user', 0)",
+            [$email, $password_hash, $first_name, $last_name, $phone]
         );
         
         sendSuccess(['user_id' => $user_id_new], 'User created successfully');
@@ -249,9 +252,13 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
-            $updates[] = "full_name = ?";
-            $params[] = sanitizeInput($_POST['full_name']);
+        if (isset($_POST['first_name']) && trim($_POST['first_name']) !== '') {
+            $updates[] = "first_name = ?";
+            $params[] = sanitizeInput($_POST['first_name']);
+        }
+        if (isset($_POST['last_name']) && trim($_POST['last_name']) !== '') {
+            $updates[] = "last_name = ?";
+            $params[] = sanitizeInput($_POST['last_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
@@ -305,7 +312,7 @@ try {
         
         // In the new schema, employees have role='employee'
         $employees = $db->fetchAll(
-            "SELECT id, email, full_name, phone, role, created_at 
+            "SELECT id, email, first_name, last_name, phone, role, created_at 
              FROM users WHERE role = 'employee' ORDER BY created_at DESC"
         );
         
@@ -332,7 +339,6 @@ try {
         $password = $_POST['password'];
         $first_name = sanitizeInput($_POST['first_name']);
         $last_name = sanitizeInput($_POST['last_name']);
-        $full_name = $first_name . ' ' . $last_name;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         
         if (!validateEmail($email)) {
@@ -351,9 +357,9 @@ try {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         
         $employee_id = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
-             VALUES (?, ?, ?, ?, 'employee', 0)",
-            [$email, $password_hash, $full_name, $phone]
+            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, ?, 'employee', 0)",
+            [$email, $password_hash, $first_name, $last_name, $phone]
         );
         
         sendSuccess(['employee_id' => $employee_id], 'Employee created successfully');
@@ -377,9 +383,13 @@ try {
         $updates = [];
         $params = [];
         
-        if (isset($_POST['full_name']) && trim($_POST['full_name']) !== '') {
-            $updates[] = "full_name = ?";
-            $params[] = sanitizeInput($_POST['full_name']);
+        if (isset($_POST['first_name']) && trim($_POST['first_name']) !== '') {
+            $updates[] = "first_name = ?";
+            $params[] = sanitizeInput($_POST['first_name']);
+        }
+        if (isset($_POST['last_name']) && trim($_POST['last_name']) !== '') {
+            $updates[] = "last_name = ?";
+            $params[] = sanitizeInput($_POST['last_name']);
         }
         if (isset($_POST['phone'])) {
             $updates[] = "phone = ?";
@@ -583,7 +593,7 @@ try {
         $offset = $_GET['offset'] ?? 0;
         
         $logs = $db->fetchAll(
-            "SELECT al.*, u.email, u.full_name 
+            "SELECT al.*, u.email, u.first_name, u.last_name 
              FROM audit_logs al
              LEFT JOIN users u ON al.user_id = u.id
              ORDER BY al.created_at DESC

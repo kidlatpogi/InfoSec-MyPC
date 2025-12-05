@@ -288,7 +288,7 @@ async function loadAdmins() {
             row.innerHTML = `
                 <td>${admin.id}</td>
                 <td>${admin.email}</td>
-                <td>${admin.full_name || 'N/A'}</td>
+                <td>${admin.first_name} ${admin.last_name}</td>
                 <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -323,7 +323,7 @@ async function loadUsers() {
             row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.email}</td>
-                <td>${user.full_name || 'N/A'}</td>
+                <td>${user.first_name} ${user.last_name}</td>
                 <td><span class="badge" style="background:#3b82f6">${user.role || 'user'}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -358,7 +358,7 @@ async function loadEmployees() {
             row.innerHTML = `
                 <td>${emp.id}</td>
                 <td>${emp.email}</td>
-                <td>${emp.full_name || 'N/A'}</td>
+                <td>${emp.first_name} ${emp.last_name}</td>
                 <td><span class="badge" style="background:#f59e0b">${emp.role || 'employee'}</span></td>
                 <td>${createdDate}</td>
                 <td>
@@ -494,7 +494,8 @@ function editAdmin(adminId, email) {
                 // Populate form
                 document.getElementById('admin-email').value = admin.email;
                 document.getElementById('admin-email').disabled = true;
-                document.getElementById('admin-name').value = admin.full_name || '';
+                // Store first and last name separately for now, showing combined
+                document.getElementById('admin-name').value = `${admin.first_name} ${admin.last_name}`;
                 document.getElementById('admin-password').value = '';
                 document.getElementById('admin-password').placeholder = 'Leave empty to keep current';
 
@@ -508,10 +509,12 @@ function editAdmin(adminId, email) {
                 adminForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('admin-name').value.trim();
-                    const password = document.getElementById('admin-password').value;
-
+                    const [firstName, ...lastNameParts] = fullName.split(' ');
+                    const lastName = lastNameParts.join(' ') || firstName;
+                    
                     const updates = {
-                        full_name: fullName
+                        first_name: firstName,
+                        last_name: lastName
                     };
 
                     if (password) {
@@ -573,7 +576,8 @@ function editUser(userId, email) {
                 // Populate form
                 document.getElementById('user-email').value = user.email;
                 document.getElementById('user-email').disabled = true;
-                document.getElementById('user-name').value = user.full_name || '';
+                // Store first and last name separately for now, showing combined
+                document.getElementById('user-name').value = `${user.first_name} ${user.last_name}`;
                 document.getElementById('user-password').value = '';
                 document.getElementById('user-password').placeholder = 'Leave empty to keep current';
 
@@ -587,10 +591,12 @@ function editUser(userId, email) {
                 userForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('user-name').value.trim();
-                    const password = document.getElementById('user-password').value;
-
+                    const [firstName, ...lastNameParts] = fullName.split(' ');
+                    const lastName = lastNameParts.join(' ') || firstName;
+                    
                     const updates = {
-                        full_name: fullName
+                        first_name: firstName,
+                        last_name: lastName
                     };
 
                     if (password) {
@@ -666,10 +672,12 @@ function editEmployee(employeeId, email) {
                 employeeForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('employee-name').value.trim();
-                    const password = document.getElementById('employee-password').value;
-
+                    const [firstName, ...lastNameParts] = fullName.split(' ');
+                    const lastName = lastNameParts.join(' ') || firstName;
+                    
                     const updates = {
-                        full_name: fullName
+                        first_name: firstName,
+                        last_name: lastName
                     };
 
                     if (password) {
@@ -1005,7 +1013,8 @@ function handleProfileSubmit(e) {
     }
 
     const updates = {
-        full_name: fullName,
+        first_name: document.getElementById('profile-first-name').value.trim(),
+        last_name: document.getElementById('profile-last-name').value.trim(),
         phone: document.getElementById('profile-phone').value.trim()
     };
 
@@ -1025,7 +1034,8 @@ async function updateUserProfile(updates) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                full_name: updates.full_name,
+                first_name: updates.first_name,
+                last_name: updates.last_name,
                 phone: updates.phone,
                 current_password: updates.current_password || '',
                 new_password: updates.new_password || ''
@@ -1037,7 +1047,7 @@ async function updateUserProfile(updates) {
         if (data.success) {
             // Update localStorage
             const user = getUserData();
-            user.full_name = updates.full_name;
+            user.first_name = updates.first_name;
             user.last_name = updates.last_name;
             user.phone = updates.phone;
             localStorage.setItem('user_data', JSON.stringify(user));
