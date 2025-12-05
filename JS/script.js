@@ -454,7 +454,10 @@ async function renderCartItems() {
 
     itemsEl.innerHTML = "";
 
-    if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
+    // Calculate total quantity (including items with 0 quantity)
+    const totalQty = window.CART_DATA.items?.reduce((s, i) => s + parseInt(i.quantity || 0), 0) || 0;
+
+    if (!window.CART_DATA.items || window.CART_DATA.items.length === 0 || totalQty === 0) {
         itemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Your cart is empty</p>';
         if (totalEl) totalEl.textContent = formatPHP(0);
         
@@ -679,8 +682,10 @@ function openProductDetail(productId) {
           Premium ${product.category} component. Built with cutting-edge technology to deliver exceptional performance and reliability.
         </div>
         <div class="product-actions">
-          <select class="variant-select" data-id="${product.id}" id="modal-variant-${product.id}">${variantOptions || '<option value="0">Standard</option>'}</select>
-          <input type="number" class="qty-input" data-id="${product.id}" id="modal-qty-${product.id}" value="1" min="1" max="${product.stock || 99}">
+          <div class="product-actions-row">
+            <select class="variant-select" data-id="${product.id}" id="modal-variant-${product.id}">${variantOptions || '<option value="0">Standard</option>'}</select>
+            <input type="number" class="qty-input" data-id="${product.id}" id="modal-qty-${product.id}" value="1" min="1" max="${product.stock || 99}">
+          </div>
           <button class="btn add" data-id="${product.id}" data-action="add-from-modal" ${product.stock <= 0 ? 'disabled' : ''}>
             ${product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
           </button>
@@ -888,7 +893,8 @@ async function initializePageScript() {
 
     const checkout = document.getElementById("checkout-btn");
     if (checkout) checkout.addEventListener("click", () => {
-        if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
+        const totalQty = window.CART_DATA.items?.reduce((s, i) => s + parseInt(i.quantity || 0), 0) || 0;
+        if (!window.CART_DATA.items || window.CART_DATA.items.length === 0 || totalQty === 0) {
             alert('Please add items to your cart before checkout');
             return;
         }
