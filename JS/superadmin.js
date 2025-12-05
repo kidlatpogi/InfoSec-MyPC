@@ -401,11 +401,12 @@ async function loadProducts() {
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
-                <td>${totalStock}</td>
                 <td>${variants.length}</td>
+                <td>${totalStock}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
                     <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+                    <button class="btn btn-sm" onclick="editStock(${product.id}, ${totalStock})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
                 </td>
             `;
@@ -413,7 +414,7 @@ async function loadProducts() {
         });
     } catch (error) {
         console.error('Failed to load products:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
     }
 }
 
@@ -587,6 +588,44 @@ async function deleteProduct(productId) {
             alert('Error deleting product: ' + error.message);
         }
     });
+}
+
+function editStock(productId, currentStock) {
+    const stockModal = document.getElementById('stock-modal');
+    const stockForm = document.getElementById('stock-form');
+    const stockInput = document.getElementById('stock-input');
+    const currentStockDisplay = document.getElementById('current-stock-display');
+    const modalTitle = document.getElementById('stock-modal-title');
+
+    // Set current stock display and input
+    currentStockDisplay.textContent = currentStock;
+    stockInput.value = currentStock;
+    modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
+
+    // Show modal
+    stockModal.classList.add('open');
+
+    // Handle form submission
+    stockForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const newStock = parseInt(stockInput.value, 10);
+
+        if (isNaN(newStock) || newStock < 0) {
+            alert('Please enter a valid stock quantity');
+            return;
+        }
+
+        try {
+            await ProductsAPI.updateProductStock(productId, newStock);
+            stockModal.classList.remove('open');
+            alert('Stock updated successfully');
+            // Reload products table
+            await loadProducts();
+        } catch (error) {
+            alert('Error updating stock: ' + error.message);
+        }
+    };
 }
 
 // ========================================
@@ -1237,6 +1276,7 @@ window.initSuperadminPage = initSuperadminPage;
 window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.editStock = editStock;
 window.editAdmin = editAdmin;
 window.deleteAdmin = deleteAdmin;
 window.editUser = editUser;
