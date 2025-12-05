@@ -18,7 +18,7 @@ try {
     
     $user_id = $_SESSION['user_id'];
     $current_user = $db->fetchOne(
-        "SELECT id, email, is_admin FROM users WHERE id = ?",
+        "SELECT id, email, role, is_admin FROM users WHERE id = ?",
         [$user_id]
     );
     
@@ -27,9 +27,9 @@ try {
     }
     
     // Determine role for logic
-    $current_user_role = $current_user['is_admin'] ? 'admin' : 'customer';
-    // Check if superadmin by email (or add a separate is_superadmin field to schema)
-    $is_superadmin = ($current_user['email'] === 'superadmin@mypc.com');
+    $current_user_role = $current_user['role'] ?? ($current_user['is_admin'] ? 'admin' : 'user');
+    // Check if superadmin using database role field
+    $is_superadmin = ($current_user['role'] === 'superadmin');
 
     $action = $_GET['action'] ?? $_POST['action'] ?? null;
     
@@ -38,24 +38,23 @@ try {
     // ========================================
     
     if ($action === 'getAdmins') {
-        // Only superadmin can manage other admins? Or maybe just list them?
-        // Let's assume is_admin=1 can list other admins
-        if (!$current_user['is_admin']) {
+        // Only superadmin and admins can list other admins
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
         $admins = $db->fetchAll(
-            "SELECT id, email, full_name, phone, created_at 
-             FROM users WHERE is_admin = 1 ORDER BY created_at DESC"
+            "SELECT id, email, full_name, phone, role, created_at 
+             FROM users WHERE role IN ('admin', 'superadmin') ORDER BY created_at DESC"
         );
         
         sendSuccess(['admins' => $admins]);
     }
     
-    // Create new admin
+    // Create new admin (superadmin only)
     elseif ($action === 'createAdmin') {
-        if (!$current_user['is_admin']) {
-             sendError('Unauthorized', 403);
+        if ($current_user['role'] !== 'superadmin') {
+             sendError('Unauthorized - Superadmin only', 403);
         }
         
         if ($method !== 'POST') {
@@ -91,8 +90,8 @@ try {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         
         $admin_id = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
-             VALUES (?, ?, ?, ?, 1)",
+            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, 'admin', 1)",
             [$email, $password_hash, $full_name, $phone]
         );
         logAuditEvent('CREATE', 'admin', $admin_id, $user_id, ['email' => $email, 'name' => $full_name]);
@@ -102,7 +101,7 @@ try {
     
     // Update admin
     elseif ($action === 'updateAdmin') {
-        if (!$current_user['is_admin']) {
+        if ($current_user['role'] !== 'superadmin') {
             sendError('Unauthorized', 403);
         }
         
@@ -136,7 +135,7 @@ try {
         }
         
         $params[] = $admin_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 1";
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role IN ('admin', 'superadmin')";
         $db->query($sql, $params);
         logAuditEvent('UPDATE', 'admin', $admin_id, $user_id, $updates);
         
@@ -145,7 +144,7 @@ try {
     
     // Delete admin
     elseif ($action === 'deleteAdmin') {
-        if (!$current_user['is_admin']) {
+        if ($current_user['role'] !== 'superadmin') {
             sendError('Unauthorized', 403);
         }
         
@@ -162,7 +161,7 @@ try {
             sendError('Cannot delete yourself');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 1", [$admin_id]);
+        $db->query("DELETE FROM users WHERE id = ? AND role IN ('admin', 'superadmin')", [$admin_id]);
         logAuditEvent('DELETE', 'admin', $admin_id, $user_id, ['action' => 'delete_admin']);
         sendSuccess([], 'Admin deleted successfully');
     }
@@ -172,13 +171,13 @@ try {
     // ========================================
     
     elseif ($action === 'getUsers') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
         $users = $db->fetchAll(
-            "SELECT id, email, full_name, phone, is_admin, created_at 
-             FROM users WHERE is_admin = 0 ORDER BY created_at DESC"
+            "SELECT id, email, full_name, phone, role, created_at 
+             FROM users WHERE role = 'user' ORDER BY created_at DESC"
         );
         
         sendSuccess(['users' => $users]);
@@ -186,7 +185,7 @@ try {
     
     // Create new user (for admin)
     elseif ($action === 'createUser') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -223,8 +222,8 @@ try {
         $full_name = $first_name . ' ' . $last_name;
         
         $user_id_new = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
-             VALUES (?, ?, ?, ?, 0)",
+            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, 'user', 0)",
             [$email, $password_hash, $full_name, $phone]
         );
         
@@ -233,7 +232,7 @@ try {
     
     // Update user
     elseif ($action === 'updateUser') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -267,7 +266,7 @@ try {
         }
         
         $params[] = $target_user_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 0";
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'user'";
         $db->query($sql, $params);
         
         logAuditEvent('UPDATE', 'user', $target_user_id, $user_id, ['fields' => array_keys($_POST)]);
@@ -276,7 +275,7 @@ try {
     
     // Delete user
     elseif ($action === 'deleteUser') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -289,7 +288,7 @@ try {
             sendError('User ID required');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 0", [$target_user_id]);
+        $db->query("DELETE FROM users WHERE id = ? AND role = 'user'", [$target_user_id]);
         logAuditEvent('DELETE', 'user', $target_user_id, $user_id, ['action' => 'delete_user']);
         sendSuccess([], 'User deleted successfully');
     }
@@ -299,16 +298,14 @@ try {
     // ========================================
     
     elseif ($action === 'getEmployees') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
-        // In the new schema, employees could be marked with is_admin=0 but with a special flag
-        // For now, we'll return all non-admin users as potential employees
-        // You may want to add an 'is_employee' column if you need to distinguish
+        // In the new schema, employees have role='employee'
         $employees = $db->fetchAll(
-            "SELECT id, email, full_name, phone, created_at 
-             FROM users WHERE is_admin = 0 ORDER BY created_at DESC"
+            "SELECT id, email, full_name, phone, role, created_at 
+             FROM users WHERE role = 'employee' ORDER BY created_at DESC"
         );
         
         sendSuccess(['employees' => $employees]);
@@ -316,7 +313,7 @@ try {
     
     // Create new employee
     elseif ($action === 'createEmployee') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -353,8 +350,8 @@ try {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         
         $employee_id = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
-             VALUES (?, ?, ?, ?, 0)",
+            "INSERT INTO users (email, password_hash, full_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, 'employee', 0)",
             [$email, $password_hash, $full_name, $phone]
         );
         
@@ -363,7 +360,7 @@ try {
     
     // Update employee
     elseif ($action === 'updateEmployee') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -397,7 +394,7 @@ try {
         }
         
         $params[] = $employee_id;
-        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND is_admin = 0";
+        $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id = ? AND role = 'employee'";
         $db->query($sql, $params);
         
         logAuditEvent('UPDATE', 'employee', $employee_id, $user_id, ['fields' => array_keys($_POST)]);
@@ -406,7 +403,7 @@ try {
     
     // Delete employee
     elseif ($action === 'deleteEmployee') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -419,7 +416,7 @@ try {
             sendError('Employee ID required');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND is_admin = 0", [$employee_id]);
+        $db->query("DELETE FROM users WHERE id = ? AND role = 'employee'", [$employee_id]);
         logAuditEvent('DELETE', 'employee', $employee_id, $user_id, ['action' => 'delete_employee']);
         sendSuccess([], 'Employee deleted successfully');
     }
