@@ -176,16 +176,18 @@ CREATE TABLE IF NOT EXISTS reviews (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Admin audit log
-CREATE TABLE IF NOT EXISTS admin_audit (
+CREATE TABLE IF NOT EXISTS audit_logs (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    admin_user_id BIGINT UNSIGNED,
-    action VARCHAR(255) NOT NULL,
-    target_type VARCHAR(120),
-    target_id BIGINT UNSIGNED,
-    metadata JSON,
+    action VARCHAR(80) NOT NULL,
+    entity_type VARCHAR(120),
+    entity_id BIGINT UNSIGNED,
+    user_id BIGINT UNSIGNED,
+    details JSON,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX (admin_user_id),
-    CONSTRAINT fk_audit_admin FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE SET NULL
+    INDEX (user_id),
+    INDEX (entity_type),
+    INDEX (created_at),
+    CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Useful indexes

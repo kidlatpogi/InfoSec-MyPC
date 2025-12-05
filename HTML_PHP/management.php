@@ -429,7 +429,7 @@ try {
         $target_user_id = $_GET['user_id'] ?? $user_id;
         
         // Users can only fetch their own addresses unless admin/superadmin
-        if ($target_user_id != $user_id && !$current_user['is_admin']) {
+        if ($target_user_id != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -450,7 +450,7 @@ try {
         $target_user_id = $_POST['user_id'] ?? $user_id;
         
         // Users can only add addresses for themselves unless admin/superadmin
-        if ($target_user_id != $user_id && !$current_user['is_admin']) {
+        if ($target_user_id != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -494,7 +494,7 @@ try {
             sendError('Address not found', 404);
         }
         
-        if ($address['user_id'] != $user_id && !$current_user['is_admin']) {
+        if ($address['user_id'] != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -561,7 +561,7 @@ try {
             sendError('Address not found', 404);
         }
         
-        if ($address['user_id'] != $user_id && !$current_user['is_admin']) {
+        if ($address['user_id'] != $user_id && !in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -574,7 +574,7 @@ try {
     // ========================================
     
     elseif ($action === 'getAuditLogs') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized: Only admins can view audit logs', 403);
         }
         
@@ -599,7 +599,7 @@ try {
     
     // Get all products (for dashboards)
     elseif ($action === 'getProducts') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -625,7 +625,7 @@ try {
     
     // Create new product
     elseif ($action === 'createProduct') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -672,7 +672,7 @@ try {
     
     // Update product
     elseif ($action === 'updateProduct') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -718,7 +718,7 @@ try {
 
     // Update variant stock
     elseif ($action === 'updateVariantStock') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -763,7 +763,7 @@ try {
     
     // Delete product
     elseif ($action === 'deleteProduct') {
-        if (!$current_user['is_admin']) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
         }
         
