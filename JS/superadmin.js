@@ -284,11 +284,12 @@ async function loadAdmins() {
         data.admins.forEach(admin => {
             const row = document.createElement('tr');
             const createdDate = new Date(admin.created_at).toLocaleDateString();
+            const roleColor = admin.role === 'superadmin' ? '#8b5cf6' : '#3b82f6';
             row.innerHTML = `
                 <td>${admin.id}</td>
                 <td>${admin.email}</td>
                 <td>${admin.full_name || 'N/A'}</td>
-                <td><span class="badge" style="background:${admin.status === 'active' ? '#10b981' : '#ef4444'}">${admin.status}</span></td>
+                <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
                 <td>${createdDate}</td>
                 <td>
                     <button class="btn btn-sm" onclick="editAdmin(${admin.id}, '${admin.email}')">Edit</button>

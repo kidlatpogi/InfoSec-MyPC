@@ -45,7 +45,8 @@ try {
         
         $admins = $db->fetchAll(
             "SELECT id, email, full_name, phone, role, created_at 
-             FROM users WHERE role IN ('admin', 'superadmin') ORDER BY created_at DESC"
+             FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
+            [$user_id]
         );
         
         sendSuccess(['admins' => $admins]);
