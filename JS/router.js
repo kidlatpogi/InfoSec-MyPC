@@ -198,6 +198,17 @@ class Router {
             }, 100);
         }
 
+        // Load checkout script for checkout page
+        if (page === 'checkout') {
+            setTimeout(() => {
+                const checkoutScript = document.createElement('script');
+                checkoutScript.src = this.baseRoot + '/JS/checkout.js?v=' + Date.now();
+                checkoutScript.dataset.page = page;
+                checkoutScript.defer = false;
+                document.body.appendChild(checkoutScript);
+            }, 100);
+        }
+
         // Load admin script for admin page
         if (page === 'admin') {
             setTimeout(() => {
