@@ -4,7 +4,7 @@
     -- CATEGORIES INSERT
     -- =====================================================
 
-    INSERT INTO `categories` (`name`, `slug`, `description`) VALUES
+    INSERT IGNORE INTO `categories` (`name`, `slug`, `description`) VALUES
     ('Processors', 'processors', 'CPUs and processors for desktop computers'),
     ('Graphics Cards', 'graphics-cards', 'GPUs and graphics cards'),
     ('Memory', 'memory', 'RAM and memory modules'),
@@ -18,7 +18,7 @@
     -- AMD CPU PRODUCTS (10 items, IDs 1-10)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (1, 'CPU-AMD-R5-7600', 'AMD Ryzen 5 7600', 'amd-ryzen-5-7600', '6-core / 12-thread Zen 4 desktop processor', '6-core / 12-thread Zen 4 desktop processor, 3.8 GHz base, 5.1 GHz boost, 6 MB L2 + 32 MB L3, 65 W TDP, AM5 socket. Native DDR5-5200 support and integrated Radeon Graphics deliver smooth 1080p gaming and snappy everyday performance without a discrete card. Ships as boxed (with Wraith Stealth cooler) or OEM/tray.', 1),
     (1, 'CPU-AMD-R5-7600X', 'AMD Ryzen 5 7600X', 'amd-ryzen-5-7600x', 'Unlocked 6C/12T Zen 4 flagship', 'Unlocked 6C/12T Zen 4 flagship, 4.7 GHz base, 5.3 GHz boost, 6 MB L2 + 32 MB L3, 105 W. Higher power headroom pushes frame rates further for competitive gaming and brisk content creation. AM5 platform, DDR5-5200, PCIe 5.0 ready; cooler not included.', 1),
     (1, 'CPU-AMD-R5-9600X', 'AMD Ryzen 5 9600X', 'amd-ryzen-5-9600x', 'Next-gen 6C/12T Zen 5 chip', 'Next-gen 6C/12T Zen 5 chip built on 4 nm, 3.9 GHz base, up to 5.4 GHz boost, 6 MB L2 + 32 MB L3, 65 W. Faster IPC plus DDR5-5600 and RDNA 2-based graphics give creators and gamers a future-proof AM5 upgrade path.', 1),
@@ -31,7 +31,7 @@
     (1, 'CPU-AMD-R9-9950X', 'AMD Ryzen 9 9950X', 'amd-ryzen-9-9950x', 'Pure-speed 16C/32T Zen 5 flagship', 'Pure-speed 16C/32T Zen 5 flagship minus vertical cache, 4.3 GHz base, 5.7 GHz boost, 16 MB L2 + 64 MB L3, 170 W. Higher sustained clocks excel in heavily threaded tasks like rendering and compilation; cooler sold separately.', 1);
 
     -- AMD CPU Variants (Boxed with cooler vs OEM tray)
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (1, 'CPU-AMD-R5-7600-BOX', 'Boxed with Cooler', 14995.00, 15),
     (1, 'CPU-AMD-R5-7600-OEM', 'OEM (Tray)', 13795.00, 10),
     (2, 'CPU-AMD-R5-7600X-BOX', 'Boxed with Cooler', 16495.00, 15),
@@ -54,7 +54,7 @@
     (10, 'CPU-AMD-R9-9950X-OEM', 'OEM (Tray)', 44795.00, 3);
 
 -- Product Images for AMD CPUs
-INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
 (1, '/assets/AMD CPU/AMD RYZEN 5 7600.webp', 'AMD Ryzen 5 7600', 0),
 (2, '/assets/AMD CPU/AMD RYZEN 5 7600X.jpg', 'AMD Ryzen 5 7600X', 0),
 (3, '/assets/AMD CPU/AMD RYZEN 5 9600 X.jpg', 'AMD Ryzen 5 9600X', 0),
@@ -68,7 +68,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- AMD GPU PRODUCTS (10 items, IDs 11-20)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (2, 'GPU-RX-6600XT', 'AMD Radeon RX 6600 XT', 'amd-radeon-rx-6600xt', 'RDNA 2 2048-SP card with 8GB GDDR6', 'RDNA 2 2048-SP card, 1968 MHz game / 2589 MHz boost, 8 GB GDDR6 on 128-bit bus, 160 W TDP, PCIe 4.0. 1080p ultra gaming with Smart Access Memory, AV1 decode, HDMI 2.1 & DP 1.4a outputs. Fits most ITX builds.', 1),
     (2, 'GPU-RX-6650XT', 'AMD Radeon RX 6650 XT', 'amd-radeon-rx-6650xt', 'Factory-binned RDNA 2 refresh', 'Factory-binned RDNA 2 2048-SP refresh, 2055 MHz game / 2635 MHz boost, 8 GB GDDR6 at 17.5 Gbps, 180 W. Faster memory + clocks give 5-10 % lift versus RX 6600 XT while staying on 128-bit bus; ideal for high-refresh 1080p.', 1),
     (2, 'GPU-RX-6700XT', 'AMD Radeon RX 6700 XT', 'amd-radeon-rx-6700xt', 'RDNA 2 2560-SP 1440p card', 'RDNA 2 2560-SP 1440p card, 2321 MHz game / 2581 MHz boost, 12 GB GDDR6 on 192-bit + 96 MB Infinity Cache, 230 W. Handles maxed 1440p or entry 4K; supports ray tracing, FSR, and USB-C output on premium boards.', 1),
@@ -81,7 +81,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (2, 'GPU-RX-9070XT', 'AMD Radeon RX 9070 XT', 'amd-radeon-rx-9070xt', 'Factory-overclocked RDNA 4 flagship', 'Factory-overclocked RDNA 4 4608-SP flagship, 2500 MHz game / 2850 MHz boost, 16 GB GDDR7 at 24 Gbps, 250 W. 15 % faster than RX 7900 XTX while drawing ~100 W less; HDMI 2.2 ready, USB-C 4K144 output.', 1);
 
     -- AMD GPU Variants (Reference, Dual-Fan, Triple-Fan)
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (11, 'GPU-RX-6600XT-REF', 'Reference', 16995.00, 10),
     (11, 'GPU-RX-6600XT-DUAL', 'Dual-Fan', 17495.00, 8),
     (11, 'GPU-RX-6600XT-TRIPLE', 'Triple-Fan', 18195.00, 4),
@@ -114,7 +114,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (20, 'GPU-RX-9070XT-TRIPLE', 'Triple-Fan', 47195.00, 2);
 
 -- Product Images for AMD GPUs
-INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
 (11, '/assets/AMD GPU/AMD RADEON RX 6600 XT.webp', 'AMD Radeon RX 6600 XT', 0),
 (12, '/assets/AMD GPU/AMD RADEON RX 6650 XT.webp', 'AMD Radeon RX 6650 XT', 0),
 (13, '/assets/AMD GPU/AMD RADEON RX 6700 XT.webp', 'AMD Radeon RX 6700 XT', 0),
@@ -128,7 +128,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- MOTHERBOARD PRODUCTS (10 items, IDs 21-30)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (5, 'MB-AORUS-X670-ELITE-AX', 'AORUS X670 ELITE AX', 'aorus-x670-elite-ax', 'AM5 ATX board for Ryzen 7000/8000 CPUs', 'AM5 ATX board for Ryzen 7000/8000 CPUs, 16+2+2 70 A VRM, DDR5-6600+ (4 slots, 128 GB), PCIe 5.0 x16 & x4, 4×M.2 (1 PCIe 5), 2.5 GbE + Wi-Fi 6E + BT 5.3, USB-C 20 Gbps, Q-Flash Plus. Solid mid-range foundation with RGB Fusion 2.0.', 1),
     (5, 'MB-ASRock-B550-PHANTOM-GAMING-4-AC', 'ASRock B550 Phantom Gaming 4 AC', 'asrock-b550-phantom-gaming-4-ac', 'AM4 ATX, 8-phase VRM', 'AM4 ATX, 8-phase VRM, PCIe 4.0 x16, DDR4-4733+ (4×32 GB), 2×M.2 (1 PCIe 4), 2.5 GbE + 802.11ac + BT 4.2, USB-C 10 Gbps. Entry-level gaming board with Polychrome SYNC and M.2 heatsink.', 1),
     (5, 'MB-ASRock-B650M-HDV-M2', 'ASRock B650M HDV M.2', 'asrock-b650m-hdv-m2', 'AM5 micro-ATX, 8-layer PCB', 'AM5 micro-ATX, 8-layer PCB, 8-phase 50 A VRM, DDR5-6400 (2 slots, 96 GB), PCIe 4.0 x16, 2×M.2 (PCIe 5 & 4), 2.5 GbE, Wi-Fi 6E optional via M.2 Key-E. Budget builder friendly with EZ M.2 latch.', 1),
@@ -141,7 +141,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (5, 'MB-ROG-STRIX-X670E-GAMING-WIFI', 'ROG STRIX X670E GAMING WIFI', 'rog-strix-x670e-gaming-wifi', 'Flagship AM5 ROG ATX', 'Flagship AM5 ROG ATX, 18+2 110 A VRM, DDR5-8000+ (128 GB), PCIe 5.0 x16 & x4, 4×M.2 (2 PCIe 5 with heatsinks), 10 GbE + Wi-Fi 6E, USB4 40 Gbps front & rear. Polymo lighting, ROG Gen-Z.2 card, AI Overclocking, and SupremeFX ALC4082 audio.', 1);
 
     -- Motherboard Variants (None needed for first variant)
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (21, 'MB-AORUS-X670-ELITE-AX-STD', 'Standard', 18995.00, 12),
     (22, 'MB-ASRock-B550-PHANTOM-4AC-STD', 'Standard', 7495.00, 18),
     (23, 'MB-ASRock-B650M-HDV-M2-STD', 'Standard', 8995.00, 15),
@@ -154,7 +154,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (30, 'MB-ROG-STRIX-X670E-GAMING-STD', 'Standard', 27995.00, 6);
 
     -- Product Images for Motherboards
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (21, '/assets/AMD Motherboard/AORUS X670 ELITE AX.png', 'AORUS X670 ELITE AX', 0),
     (22, '/assets/AMD Motherboard/ASROCK B550 PHANTOM GAMING 4_AC.webp', 'ASRock B550 Phantom Gaming 4 AC', 0),
     (23, '/assets/AMD Motherboard/ASUS CROSSHAIR X670E-E.jpg', 'ASUS ROG Crosshair X670E-E', 0),
@@ -170,7 +170,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- CASE PRODUCTS (15 items, IDs 31-45)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (7, 'CASE-TT-TOWER-300', 'Thermaltake Tower 300', 'tt-tower-300', 'Mini-ITX / micro-ATX vertical “chimney” tower', 'Mini-ITX / micro-ATX vertical “chimney” tower, 3× 120 mm ARGB fans pre-installed, 280 mm rad top, 365 mm GPU clearance, hot-swap 3.5” sled, tempered-glass front & side. Rotatable motherboard tray shows off GPU or CPU side at will.', 1),
     (7, 'CASE-PHANTEKS-ECLIPSE-G400A', 'Phanteks Eclipse G400A', 'phanteks-eclipse-g400a', 'Mid-tower ATX airflow specialist', 'Mid-tower ATX airflow specialist, mesh front, 2× 140 mm Skiron fans included, supports 360 mm front / 280 mm top radiators, 390 mm GPUs, built-in PWM fan hub. Tool-less tempered-glass side, PSU shroud, 34 mm cable space.', 1),
     (7, 'CASE-NZXT-H7-FLOW', 'NZXT H7 Flow', 'nzxt-h7-flow', 'Clean ATX airflow chassis', 'Clean ATX airflow chassis, perforated top & front, 2× 120 mm fans, fits 360 mm side / 360 mm top AIO, 381 mm GPU, 165 mm CPU cooler. Removable radiator bracket, pre-installed vertical GPU kit, USB-C 3.2 Gen 2 front.', 1),
@@ -188,7 +188,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (7, 'CASE-ANTEC-C5-ARGB', 'Antec C5 ARGB', 'antec-c5-argb', 'Budget ATX airflow', 'Budget ATX airflow, mesh front, 3× 120 mm ARGB fans pre-installed, 280 mm front / 240 mm top rad, 350 mm GPU, 160 mm tower. Full-length PSU shroud, magnetic tempered-glass side, ARGB sync button front I/O.', 1);
 
     -- Case Variants
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (31, 'CASE-TT-TOWER-300-BLK', 'Black', 4995.00, 8),
     (31, 'CASE-TT-TOWER-300-SNW', 'Snow', 4995.00, 6),
     (31, 'CASE-TT-TOWER-300-TRQ', 'Turquoise', 4995.00, 4),
@@ -223,7 +223,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (45, 'CASE-ANTEC-C5-WHT', 'White', 2995.00, 10);
 
     -- Case Images
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (31, '/assets/CASE/Thermaltake The Tower 300 Micro Tower Chassis.jpg', 'Thermaltake Tower 300', 0),
     (32, '/assets/CASE/Phanteks Eclipse G400A ATX_.webp', 'Phanteks Eclipse G400A', 0),
     (33, '/assets/CASE/NZXT H7 Flow.webp', 'NZXT H7 Flow', 0),
@@ -244,7 +244,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- CPU COOLER PRODUCTS (10 items, IDs 46-55)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (8, 'COOL-THERMALRIGHT-PA120-SE', 'Thermalright Peerless Assassin 120 SE', 'thermalright-pa120-se', 'Dual-tower 120 mm SE edition', 'Dual-tower 120 mm SE edition, 6 heat-pipes, 2× TL-C12C PWM fans (1550 rpm, 25 dB), 165 mm height, 245 W TDP rating. Easy clip mounting for Intel 1700/AMD AM5; top-tier value for Ryzen 7 & i7 builds.', 1),
     (8, 'COOL-NOCTUA-NH-D15-G2', 'Noctua NH-D15 G2', 'noctua-nh-d15-g2', '2nd-gen flagship dual-tower', '2nd-gen flagship dual-tower, 8 heat-pipes, offset asymmetry for 100 % PCIe clearance, 2× NF-A14x25 G2 140 mm fans, 159 mm height, 280 W TDP. SecuFirm2+ for AM5/LGA1700, NT-H2 paste, 6-year warranty.', 1),
     (8, 'COOL-NOCTUA-NH-D15', 'Noctua NH-D15', 'noctua-nh-d15', 'Legendary dual-tower classic', 'Legendary dual-tower classic, 6 heat-pipes, 2× NF-A15 140 mm PWM fans, 165 mm height, 250 W TDP. Whisper-quiet 24.6 dB(A), broad socket support (Intel 1700/AMD AM5), premium build and 6-year warranty.', 1),
@@ -257,7 +257,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (8, 'COOL-ARCTIC-LIQUID-FREEZER-III', 'Arctic Liquid Freezer III', 'arctic-liquid-freezer-iii', 'Rev. 3 AIO with thicker 38 mm radiator', 'Rev. 3 AIO with thicker 38 mm radiator, VRM fan on pump block, 2×/3× P14 PWM PST A-RGB, 300 W TDP. Sleeved tubing, integrated cable management, compatible with Intel 1700/AMD AM5, 6-year warranty.', 1);
 
     -- Cooler Variants
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (46, 'COOL-PA120-SE-BLK', 'Black', 2195.00, 20),
     (46, 'COOL-PA120-SE-WHT', 'White', 2195.00, 10),
     (47, 'COOL-NHD15-G2-BLK', 'Black', 6995.00, 5),
@@ -279,7 +279,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (55, 'COOL-ARCTIC-360', '360 mm', 6295.00, 4);
 
     -- Cooler Images
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (46, '/assets/CPU Coolers/Thermalright Peerless Assassin 120 SE CPU Air Cooler.webp', 'Thermalright Peerless Assassin 120 SE', 0),
     (47, '/assets/CPU Coolers/Noctua NH-D15 G2 CPU air cooler.webp', 'Noctua NH-D15 G2', 0),
     (48, '/assets/CPU Coolers/Noctua NH-D15 CPU cooler.jpg', 'Noctua NH-D15', 0),
@@ -295,7 +295,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- DDR4 MEMORY PRODUCTS (10 items, IDs 56-65)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (3, 'RAM-SAMSUNG-SODIMM-DDR4', 'Samsung SODIMM DDR4', 'samsung-sodimm-ddr4', 'JEDEC-standard 1.2 V DDR4-3200 CL22 SODIMM', 'JEDEC-standard 1.2 V DDR4-3200 CL22 SODIMM for laptops & mini-PCs; strict binning gives rock-solid stability and low power draw.', 1),
     (3, 'RAM-MUSHKIN-REDLINE-SODIMM-DDR4', 'Mushkin Redline SODIMM DDR4', 'mushkin-redline-sodimm-ddr4', 'Performance DDR4-3200 CL16 SODIMM', 'Performance DDR4-3200 CL16 SODIMM with red aluminium spreader; hand-tested chips deliver plug-and-play speed boost for gaming notebooks.', 1),
     (3, 'RAM-LEXAR-THOR-DDR4-UDIMM', 'Lexar Thor DDR4 UDIMM', 'lexar-thor-ddr4-udimm', 'Desktop DDR4-3600 CL18', 'Desktop DDR4-3600 CL18, wing-bolt heat-spreader, low-profile 34 mm height; XMP 2.0 one-click OC, compatible with Ryzen & Intel DDR4 boards.', 1),
@@ -308,7 +308,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (3, 'RAM-CORSAIR-VENGEANCE-LPX-DDR4', 'Corsair Vengeance LPX DDR4', 'corsair-vengeance-lpx-ddr4', 'Low-profile 34 mm DDR4-2133–5000', 'Low-profile 34 mm DDR4-2133–5000, pure aluminium spreader, XMP 2.0; hand-sorted ICs, wide compatibility, lifetime Corsair support.', 1);
 
     -- DDR4 Variants
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (56, 'RAM-SAM-DDR4-8G', '8 GB', 1795.00, 20),
     (56, 'RAM-SAM-DDR4-16G', '16 GB', 2595.00, 20),
     (57, 'RAM-MUSHKIN-16K', '16 GB kit (2×8)', 1895.00, 15),
@@ -345,7 +345,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (65, 'RAM-CORSAIR-128K', '128 GB kit', 8049.00, 2);
 
     -- DDR4 Images
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (56, '/assets/DDR4/SAMSUNG SODIMM DDR4_.webp', 'Samsung SODIMM DDR4', 0),
     (57, '/assets/DDR4/MUSHKIN ENHANCED REDLINE SODIMM DDR4.jpg', 'Mushkin Redline SODIMM DDR4', 0),
     (58, '/assets/DDR4/Lexar THOR DDR4 UDIMM_.webp', 'Lexar Thor DDR4 UDIMM', 0),
@@ -361,7 +361,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- DDR5 MEMORY PRODUCTS (10 items, IDs 66-75)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (3, 'RAM-TEAM-DELTA-RGB-DDR5', 'Team T-Force Delta RGB DDR5', 'team-delta-rgb-ddr5', '120° ARGB light-bar DDR5-5600–7200', '120° ARGB light-bar DDR5-5600–7200, on-die ECC, PMIC power, XMP 3.0; aluminium heat-sink, lifetime warranty, motherboard sync ready.', 1),
     (3, 'RAM-PATRIOT-VIPER-VENOM-DDR5', 'Patriot Viper Venom DDR5', 'patriot-viper-venom-ddr5', 'Viper DDR5-5200–7400 CL30-36', 'Viper DDR5-5200–7400 CL30-36, forged heat-spreader, RGB top strip; on-die ECC, XMP 3.0, lifetime coverage, Intel & AMD certified.', 1),
     (3, 'RAM-LEXAR-ARES-RGB-DDR5', 'Lexar Ares RGB DDR5', 'lexar-ares-rgb-ddr5', 'DDR5-5600–6400 with mirrored RGB bar', 'DDR5-5600–6400 with mirrored RGB bar, aluminium heat-sink, PMIC & ECC inside; XMP 3.0 one-click, lifetime service, 1.25 V–1.35 V.', 1),
@@ -374,7 +374,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (3, 'RAM-ADATA-XPG-LANCER-RGB-DDR5', 'ADATA XPG Lancer RGB DDR5', 'adata-xpg-lancer-rgb-ddr5', 'XPG DDR5-5200–7200 CL36-40', 'XPG DDR5-5200–7200 CL36-40, sleek geometric RGB diffuser, PMIC & ECC, XMP 3.0 ready; aluminium heat-sink, lifetime ADATA warranty.', 1);
 
     -- DDR5 Variants
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (66, 'RAM-TEAM-16K', '16 GB kit', 3995.00, 15),
     (66, 'RAM-TEAM-32K', '32 GB kit', 5595.00, 8),
     (66, 'RAM-TEAM-64K', '64 GB kit', 7195.00, 3),
@@ -410,7 +410,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (75, 'RAM-ADATA-64K', '64 GB kit', 6949.00, 4);
 
     -- DDR5 Images
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (66, '/assets/DDR5/TeamGroup T-Force Delta RGB DDR5.webp', 'Team T-Force Delta RGB DDR5', 0),
     (67, '/assets/DDR5/Patriot Viper Venom DDR5.jpg', 'Patriot Viper Venom DDR5', 0),
     (68, '/assets/DDR5/LEXAR ARES RGB DDR5.webp', 'Lexar Ares RGB DDR5', 0),
@@ -426,7 +426,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- HDD PRODUCTS (10 items, IDs 76-85)
     -- =====================================================
 
-    INSERT INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (4, 'HDD-WD-RED-PRO-20TB', 'WD Red Pro 20TB', 'wd-red-pro-20tb', 'NAS-optimized 7200 rpm CMR drive', 'NAS-optimized 7200 rpm CMR drive, 512 MB cache, 300 TB/year workload, 1 M-hr MTBF, 5-year warranty; NASware 3.0, 3.5-inch SATA 6 Gb/s.', 1),
     (4, 'HDD-WD-GOLD-22TB', 'WD Gold 22TB', 'wd-gold-22tb', 'Enterprise-class 7200 rpm', 'Enterprise-class 7200 rpm, 512 MB cache, 550 TB/year workload, 2.5 M-hr MTBF, 5-year warranty; vibration protection, 24×7 duty, SATA 6 Gb/s.', 1),
     (4, 'HDD-WD-BLUE-8TB', 'WD Blue 8TB', 'wd-blue-8tb', 'Mainstream 5400 rpm CMR drive', 'Mainstream 5400 rpm CMR drive, 256 MB cache, 180 TB/year rating, 2-year warranty; everyday storage, SATA 6 Gb/s, 3.5-inch form factor.', 1),
@@ -439,7 +439,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (4, 'HDD-WD-BLACK-8TB', 'WD Black 8TB', 'wd-black-8tb', 'Performance 7200 rpm', 'Performance 7200 rpm, 256 MB cache, 180 TB/year, 5-year warranty; dual-core processor, dual-stage actuator, SATA 6 Gb/s, 3.5-inch.', 1);
 
     -- HDD Variants
-    INSERT INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
     (76, 'HDD-WD-RED-STD', 'Standard', 29995.00, 12),
     (77, 'HDD-WD-GOLD-STD', 'Standard', 34995.00, 8),
     (78, 'HDD-WD-BLUE-STD', 'Standard', 9995.00, 25),
@@ -452,7 +452,7 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (85, 'HDD-WD-BLACK-STD', 'Standard', 15995.00, 20);
 
     -- HDD Images
-    INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (76, '/assets/HDD/Western Digital (WD) Red Pro 20TB NAS_.webp', 'WD Red Pro 20TB', 0),
     (77, '/assets/HDD/Western Digital (WD) Gold 22TB.webp', 'WD Gold 22TB', 0),
     (78, '/assets/HDD/Western Digital (WD) Blue 8TB.webp', 'WD Blue 8TB', 0),
@@ -468,5 +468,5 @@ INSERT INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     -- USERS TABLE - Add Superadmin Account
     -- =====================================================
 
-    INSERT INTO `users` (`email`, `password_hash`, `full_name`, `is_admin`) VALUES
+    INSERT IGNORE INTO `users` (`email`, `password_hash`, `full_name`, `is_admin`) VALUES
     ('superadmin@mypc.com', '$2y$10$tFnX.sMLCSnfYNeNyX0rseDx3MGiZPHOp1zxltMFsGnny/RvL5lVS', 'Super Administrator', 1);
