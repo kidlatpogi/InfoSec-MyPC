@@ -457,7 +457,25 @@ async function renderCartItems() {
     if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
         itemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Your cart is empty</p>';
         if (totalEl) totalEl.textContent = formatPHP(0);
+        
+        // Disable checkout button when cart is empty
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.opacity = '0.5';
+            checkoutBtn.style.cursor = 'not-allowed';
+            checkoutBtn.title = 'Add items to cart to proceed';
+        }
         return;
+    }
+
+    // Enable checkout button when cart has items
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = '1';
+        checkoutBtn.style.cursor = 'pointer';
+        checkoutBtn.title = '';
     }
 
     window.CART_DATA.items.forEach((item) => {
@@ -870,6 +888,10 @@ async function initializePageScript() {
 
     const checkout = document.getElementById("checkout-btn");
     if (checkout) checkout.addEventListener("click", () => {
+        if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
+            alert('Please add items to your cart before checkout');
+            return;
+        }
         closeCart();
         window.router.navigateTo("/checkout");
     });
