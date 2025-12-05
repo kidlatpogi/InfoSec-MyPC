@@ -456,17 +456,137 @@ async function loadOrders() {
 // ========================================
 
 function viewProduct(productId) {
-    alert(`View product ${productId} - Feature not yet implemented`);
+    ProductsAPI.getAllProducts()
+        .then(data => {
+            const product = data.products.find(p => p.id == productId);
+            if (!product) {
+                alert('Product not found');
+                return;
+            }
+
+            const viewModal = document.getElementById('product-view-modal');
+            const viewContent = document.getElementById('product-view-content');
+            const viewTitle = document.getElementById('product-view-title');
+
+            const variants = product.variants || [];
+            const variantsHTML = variants.length > 0
+                ? variants.map(v => `
+                    <div style="padding: 0.75rem; background: var(--surface); border-radius: 6px; margin-bottom: 0.5rem;">
+                        <strong>${v.title}</strong> - ${formatPHP(v.price)} (Stock: ${v.stock})
+                    </div>
+                `).join('')
+                : '<p style="color: var(--text-light);">No variants</p>';
+
+            viewContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3 style="margin-top: 0;">Product Information</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>ID:</strong> ${product.id}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Name:</strong> ${product.name || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Category:</strong> ${product.category_name || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Base Price:</strong> ${formatPHP(product.base_price || 0)}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>SKU:</strong> ${product.sku || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Created:</strong> ${new Date(product.created_at).toLocaleDateString() || 'N/A'}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0;">Variants (${variants.length})</h3>
+                        ${variantsHTML}
+                    </div>
+                </div>
+            `;
+
+            viewTitle.textContent = `Product Details: ${product.name}`;
+            viewModal.classList.add('open');
+        })
+        .catch(error => alert('Error loading product: ' + error.message));
 }
 
 function editProduct(productId) {
-    alert(`Edit product ${productId} - Feature not yet implemented`);
+    verifyPassword().then(verified => {
+        if (!verified) return;
+
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const modalTitle = document.getElementById('product-modal-title');
+
+        // Fetch the product data
+        ProductsAPI.getAllProducts()
+            .then(data => {
+                const product = data.products.find(p => p.id == productId);
+                if (!product) {
+                    alert('Product not found');
+                    return;
+                }
+
+                // Populate form
+                document.getElementById('product-title').value = product.name;
+                document.getElementById('product-category').value = product.category_name || '';
+                document.getElementById('product-price').value = product.base_price;
+                document.getElementById('product-variants').value = product.variants ? JSON.stringify(product.variants, null, 2) : '';
+
+                // Set modal title
+                modalTitle.textContent = `Edit Product: ${product.name}`;
+
+                // Show modal
+                productModal.classList.add('open');
+
+                // Handle form submission
+                productForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('product-title').value.trim();
+                    const category = document.getElementById('product-category').value.trim();
+                    const basePrice = parseFloat(document.getElementById('product-price').value);
+                    let variants = [];
+
+                    const variantsStr = document.getElementById('product-variants').value.trim();
+                    if (variantsStr) {
+                        try {
+                            variants = JSON.parse(variantsStr);
+                        } catch (e) {
+                            alert('Invalid JSON format for variants');
+                            return;
+                        }
+                    }
+
+                    try {
+                        await ProductsAPI.updateProduct(productId, name, category, basePrice, variants);
+                        alert('Product updated successfully');
+                        productModal.classList.remove('open');
+                        loadProducts();
+                    } catch (error) {
+                        alert('Error updating product: ' + error.message);
+                    }
+                };
+            })
+            .catch(error => alert('Error loading product: ' + error.message));
+    });
 }
 
-function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        alert(`Delete product ${productId} - Feature not yet implemented`);
-    }
+async function deleteProduct(productId) {
+    const verified = await verifyPassword();
+    if (!verified) return;
+
+    showConfirmDialog('Are you sure you want to delete this product? This action cannot be undone.', async () => {
+        try {
+            await ProductsAPI.deleteProduct(productId);
+            alert('Product deleted successfully');
+            loadProducts();
+        } catch (error) {
+            alert('Error deleting product: ' + error.message);
+        }
+    });
 }
 
 // ========================================
