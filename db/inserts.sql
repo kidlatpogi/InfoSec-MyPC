@@ -468,5 +468,5 @@ INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) V
     -- USERS TABLE - Add Superadmin Account
     -- =====================================================
 
-    INSERT IGNORE INTO `users` (`email`, `password_hash`, `full_name`, `is_admin`) VALUES
-    ('superadmin@mypc.com', '$2y$10$tFnX.sMLCSnfYNeNyX0rseDx3MGiZPHOp1zxltMFsGnny/RvL5lVS', 'Super Administrator', 1);
+    INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
+    ('superadmin@mypc.com', '$2y$10$tFnX.sMLCSnfYNeNyX0rseDx3MGiZPHOp1zxltMFsGnny/RvL5lVS', 'Super', 'Administrator', 'superadmin', 1);

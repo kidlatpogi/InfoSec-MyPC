@@ -91,22 +91,23 @@ try {
         
         // Insert user
         $user_id = $db->insert(
-            "INSERT INTO users (email, password_hash, full_name, phone, is_admin) 
-             VALUES (?, ?, ?, ?, 0)",
-            [$email, $password_hash, $full_name, $phone]
+            "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
+             VALUES (?, ?, ?, ?, ?, 'user', 0)",
+            [$email, $password_hash, $first_name, $last_name, $phone]
         );
         
         // Set session
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_email'] = $email;
-        $_SESSION['user_role'] = 'customer';
+        $_SESSION['user_role'] = 'user';
         
         sendSuccess([
             'user' => [
                 'id' => $user_id,
                 'email' => $email,
-                'full_name' => $full_name,
-                'role' => 'customer'
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'role' => 'user'
             ]
         ], 'Registration successful');
     }
@@ -130,7 +131,7 @@ try {
         
         // Get user from database
         $user = $db->fetchOne(
-            "SELECT id, email, password_hash, full_name, is_admin 
+            "SELECT id, email, password_hash, first_name, last_name, role, is_admin 
              FROM users WHERE email = ?",
             [$email]
         );
@@ -148,8 +149,8 @@ try {
             sendError('Invalid email or password', 401);
         }
         
-        // Determine role based on is_admin
-        $role = $user['is_admin'] ? 'admin' : 'customer';
+        // Determine role from database
+        $role = $user['role'] ?? ($user['is_admin'] ? 'admin' : 'user');
         
         // Set session
         $_SESSION['user_id'] = $user['id'];
@@ -160,7 +161,8 @@ try {
             'user' => [
                 'id' => $user['id'],
                 'email' => $user['email'],
-                'full_name' => $user['full_name'],
+                'first_name' => $user['first_name'],
+                'last_name' => $user['last_name'],
                 'role' => $role
             ]
         ], 'Login successful');
@@ -180,7 +182,7 @@ try {
         
         $user_id = $_SESSION['user_id'];
         $user = $db->fetchOne(
-            "SELECT id, email, full_name, is_admin, phone 
+            "SELECT id, email, first_name, last_name, role, is_admin, phone 
              FROM users WHERE id = ?",
             [$user_id]
         );
@@ -189,7 +191,7 @@ try {
             sendError('User not found', 404);
         }
         
-        $user['role'] = $user['is_admin'] ? 'admin' : 'customer';
+        $user['role'] = $user['role'] ?? ($user['is_admin'] ? 'admin' : 'user');
         
         sendSuccess(['user' => $user]);
     }
@@ -205,7 +207,6 @@ try {
         // Get input data
         $first_name = isset($_POST['first_name']) ? sanitizeInput($_POST['first_name']) : null;
         $last_name = isset($_POST['last_name']) ? sanitizeInput($_POST['last_name']) : null;
-        $full_name = ($first_name && $last_name) ? $first_name . ' ' . $last_name : null;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : null;
         $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
@@ -239,9 +240,14 @@ try {
         $updates = [];
         $params = [];
         
-        if ($full_name !== null) {
-            $updates[] = 'full_name = ?';
-            $params[] = $full_name;
+        if ($first_name !== null) {
+            $updates[] = 'first_name = ?';
+            $params[] = $first_name;
+        }
+        
+        if ($last_name !== null) {
+            $updates[] = 'last_name = ?';
+            $params[] = $last_name;
         }
         
         if ($phone !== null) {
@@ -264,7 +270,7 @@ try {
         
         // Return updated user data
         $updated_user = $db->fetchOne(
-            "SELECT id, email, first_name, last_name, role, phone, status 
+            "SELECT id, email, first_name, last_name, role, phone 
              FROM users WHERE id = ?",
             [$user_id]
         );

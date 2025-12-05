@@ -262,8 +262,8 @@ async function loadUsers() {
             row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.email}</td>
-                <td>${user.full_name || 'N/A'}</td>
-                <td><span class="badge" style="background:${user.status === 'active' ? '#10b981' : '#ef4444'}">${user.status || 'active'}</span></td>
+                <td>${user.first_name} ${user.last_name}</td>
+                <td><span class="badge" style="background:#3b82f6">${user.role || 'user'}</span></td>
                 <td>${createdDate}</td>
                 <td>
                     <button class="btn btn-sm" onclick="editUser(${user.id})">Edit</button>
@@ -297,8 +297,8 @@ async function loadEmployees() {
             row.innerHTML = `
                 <td>${emp.id}</td>
                 <td>${emp.email}</td>
-                <td>${emp.full_name || 'N/A'}</td>
-                <td><span class="badge" style="background:${emp.status === 'active' ? '#10b981' : '#ef4444'}">${emp.status || 'active'}</span></td>
+                <td>${emp.first_name} ${emp.last_name}</td>
+                <td><span class="badge" style="background:#f59e0b">${emp.role || 'employee'}</span></td>
                 <td>${createdDate}</td>
                 <td>
                     <button class="btn btn-sm" onclick="editEmployee(${emp.id})">Edit</button>
