@@ -1,0 +1,211 @@
+
+# 🛒 Shopping Cart System - Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          CUSTOMER DASHBOARD                              │
+│                         (Customer Role Only)                             │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           PRODUCT BROWSING                               │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐     │
+│  │   Product Card   │  │   Product Card   │  │   Product Card   │     │
+│  │   [Image]        │  │   [Image]        │  │   [Image]        │     │
+│  │   AMD Ryzen 5    │  │   Intel i7       │  │   NVIDIA RTX     │     │
+│  │   ₱13,795        │  │   ₱18,295        │  │   ₱25,000        │     │
+│  │   [Variant ▼]    │  │   [Variant ▼]    │  │   [Variant ▼]    │     │
+│  │   [Qty: 1]       │  │   [Qty: 2]       │  │   [Qty: 1]       │     │
+│  │   [Add to Cart]  │  │   [Add to Cart]  │  │   [Add to Cart]  │     │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                     Click "Add to Cart" Button
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        CART API (cart.php)                               │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │ 1. Verify user is logged in (session check)                    │    │
+│  │ 2. Validate product ID and variant ID                          │    │
+│  │ 3. Check stock availability                                    │    │
+│  │ 4. Get or create cart for user                                 │    │
+│  │ 5. Check if item already in cart                               │    │
+│  │    ├─ Yes → Update quantity (existing + new)                   │    │
+│  │    └─ No  → Insert new cart item                               │    │
+│  │ 6. Return success response                                     │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                       Success Response ✅
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     REAL-TIME CART UPDATE                                │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │ • loadCartFromBackend() - Fetch latest cart data              │    │
+│  │ • updateCartCount() - Update badge number                     │    │
+│  │ • Visual feedback: "✓ Added!" (green button, 1.5 sec)         │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        HEADER NAVIGATION                                 │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │  [MyPC]  [Shop]              [Cart 4]  [Profile]  [Logout]    │    │
+│  │                               └─┬─┘                             │    │
+│  │                                 │                               │    │
+│  │                     Cart Badge (Real-time Count)               │    │
+│  │                     Shows: 4 (total quantity)                  │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                        Click "Cart" Button
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         CART DRAWER (Slide-in)                          │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │ [×]                    Your Cart                               │    │
+│  │ ────────────────────────────────────────────────────────────── │    │
+│  │                                                                 │    │
+│  │ ┌─────────────────────────────────────────────────────────┐   │    │
+│  │ │ [Image] AMD Ryzen 5 7600X (OEM Tray)                    │   │    │
+│  │ │         ₱13,795 × 1 = ₱13,795                            │   │    │
+│  │ │         [−] [1] [+]  [Remove]                            │   │    │
+│  │ └─────────────────────────────────────────────────────────┘   │    │
+│  │                                                                 │    │
+│  │ ┌─────────────────────────────────────────────────────────┐   │    │
+│  │ │ [Image] Intel i7 13700K (Boxed)                          │   │    │
+│  │ │         ₱18,295 × 2 = ₱36,590                            │   │    │
+│  │ │         [−] [2] [+]  [Remove]                            │   │    │
+│  │ └─────────────────────────────────────────────────────────┘   │    │
+│  │                                                                 │    │
+│  │ ┌─────────────────────────────────────────────────────────┐   │    │
+│  │ │ [Image] NVIDIA RTX 4060                                  │   │    │
+│  │ │         ₱25,000 × 1 = ₱25,000                            │   │    │
+│  │ │         [−] [1] [+]  [Remove]                            │   │    │
+│  │ └─────────────────────────────────────────────────────────┘   │    │
+│  │                                                                 │    │
+│  │ ────────────────────────────────────────────────────────────── │    │
+│  │ Total: ₱75,385                        [Checkout]            │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+             │                    │                    │
+       Click [+]            Click [−]            Click [Remove]
+             │                    │                    │
+             ▼                    ▼                    ▼
+    ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
+    │ Increase Qty   │  │ Decrease Qty   │  │ Confirmation   │
+    │ qty = qty + 1  │  │ qty = qty - 1  │  │ "Remove item?" │
+    │                │  │                │  │  [Yes] [No]    │
+    │ Update API →   │  │ If qty = 0:    │  │                │
+    │ Refresh Cart   │  │ Confirm Remove │  │ Delete API →   │
+    │ Update Total   │  │ Update API →   │  │ Refresh Cart   │
+    └────────────────┘  │ Refresh Cart   │  │ Update Total   │
+                        │ Update Total   │  └────────────────┘
+                        └────────────────┘
+                                    │
+                      All changes are INSTANT
+                      (No page reload needed)
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     DATABASE OPERATIONS                                  │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │ Tables:                                                         │    │
+│  │ • carts (id, user_id, created_at)                              │    │
+│  │ • cart_items (id, cart_id, product_id, variant_id, quantity)   │    │
+│  │ • product_variants (id, product_id, title, price, stock)       │    │
+│  │                                                                 │    │
+│  │ Operations:                                                     │    │
+│  │ • INSERT - Add new item to cart                                │    │
+│  │ • UPDATE - Change quantity                                     │    │
+│  │ • DELETE - Remove item                                         │    │
+│  │ • SELECT - Get cart with JOIN to products/variants             │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                        Click "Checkout" Button
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         CHECKOUT PAGE                                    │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │                      Order Summary                              │    │
+│  │ ────────────────────────────────────────────────────────────── │    │
+│  │ AMD Ryzen 5 7600X (OEM Tray) x 1        ₱13,795               │    │
+│  │ Intel i7 13700K (Boxed) x 2              ₱36,590               │    │
+│  │ NVIDIA RTX 4060 x 1                      ₱25,000               │    │
+│  │ ────────────────────────────────────────────────────────────── │    │
+│  │ Total:                                   ₱75,385               │    │
+│  │                                                                 │    │
+│  │                   Shipping Details                              │    │
+│  │ ────────────────────────────────────────────────────────────── │    │
+│  │ Full Name:     [John Doe            ]                          │    │
+│  │ Email:         [john@example.com    ]                          │    │
+│  │ Phone:         [+63 9xx xxx xxxx    ]                          │    │
+│  │ Address:       [123 Main Street     ]                          │    │
+│  │ City:          [Manila              ]  Postal: [1000]          │    │
+│  │                                                                 │    │
+│  │                   Payment Method                                │    │
+│  │ (•) Cash on Delivery                                            │    │
+│  │ ( ) Credit/Debit Card                                           │    │
+│  │ ( ) Bank Transfer                                               │    │
+│  │                                                                 │    │
+│  │                  [Complete Purchase]                            │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════
+                            ROLE-BASED ACCESS
+═══════════════════════════════════════════════════════════════════════════
+
+┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
+│   CUSTOMER         │  │   EMPLOYEE         │  │   ADMIN/SUPERADMIN │
+│                    │  │                    │  │                    │
+│ ✅ Cart visible    │  │ ❌ Cart hidden     │  │ ❌ Cart hidden     │
+│ ✅ Add to cart     │  │ ❌ No add button   │  │ ❌ No add button   │
+│ ✅ Can checkout    │  │ ❌ Cannot shop     │  │ ❌ Cannot shop     │
+│                    │  │                    │  │                    │
+│ Use case:          │  │ Use case:          │  │ Use case:          │
+│ • Shop products    │  │ • Manage inventory │  │ • Manage users     │
+│ • Buy items        │  │ • View products    │  │ • View orders      │
+│ • Track orders     │  │ • Help customers   │  │ • System admin     │
+└────────────────────┘  └────────────────────┘  └────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════
+                          KEY FEATURES SUMMARY
+═══════════════════════════════════════════════════════════════════════════
+
+✅ Add multiple products (unlimited)
+✅ Real-time cart count badge
+✅ Increase/decrease quantities
+✅ Remove items with confirmation
+✅ Cart total auto-calculation
+✅ Proceed to checkout
+✅ Customer-only access
+✅ Stock validation
+✅ Persistent cart (database-saved)
+✅ Mobile responsive
+✅ Beautiful UI with animations
+✅ Error handling
+✅ Security (XSS prevention, role checks)
+
+
+═══════════════════════════════════════════════════════════════════════════
+                        TECHNICAL STACK
+═══════════════════════════════════════════════════════════════════════════
+
+Frontend:           Backend:            Database:
+• JavaScript ES6    • PHP 7.x+          • MySQL
+• HTML5            • Session Auth       • carts table
+• CSS3             • REST API           • cart_items table
+• DOM API          • JSON responses     • product_variants
+
+Features:           Security:           Performance:
+• SPA routing      • XSS prevention     • Debounced search
+• Real-time updates• CSRF protection    • Optimized queries
+• Local storage    • Role checks        • Minimal redraws
+• Event delegation • Input validation   • Lazy loading
+```
