@@ -610,7 +610,7 @@ try {
     
     // Get all products (for dashboards)
     elseif ($action === 'getProducts') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -622,13 +622,31 @@ try {
              ORDER BY p.created_at DESC"
         );
         
-        // Get variants for each product
+        // Get variants and images for each product
         foreach ($products as &$product) {
             $variants = $db->fetchAll(
                 "SELECT id, title, price, stock FROM product_variants WHERE product_id = ?",
                 [$product['id']]
             );
             $product['variants'] = $variants;
+            
+            // Get product images
+            $images = $db->fetchAll(
+                "SELECT id, url, alt_text, `order` 
+                 FROM product_images 
+                 WHERE product_id = ? 
+                 ORDER BY `order` ASC LIMIT 1",
+                [$product['id']]
+            );
+            
+            // Convert image URLs to use image serving script
+            foreach ($images as &$img) {
+                $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+            }
+            unset($img);
+            
+            $product['images'] = $images;
+            $product['image_url'] = !empty($images) ? $images[0]['url'] : null;
         }
         
         sendSuccess(['products' => $products]);
@@ -636,7 +654,7 @@ try {
     
     // Create new product
     elseif ($action === 'createProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -683,7 +701,7 @@ try {
     
     // Update product
     elseif ($action === 'updateProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -729,7 +747,7 @@ try {
 
     // Update variant stock
     elseif ($action === 'updateVariantStock') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
             sendError('Unauthorized', 403);
         }
         
@@ -774,7 +792,7 @@ try {
     
     // Delete product
     elseif ($action === 'deleteProduct') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
             sendError('Unauthorized', 403);
         }
         

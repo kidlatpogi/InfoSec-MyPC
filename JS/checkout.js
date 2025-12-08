@@ -78,9 +78,14 @@ async function loadCheckoutItems() {
 
         if (!checkoutItemsEl) return;
 
+        console.log('[loadCheckoutItems] Before loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
+        
         await loadCartFromBackend();
+        
+        console.log('[loadCheckoutItems] After loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
 
-        if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
+        if (!window.CART_DATA || !window.CART_DATA.items || window.CART_DATA.items.length === 0) {
+            console.warn('[loadCheckoutItems] Cart is empty or not loaded');
             checkoutItemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#d32f2f;">Your cart is empty. Please add items before checking out.</p>';
             if (checkoutTotalEl) checkoutTotalEl.textContent = formatPHP(0);
             
@@ -94,6 +99,8 @@ async function loadCheckoutItems() {
             return;
         }
 
+        console.log('[loadCheckoutItems] Cart items to render:', window.CART_DATA.items);
+
         // Enable submit button if cart has items
         const submitBtn = document.querySelector('#checkout-form button[type="submit"]');
         if (submitBtn) {
@@ -104,16 +111,18 @@ async function loadCheckoutItems() {
 
         checkoutItemsEl.innerHTML = '';
         window.CART_DATA.items.forEach((item) => {
+            console.log('[loadCheckoutItems] Rendering item:', item);
             const itemDiv = document.createElement('div');
             itemDiv.className = 'summary-row';
             itemDiv.innerHTML = `
-                <span>${item.name}${item.variant_label ? ' (' + item.variant_label + ')' : ''} x ${item.quantity}</span>
+                <span>${item.name}${item.variant_title ? ' (' + item.variant_title + ')' : ''} x ${item.quantity}</span>
                 <span>${formatPHP(item.unit_price * item.quantity)}</span>
             `;
             checkoutItemsEl.appendChild(itemDiv);
         });
 
         if (checkoutTotalEl) {
+            console.log('[loadCheckoutItems] Setting total to:', window.CART_DATA.subtotal);
             checkoutTotalEl.textContent = formatPHP(window.CART_DATA.subtotal || 0);
         }
 
@@ -175,8 +184,16 @@ function initializeCheckoutForm() {
 // INITIALIZATION
 // ========================================
 
-document.addEventListener('DOMContentLoaded', () => {
+window.initCheckoutPage = async function() {
     console.log('[checkout.js] Initializing checkout page');
-    loadCheckoutData();
+    await loadCheckoutData();
     initializeCheckoutForm();
+};
+
+// Also support DOMContentLoaded for direct page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[checkout.js] DOMContentLoaded - calling initCheckoutPage');
+    if (window.initCheckoutPage) {
+        window.initCheckoutPage();
+    }
 });

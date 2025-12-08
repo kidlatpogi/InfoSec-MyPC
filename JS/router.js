@@ -205,6 +205,11 @@ class Router {
                 checkoutScript.src = this.baseRoot + '/JS/checkout.js?v=' + Date.now();
                 checkoutScript.dataset.page = page;
                 checkoutScript.defer = false;
+                checkoutScript.onload = () => {
+                    if (window.initCheckoutPage) {
+                        window.initCheckoutPage();
+                    }
+                };
                 document.body.appendChild(checkoutScript);
             }, 100);
         }

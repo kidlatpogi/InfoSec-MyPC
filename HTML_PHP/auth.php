@@ -207,14 +207,23 @@ try {
         // Get input data
         $first_name = isset($_POST['first_name']) ? sanitizeInput($_POST['first_name']) : null;
         $last_name = isset($_POST['last_name']) ? sanitizeInput($_POST['last_name']) : null;
+        $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : null;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
         $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : null;
         $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : null;
         
         // Get current user data
-        $user = $db->fetchOne("SELECT password_hash FROM users WHERE id = ?", [$user_id]);
+        $user = $db->fetchOne("SELECT password_hash, email FROM users WHERE id = ?", [$user_id]);
         if (!$user) {
             sendError('User not found', 404);
+        }
+        
+        // If email is being changed, check if it's already in use
+        if ($email !== null && $email !== $user['email']) {
+            $existing = $db->fetchOne("SELECT id FROM users WHERE email = ? AND id != ?", [$email, $user_id]);
+            if ($existing) {
+                sendError('Email is already in use by another account');
+            }
         }
         
         // If changing password, verify current password
@@ -248,6 +257,11 @@ try {
         if ($last_name !== null) {
             $updates[] = 'last_name = ?';
             $params[] = $last_name;
+        }
+        
+        if ($email !== null) {
+            $updates[] = 'email = ?';
+            $params[] = $email;
         }
         
         if ($phone !== null) {
@@ -315,6 +329,7 @@ try {
     
 } catch (Exception $e) {
     error_log("Auth API Error: " . $e->getMessage());
-    sendError('An error occurred. Please try again later.', 500);
+    error_log("Stack trace: " . $e->getTraceAsString());
+    sendError('An error occurred: ' . $e->getMessage(), 500);
 }
 ?>

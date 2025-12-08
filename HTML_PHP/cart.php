@@ -34,7 +34,8 @@ try {
         $items = $db->fetchAll(
             "SELECT ci.id as cart_item_id, ci.quantity, ci.added_at,
                     p.id as product_id, p.name, p.slug,
-                    pv.id as variant_id, pv.title as variant_title, pv.price,
+                    pv.id as variant_id, pv.title as variant_title, 
+                    pv.price as price,
                     pv.price as unit_price,
                     pv.price * ci.quantity as line_total,
                     (SELECT url FROM product_images WHERE product_id = p.id ORDER BY `order` ASC LIMIT 1) as image_url
@@ -46,8 +47,13 @@ try {
             [$cart_id]
         );
 
-        // Image URLs are already correct (starting with /assets/)
-        // No prefix needed when running PHP dev server from project root
+        // Convert image URLs to use image serving script
+        foreach ($items as &$item) {
+            if (!empty($item['image_url'])) {
+                $item['image_url'] = '/serve-image.php?path=' . urlencode($item['image_url']);
+            }
+        }
+        unset($item);
 
         // Calculate totals
         $subtotal = 0;
@@ -67,24 +73,38 @@ try {
     // Add item to cart
     elseif ($method === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
-        $variant_id = isset($_POST['variant_id']) ? intval($_POST['variant_id']) : null;
+        $variant_id = isset($_POST['variant_id']) && $_POST['variant_id'] !== '' && $_POST['variant_id'] !== 'null' ? intval($_POST['variant_id']) : null;
         $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
         if ($product_id <= 0 || $quantity <= 0) {
             sendError('Invalid product or quantity');
         }
 
-        // Verify variant exists
-        $variant = $db->fetchOne(
-            "SELECT pv.id, pv.stock, p.id as product_id FROM product_variants pv 
-             JOIN products p ON pv.product_id = p.id 
-             WHERE pv.id = ? AND p.active = 1",
-            [$variant_id]
-        );
+        // If no variant_id provided, get the first available variant for this product
+        if ($variant_id === null || $variant_id === 0) {
+            $variant = $db->fetchOne(
+                "SELECT pv.id, pv.stock as stock, p.id as product_id FROM product_variants pv 
+                 JOIN products p ON pv.product_id = p.id 
+                 WHERE p.id = ? AND p.active = 1 AND pv.stock > 0
+                 ORDER BY pv.id ASC LIMIT 1",
+                [$product_id]
+            );
+        } else {
+            // Verify specific variant exists
+            $variant = $db->fetchOne(
+                "SELECT pv.id, pv.stock as stock, p.id as product_id FROM product_variants pv 
+                 JOIN products p ON pv.product_id = p.id 
+                 WHERE pv.id = ? AND p.active = 1",
+                [$variant_id]
+            );
+        }
 
         if (!$variant) {
-            sendError('Product variant not found', 404);
+            sendError('Product variant not found or out of stock', 404);
         }
+        
+        // Use the found variant_id
+        $variant_id = $variant['id'];
 
         // Check stock availability
         if ($quantity > $variant['stock']) {
@@ -103,16 +123,16 @@ try {
         // Check if item already in cart
         $existing = $db->fetchOne(
             "SELECT id, quantity FROM cart_items 
-             WHERE cart_id = ? AND product_id = ? AND (variant_id = ? OR (variant_id IS NULL AND ? IS NULL))",
-            [$cart_id, $product_id, $variant_id, $variant_id]
+             WHERE cart_id = ? AND variant_id = ?",
+            [$cart_id, $variant_id]
         );
 
         if ($existing) {
             // Update quantity
             $new_quantity = $existing['quantity'] + $quantity;
 
-            if ($new_quantity > $available_stock) {
-                sendError("Cannot add more items. Only {$available_stock} available in stock");
+            if ($new_quantity > $variant['stock']) {
+                sendError("Cannot add more items. Only {$variant['stock']} available in stock");
             }
 
             $db->query(
@@ -122,9 +142,9 @@ try {
         } else {
             // Insert new item
             $db->insert(
-                "INSERT INTO cart_items (cart_id, product_id, variant_id, quantity) 
-                 VALUES (?, ?, ?, ?)",
-                [$cart_id, $product_id, $variant_id, $quantity]
+                "INSERT INTO cart_items (cart_id, variant_id, quantity) 
+                 VALUES (?, ?, ?)",
+                [$cart_id, $variant_id, $quantity]
             );
         }
 
@@ -140,12 +160,12 @@ try {
             sendError('Invalid cart item');
         }
 
-        // Get cart item and verify ownership
+        // Get cart item and verify ownership, check variant stock
         $cart_item = $db->fetchOne(
-            "SELECT ci.*, c.user_id, p.stock_quantity 
+            "SELECT ci.*, c.user_id, pv.stock as variant_stock
              FROM cart_items ci
              JOIN carts c ON ci.cart_id = c.id
-             JOIN products p ON ci.product_id = p.id
+             JOIN product_variants pv ON ci.variant_id = pv.id
              WHERE ci.id = ?",
             [$cart_item_id]
         );
@@ -159,9 +179,10 @@ try {
             $db->query("DELETE FROM cart_items WHERE id = ?", [$cart_item_id]);
             sendSuccess([], 'Item removed from cart');
         } else {
-            // Check stock
-            if ($quantity > $cart_item['stock_quantity']) {
-                sendError("Only {$cart_item['stock_quantity']} items available");
+            // Check stock from variant
+            $available_stock = $cart_item['variant_stock'];
+            if ($quantity > $available_stock) {
+                sendError("Only {$available_stock} items available");
             }
 
             // Update quantity
@@ -214,7 +235,7 @@ try {
     }
 
 } catch (Exception $e) {
-    error_log("Cart API Error: " . $e->getMessage());
+    error_log("Cart API Exception: " . $e->getMessage());
     sendError('An error occurred. Please try again later.', 500);
 }
 ?>

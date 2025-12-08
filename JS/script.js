@@ -133,6 +133,32 @@ function updateAuthNav() {
     } else {
         authNav.innerHTML = '<a href="/login" style="font-weight:600;margin-right:0.5rem">Login</a><a href="/signup" style="font-weight:600">Create account</a>';
     }
+    
+    // Update cart visibility based on user role
+    updateCartVisibility();
+}
+
+// Control cart visibility - only show for customers and non-logged-in users
+function updateCartVisibility() {
+    const cartToggle = document.getElementById("cart-toggle");
+    const addToCartButtons = document.querySelectorAll("#prod-add, .add-to-cart, [data-action='add']");
+    const user = getUserData();
+    
+    // Hide cart for employee, admin, and superadmin roles
+    const shouldHideCart = user && (user.role === 'employee' || user.role === 'admin' || user.role === 'superadmin');
+    
+    if (cartToggle) {
+        cartToggle.style.display = shouldHideCart ? 'none' : '';
+    }
+    
+    // Hide "Add to Cart" buttons for non-customer roles
+    addToCartButtons.forEach(btn => {
+        if (shouldHideCart) {
+            btn.style.display = 'none';
+        } else {
+            btn.style.display = '';
+        }
+    });
 }
 
 function syncAuthButton() {
@@ -152,6 +178,28 @@ function syncAuthButton() {
             parent.innerHTML = '<a href="/login" style="font-weight:600;margin-right:0.5rem">Login</a><a href="/signup" style="font-weight:600">Create account</a>';
         }
     }
+}
+
+// ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+// Ensure image URL is properly wrapped through serve-image.php
+function ensureImageUrl(url) {
+    if (!url) return '/assets/placeholder.jpg';
+    
+    // If already wrapped with serve-image.php, return as-is
+    if (url.includes('serve-image.php')) {
+        return url;
+    }
+    
+    // If it's an /assets/ URL that wasn't wrapped, wrap it now
+    if (url.startsWith('/assets/')) {
+        return '/serve-image.php?path=' + encodeURIComponent(url);
+    }
+    
+    // Otherwise return as-is (could be a data URI or external URL)
+    return url;
 }
 
 // ========================================
@@ -187,7 +235,7 @@ async function loadProducts(filters = {}) {
                 title: p.name,
                 category: p.category_name || 'Uncategorized',
                 price: parseFloat(p.price || 0),
-                img: p.image_url || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 200%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%23666%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EProduct%3C/text%3E%3C/svg%3E',
+                img: ensureImageUrl(p.image_url),
                 variants: p.variants || [],
                 stock: p.stock || 0,
                 dbId: p.id // Store database ID for cart operations
@@ -344,6 +392,9 @@ async function renderProducts() {
 
     renderPagination(data.pagination?.page || 1, data.pagination?.pages || 1);
     console.log("[renderProducts] Rendering complete");
+    
+    // Update cart visibility based on user role
+    updateCartVisibility();
 }
 
 function renderPagination(page, total) {
@@ -376,15 +427,23 @@ async function loadCartFromBackend() {
     try {
         const user = getUserData();
         if (!user) {
+            console.warn('[loadCartFromBackend] No user logged in');
             window.CART_DATA = { items: [], subtotal: 0 };
             updateCartCount();
             return;
         }
 
+        console.log('[loadCartFromBackend] Fetching cart from API...');
         const data = await CartAPI.getCart();
-        if (data.cart) {
+        console.log('[loadCartFromBackend] API response:', data);
+        
+        if (data && data.cart) {
             window.CART_DATA = data.cart;
+            console.log('[loadCartFromBackend] Cart data set:', window.CART_DATA);
             updateCartCount();
+        } else {
+            console.warn('[loadCartFromBackend] No cart data in response');
+            window.CART_DATA = { items: [], subtotal: 0 };
         }
     } catch (error) {
         console.error("Failed to load cart:", error);
@@ -403,6 +462,7 @@ function updateCartCount() {
 async function addToCart(productSlug, qty = 1) {
     try {
         const user = getUserData();
+        
         if (!user) {
             alert("Please login to add items to cart");
             window.router?.navigateTo("/login");
@@ -411,6 +471,7 @@ async function addToCart(productSlug, qty = 1) {
 
         // Find product by slug
         const product = window.PRODUCTS.find(p => p.id === productSlug);
+        
         if (!product) {
             alert("Product not found");
             return;
@@ -418,12 +479,24 @@ async function addToCart(productSlug, qty = 1) {
 
         // Get variant if selected
         const variantSelect = document.querySelector(`.variant-select[data-id="${productSlug}"]`);
-        const variantIdx = variantSelect ? parseInt(variantSelect.value || 0, 10) : null;
-        const variantId = (product.variants && product.variants[variantIdx]) ? product.variants[variantIdx].id : null;
+        const variantIdx = variantSelect ? parseInt(variantSelect.value || 0, 10) : 0;
+        
+        // Get variant ID - if product has variants, use the selected one, otherwise use first available
+        let variantId = null;
+        if (product.variants && product.variants.length > 0) {
+            const selectedVariant = product.variants[variantIdx];
+            variantId = selectedVariant ? selectedVariant.id : product.variants[0].id;
+        }
 
         // Get quantity from input
         const qtyInput = document.querySelector(`.qty-input[data-id="${productSlug}"]`);
         const quantity = qtyInput ? parseInt(qtyInput.value, 10) : qty;
+
+        // Validate quantity
+        if (quantity < 1) {
+            alert("Quantity must be at least 1");
+            return;
+        }
 
         await CartAPI.addToCart(product.dbId, quantity, variantId);
         await loadCartFromBackend();
@@ -440,8 +513,7 @@ async function addToCart(productSlug, qty = 1) {
             }, 1500);
         }
     } catch (error) {
-        console.error("Add to cart failed:", error);
-        alert(error.message || "Failed to add to cart");
+        alert(error.message || "Failed to add to cart. Please try again.");
     }
 }
 
@@ -484,20 +556,24 @@ async function renderCartItems() {
     window.CART_DATA.items.forEach((item) => {
         const row = document.createElement("div");
         row.className = "cart-item";
+        
+        const variantText = item.variant_title ? ` (${escapeHtml(item.variant_title)})` : '';
+        const lineTotal = formatPHP(parseFloat(item.line_total || 0));
+        
         row.innerHTML = `
-      <img src="${item.image_url || '/assets/placeholder.jpg'}" alt="${item.name}">
-      <div style="flex:1">
-        <div>${item.name}</div>
-        <div style="color:#666">${formatPHP(item.unit_price)} x ${item.quantity} ${item.variant_label ? '• ' + item.variant_label : ''}</div>
+      <img src="${escapeHtml(ensureImageUrl(item.image_url))}" alt="${escapeHtml(item.name)}" onerror="this.src='/serve-image.php?path=%2Fassets%2Fplaceholder.jpg'">
+      <div class="cart-details">
+        <div class="cart-title">${escapeHtml(item.name)}${variantText}</div>
+        <div class="cart-meta">${formatPHP(item.unit_price)} × ${item.quantity} = ${lineTotal}</div>
       </div>
       <div class="cart-actions">
         <div class="qty-row">
-          <button class="qty-btn" data-cart-item-id="${item.cart_item_id}" data-action="dec">−</button>
+          <button class="qty-btn" data-cart-item-id="${item.cart_item_id}" data-action="dec" title="Decrease quantity">−</button>
           <input class="qty-input" value="${item.quantity}" readonly>
-          <button class="qty-btn" data-cart-item-id="${item.cart_item_id}" data-action="inc">+</button>
+          <button class="qty-btn" data-cart-item-id="${item.cart_item_id}" data-action="inc" title="Increase quantity">+</button>
         </div>
         <div class="remove-row">
-          <button class="btn" data-cart-item-id="${item.cart_item_id}" data-action="rem">Remove</button>
+          <button class="btn btn-danger" data-cart-item-id="${item.cart_item_id}" data-action="rem">Remove</button>
         </div>
       </div>
     `;
@@ -514,12 +590,19 @@ async function changeCartQty(cartItemId, delta) {
 
         const newQty = parseInt(item.quantity) + delta;
 
-        if (newQty <= 0) {
-            await CartAPI.removeFromCart(cartItemId);
-        } else {
-            await CartAPI.updateCartItem(cartItemId, newQty);
+        // Prevent quantity from going below 1
+        if (newQty < 1) {
+            // Ask user if they want to remove the item
+            if (confirm('Remove this item from cart?')) {
+                await CartAPI.removeFromCart(cartItemId);
+                await loadCartFromBackend();
+                await renderCartItems();
+            }
+            return;
         }
 
+        await CartAPI.updateCartItem(cartItemId, newQty);
+        await loadCartFromBackend();
         await renderCartItems();
     } catch (error) {
         console.error("Update cart failed:", error);
@@ -529,7 +612,12 @@ async function changeCartQty(cartItemId, delta) {
 
 async function removeFromCart(cartItemId) {
     try {
+        if (!confirm('Remove this item from cart?')) {
+            return;
+        }
+        
         await CartAPI.removeFromCart(cartItemId);
+        await loadCartFromBackend();
         await renderCartItems();
     } catch (error) {
         console.error("Remove from cart failed:", error);
@@ -607,12 +695,14 @@ if (!window.scriptClickListenersAttached) {
     });
 }
 
-// Variant price change
+// Variant price change and quantity price update
 if (!window.scriptChangeListenersAttached) {
     window.scriptChangeListenersAttached = true;
 
     document.addEventListener("change", (e) => {
         const sel = e.target;
+        
+        // Handle variant selection change
         if (sel.matches(".variant-select")) {
             const id = sel.getAttribute("data-id");
             const prod = PRODUCTS.find((p) => p.id === id);
@@ -625,12 +715,51 @@ if (!window.scriptChangeListenersAttached) {
 
             // Update price in product card
             const priceEl = sel.closest(".product")?.querySelector(".price");
-            if (priceEl) priceEl.textContent = formatPHP(variantPrice);
+            if (priceEl) {
+                priceEl.setAttribute("data-base", variantPrice);
+                const qtyInput = sel.closest(".product")?.querySelector(".qty-input");
+                const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                priceEl.textContent = formatPHP(variantPrice * qty);
+            }
 
             // Update price in product detail modal
             const modalPriceEl = document.querySelector(".product-detail-price");
             if (modalPriceEl) {
-                modalPriceEl.textContent = formatPHP(variantPrice);
+                modalPriceEl.setAttribute("data-base", variantPrice);
+                const modalQtyInput = document.querySelector("#modal-qty-" + id);
+                const qty = modalQtyInput ? parseInt(modalQtyInput.value) || 1 : 1;
+                modalPriceEl.textContent = formatPHP(variantPrice * qty);
+            }
+        }
+    });
+    
+    // Handle quantity input change
+    document.addEventListener("input", (e) => {
+        if (e.target.matches(".qty-input") || e.target.matches('input[type="number"][id*="qty"]')) {
+            const input = e.target;
+            const qty = Math.max(1, parseInt(input.value) || 1);
+            
+            // Update price in product card
+            const priceEl = input.closest(".product")?.querySelector(".price");
+            if (priceEl) {
+                const basePrice = parseFloat(priceEl.getAttribute("data-base")) || 0;
+                priceEl.textContent = formatPHP(basePrice * qty);
+            }
+            
+            // Update price in product detail modal
+            const modalPriceEl = document.querySelector(".product-detail-price");
+            if (modalPriceEl && input.id && input.id.includes("modal-qty")) {
+                const basePrice = parseFloat(modalPriceEl.getAttribute("data-base")) || 0;
+                modalPriceEl.textContent = formatPHP(basePrice * qty);
+            }
+            
+            // Update price on single product page
+            if (input.id === "prod-qty") {
+                const prodPriceEl = document.getElementById("prod-price");
+                if (prodPriceEl) {
+                    const basePrice = parseFloat(prodPriceEl.getAttribute("data-base")) || 0;
+                    prodPriceEl.textContent = formatPHP(basePrice * qty);
+                }
             }
         }
     });
@@ -672,7 +801,7 @@ function openProductDetail(productId) {
     content.innerHTML = `
     <div class="product-detail-grid">
       <div class="product-detail-image">
-        <img src="${product.img}" alt="${product.title}">
+        <img src="${ensureImageUrl(product.img)}" alt="${product.title}">
       </div>
       <div class="product-detail-info">
         <h3>${product.title}</h3>
@@ -698,6 +827,9 @@ function openProductDetail(productId) {
     modal.classList.add("open");
     backdrop.classList.add("open");
     console.log("[openProductDetail] Modal opened successfully");
+    
+    // Update cart visibility for modal buttons
+    updateCartVisibility();
 }
 
 function closeProductDetail() {
@@ -739,7 +871,10 @@ async function loadSingleProduct() {
         // Price and Variants
         const priceEl = document.getElementById("prod-price");
         let currentPrice = parseFloat(product.price);
-        if (priceEl) priceEl.textContent = formatPHP(currentPrice);
+        if (priceEl) {
+            priceEl.setAttribute("data-base", currentPrice);
+            priceEl.textContent = formatPHP(currentPrice);
+        }
 
         // Handle variants if they exist
         if (product.variants && product.variants.length > 0) {
@@ -770,7 +905,13 @@ async function loadSingleProduct() {
                      const idx = e.target.value;
                      const variant = product.variants[idx];
                      if (variant) {
-                         if (priceEl) priceEl.textContent = formatPHP(variant.price);
+                         const variantPrice = parseFloat(variant.price);
+                         if (priceEl) {
+                             priceEl.setAttribute("data-base", variantPrice);
+                             const qtyInput = document.getElementById("prod-qty");
+                             const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                             priceEl.textContent = formatPHP(variantPrice * qty);
+                         }
                          const qtyInput = document.getElementById("prod-qty");
                          if (qtyInput) qtyInput.max = variant.stock;
                      }
@@ -826,6 +967,9 @@ async function loadSingleProduct() {
         const container = document.querySelector(".product-detail");
         if (container) container.innerHTML = `<p class="error">Failed to load product details. ${e.message}</p>`;
     }
+    
+    // Update cart visibility for this page
+    updateCartVisibility();
 }
 
 // ========================================
@@ -839,6 +983,9 @@ async function initializePageScript() {
     await checkUserSession();
     updateAuthNav();
     syncAuthButton();
+    
+    // Update cart visibility immediately
+    updateCartVisibility();
 
     // Check if this is admin/employee/superadmin page
     if (document.getElementById("superadmin-welcome")) {
@@ -922,6 +1069,31 @@ async function initializePageScript() {
 
     console.log("[initializePageScript] Page initialization complete");
 
+    // Add global quantity input validation and price update
+    if (!window.qtyValidationAttached) {
+        window.qtyValidationAttached = true;
+        
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('.qty-input, input[type="number"][id*="qty"]')) {
+                let value = parseInt(e.target.value);
+                // Ensure value is at least 1
+                if (isNaN(value) || value < 1) {
+                    e.target.value = 1;
+                }
+            }
+        });
+
+        // Prevent negative values on blur
+        document.addEventListener('blur', (e) => {
+            if (e.target.matches('.qty-input, input[type="number"][id*="qty"]')) {
+                let value = parseInt(e.target.value);
+                if (isNaN(value) || value < 1) {
+                    e.target.value = 1;
+                }
+            }
+        }, true);
+    }
+
     // Category filter
     const catSel = document.getElementById("category-filter");
     if (catSel) {
@@ -969,5 +1141,6 @@ async function initializePageScript() {
 // Make functions globally available
 window.initializePageScript = initializePageScript;
 window.updateAuthNav = updateAuthNav;
+window.updateCartVisibility = updateCartVisibility;
 window.doLogout = doLogout;
 window.formatPHP = formatPHP;

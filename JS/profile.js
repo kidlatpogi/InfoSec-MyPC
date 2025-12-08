@@ -10,6 +10,8 @@
 async function loadProfileData() {
     try {
         const user = getUserData();
+        console.log('[loadProfileData] Current user data:', user);
+        
         if (!user) {
             // Not logged in, redirect to login
             window.router?.navigateTo('/login');
@@ -20,22 +22,32 @@ async function loadProfileData() {
         const welcomeHeading = document.querySelector('#overview h1');
         if (welcomeHeading) {
             welcomeHeading.textContent = `Welcome back, ${user.first_name}!`;
+            console.log('[loadProfileData] Updated welcome heading');
         }
 
         // Populate account information
         const nameInfo = document.querySelector('#overview .info-item:nth-child(1) p');
         if (nameInfo) {
             nameInfo.textContent = `${user.first_name} ${user.last_name}`;
+            console.log('[loadProfileData] Updated name info to:', nameInfo.textContent);
+        } else {
+            console.warn('[loadProfileData] Name info element not found');
         }
 
         const emailInfo = document.querySelector('#overview .info-item:nth-child(2) p');
         if (emailInfo) {
             emailInfo.textContent = user.email;
+            console.log('[loadProfileData] Updated email info to:', emailInfo.textContent);
+        } else {
+            console.warn('[loadProfileData] Email info element not found');
         }
 
         const phoneInfo = document.querySelector('#overview .info-item:nth-child(3) p');
         if (phoneInfo) {
             phoneInfo.textContent = user.phone || 'Not provided';
+            console.log('[loadProfileData] Updated phone info to:', phoneInfo.textContent);
+        } else {
+            console.warn('[loadProfileData] Phone info element not found');
         }
 
         const memberSinceInfo = document.querySelector('#overview .info-item:nth-child(4) p');
@@ -62,6 +74,8 @@ async function loadProfileData() {
 
         // Load orders
         await loadUserOrders();
+        
+        console.log('[loadProfileData] Profile data reload complete');
 
     } catch (error) {
         console.error('Failed to load profile data:', error);
@@ -188,6 +202,29 @@ async function cancelOrder(orderId) {
 // SECTION NAVIGATION
 // ========================================
 
+function switchSection(sectionId) {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.profile-section');
+    
+    // Remove active class from all menu items and sections
+    menuItems.forEach(mi => mi.classList.remove('active'));
+    sections.forEach(s => s.classList.remove('active'));
+    
+    // Add active class to the target menu item
+    const targetMenuItem = document.querySelector(`.menu-item[data-section="${sectionId}"]`);
+    if (targetMenuItem) {
+        targetMenuItem.classList.add('active');
+    }
+    
+    // Show corresponding section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+    
+    console.log('[switchSection] Switched to:', sectionId);
+}
+
 function initProfileNavigation() {
     const menuItems = document.querySelectorAll('.menu-item');
     const sections = document.querySelectorAll('.profile-section');
@@ -202,18 +239,7 @@ function initProfileNavigation() {
                 return;
             }
 
-            // Remove active class from all menu items and sections
-            menuItems.forEach(mi => mi.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-
-            // Add active class to clicked menu item
-            item.classList.add('active');
-
-            // Show corresponding section
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
+            switchSection(sectionId);
         });
     });
 }
@@ -229,13 +255,166 @@ function initProfileEditForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        alert('Profile editing is not yet implemented. This feature will be available soon.');
+        const fullName = document.getElementById('edit-name').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
 
-        // TODO: Implement profile update API endpoint
-        // const name = document.getElementById('edit-name').value;
-        // const email = document.getElementById('edit-email').value;
-        // const phone = document.getElementById('edit-phone').value;
-        // await ProfileAPI.updateProfile({ name, email, phone });
+        console.log('Form data:', { fullName, email, phone, hasCurrentPassword: !!currentPassword, hasNewPassword: !!newPassword });
+
+        if (!fullName) {
+            alert('Full name is required');
+            return;
+        }
+
+        if (!email) {
+            alert('Email is required');
+            return;
+        }
+
+        // Split full name into first and last name
+        const nameParts = fullName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        console.log('Name split:', { firstName, lastName });
+
+        // If changing password, validate
+        if (newPassword || confirmPassword) {
+            if (!currentPassword) {
+                alert('Please enter your current password to change it');
+                return;
+            }
+            if (!newPassword) {
+                alert('Please enter a new password');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+        }
+
+        try {
+            const requestBody = new URLSearchParams({
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone: phone,
+                current_password: currentPassword || '',
+                new_password: newPassword || ''
+            });
+            
+            console.log('Sending request to /HTML_PHP/auth.php?action=updateProfile');
+            console.log('Request body:', requestBody.toString());
+            
+            const response = await fetch('/HTML_PHP/auth.php?action=updateProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: requestBody
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+            
+            const responseText = await response.text();
+            console.log('Response text:', responseText);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Failed to parse JSON:', parseError);
+                alert('Server returned invalid response. Check console for details.');
+                return;
+            }
+            
+            console.log('Update response:', data);
+
+            if (data.success) {
+                // Update localStorage with server response data
+                if (data.user) {
+                    // Use the user data from server response
+                    const currentUser = getUserData();
+                    const updatedUser = {
+                        ...currentUser,
+                        first_name: data.user.first_name,
+                        last_name: data.user.last_name,
+                        email: data.user.email,
+                        phone: data.user.phone
+                    };
+                    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+                    console.log('Updated user data in localStorage:', updatedUser);
+                } else {
+                    // Fallback: update with the values we sent
+                    const user = getUserData();
+                    user.first_name = firstName;
+                    user.last_name = lastName;
+                    user.email = email;
+                    user.phone = phone;
+                    localStorage.setItem('user_data', JSON.stringify(user));
+                    console.log('Updated user data (fallback):', user);
+                }
+
+                // Clear password fields immediately
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+
+                // Switch to Profile Overview to show the changes
+                switchSection('overview');
+                
+                // Immediately update the Profile Overview UI with new data
+                const fullNameDisplay = `${firstName} ${lastName}`;
+                
+                // Update welcome heading
+                const welcomeHeading = document.querySelector('#overview h1');
+                if (welcomeHeading) {
+                    welcomeHeading.textContent = `Welcome back, ${firstName}!`;
+                }
+                
+                // Update account information directly
+                const nameInfo = document.querySelector('#overview .info-item:nth-child(1) p');
+                if (nameInfo) {
+                    nameInfo.textContent = fullNameDisplay;
+                }
+                
+                const emailInfo = document.querySelector('#overview .info-item:nth-child(2) p');
+                if (emailInfo) {
+                    emailInfo.textContent = email;
+                }
+                
+                const phoneInfo = document.querySelector('#overview .info-item:nth-child(3) p');
+                if (phoneInfo) {
+                    phoneInfo.textContent = phone || 'Not provided';
+                }
+                
+                console.log('Updated UI directly with:', { fullNameDisplay, email, phone });
+                
+                // Update the auth navigation to reflect name changes
+                if (typeof window.updateAuthNav === 'function') {
+                    window.updateAuthNav();
+                    console.log('Auth nav updated');
+                }
+                
+                // Show success message
+                alert('Profile updated successfully!');
+            } else {
+                console.error('Update failed:', data);
+                alert(data.message || 'Error updating profile');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            alert('Error updating profile. Please check the console for details.');
+        }
     });
 }
 

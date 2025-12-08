@@ -200,12 +200,18 @@ const CartAPI = {
 
     // Add item to cart
     async addToCart(productId, quantity = 1, variantId = null) {
-        const body = toFormData({
+        const params = {
             action: 'add',
             product_id: productId,
-            quantity,
-            ...(variantId && { variant_id: variantId })
-        });
+            quantity: quantity
+        };
+        
+        // Only add variant_id if it's a valid number
+        if (variantId !== null && variantId !== undefined && variantId !== '') {
+            params.variant_id = variantId;
+        }
+        
+        const body = toFormData(params);
 
         return await apiCall('cart.php', {
             method: 'POST',

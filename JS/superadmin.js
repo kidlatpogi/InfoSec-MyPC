@@ -481,6 +481,7 @@ function viewProduct(productId) {
             viewContent.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                     <div>
+                        ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">` : '<div style="background: #f0f0f0; padding: 3rem; text-align: center; border-radius: 8px; margin-bottom: 1rem;">No Image</div>'}
                         <h3 style="margin-top: 0;">Product Information</h3>
                         <div style="margin-bottom: 1rem;">
                             <strong>ID:</strong> ${product.id}
@@ -668,6 +669,7 @@ function editAdmin(adminId, email) {
                 adminForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('admin-name').value.trim();
+                    const password = document.getElementById('admin-password').value.trim();
                     const [firstName, ...lastNameParts] = fullName.split(' ');
                     const lastName = lastNameParts.join(' ') || firstName;
                     
@@ -750,6 +752,7 @@ function editUser(userId, email) {
                 userForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('user-name').value.trim();
+                    const password = document.getElementById('user-password').value.trim();
                     const [firstName, ...lastNameParts] = fullName.split(' ');
                     const lastName = lastNameParts.join(' ') || firstName;
                     
@@ -831,6 +834,7 @@ function editEmployee(employeeId, email) {
                 employeeForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const fullName = document.getElementById('employee-name').value.trim();
+                    const password = document.getElementById('employee-password').value.trim();
                     const [firstName, ...lastNameParts] = fullName.split(' ');
                     const lastName = lastNameParts.join(' ') || firstName;
                     
@@ -1114,17 +1118,40 @@ async function loadAuditLogs() {
 }
 
 async function loadProfileData() {
-    const user = getUserData();
+    // Force refresh from localStorage
+    const userDataString = localStorage.getItem('mypc_user_data');
+    console.log('[loadProfileData] Raw localStorage:', userDataString);
+    
+    const user = userDataString ? JSON.parse(userDataString) : null;
+    console.log('[loadProfileData] Parsed user data:', user);
+    
     if (!user) {
         window.location.href = 'login.html';
         return;
     }
 
     // Populate form with current user data
-    document.getElementById('profile-first-name').value = user.first_name || '';
-    document.getElementById('profile-last-name').value = user.last_name || '';
-    document.getElementById('profile-email').value = user.email || '';
-    document.getElementById('profile-phone').value = user.phone || '';
+    // Combine first_name and last_name into full_name
+    const fullName = [user.first_name || '', user.last_name || ''].filter(Boolean).join(' ');
+    console.log('[loadProfileData] Setting full name to:', fullName);
+    
+    const fullNameInput = document.getElementById('profile-full-name');
+    if (fullNameInput) {
+        fullNameInput.value = fullName;
+        console.log('[loadProfileData] Full name input updated to:', fullNameInput.value);
+    } else {
+        console.error('[loadProfileData] Full name input not found!');
+    }
+    
+    const emailInput = document.getElementById('profile-email');
+    if (emailInput) {
+        emailInput.value = user.email || '';
+    }
+    
+    const phoneInput = document.getElementById('profile-phone');
+    if (phoneInput) {
+        phoneInput.value = user.phone || '';
+    }
 
     // Clear password fields
     document.getElementById('profile-current-password').value = '';
@@ -1140,16 +1167,20 @@ function resetProfileForm() {
 function handleProfileSubmit(e) {
     e.preventDefault();
 
-    const firstName = document.getElementById('profile-first-name').value.trim();
-    const lastName = document.getElementById('profile-last-name').value.trim();
+    const fullName = document.getElementById('profile-full-name').value.trim();
     const currentPassword = document.getElementById('profile-current-password').value;
     const newPassword = document.getElementById('profile-new-password').value;
     const confirmPassword = document.getElementById('profile-confirm-password').value;
 
-    if (!firstName || !lastName) {
-        alert('First name and last name are required');
+    if (!fullName) {
+        alert('Full name is required');
         return;
     }
+
+    // Split full name into first and last name
+    const nameParts = fullName.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
 
     // If changing password, validate
     if (newPassword || confirmPassword || currentPassword) {
@@ -1172,8 +1203,8 @@ function handleProfileSubmit(e) {
     }
 
     const updates = {
-        first_name: document.getElementById('profile-first-name').value.trim(),
-        last_name: document.getElementById('profile-last-name').value.trim(),
+        first_name: firstName,
+        last_name: lastName,
         phone: document.getElementById('profile-phone').value.trim()
     };
 
@@ -1187,7 +1218,7 @@ function handleProfileSubmit(e) {
 
 async function updateUserProfile(updates) {
     try {
-        const response = await fetch('auth.php?action=updateProfile', {
+        const response = await fetch('/HTML_PHP/auth.php?action=updateProfile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1201,25 +1232,48 @@ async function updateUserProfile(updates) {
             })
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse response:', e);
+            alert('Server error. Please try again.');
+            return;
+        }
+        
+        console.log('Response data:', data);
 
         if (data.success) {
-            // Update localStorage
+            // Update localStorage with fresh data
             const user = getUserData();
             user.first_name = updates.first_name;
             user.last_name = updates.last_name;
             user.phone = updates.phone;
             localStorage.setItem('user_data', JSON.stringify(user));
 
-            alert('Profile updated successfully!');
-            document.getElementById('profile-edit-form').reset();
-            await loadProfileData();
-
-            // Update welcome message
+            // Immediately update the welcome message
+            const fullNameDisplay = `${updates.first_name} ${updates.last_name}`;
+            
             const welcomeEl = document.getElementById('superadmin-welcome');
             if (welcomeEl) {
-                welcomeEl.textContent = `Welcome, ${user.first_name} ${user.last_name}`;
+                welcomeEl.textContent = `Welcome, ${updates.first_name} ${updates.last_name}`;
             }
+            
+            // Clear password fields only
+            document.getElementById('profile-current-password').value = '';
+            document.getElementById('profile-new-password').value = '';
+            document.getElementById('profile-confirm-password').value = '';
+            
+            // Update form with new values
+            document.getElementById('profile-full-name').value = fullNameDisplay;
+            document.getElementById('profile-phone').value = updates.phone;
+            
+            console.log('Updated superadmin profile UI with:', fullNameDisplay);
+            
+            alert('Profile updated successfully!');
         } else {
             alert(data.message || 'Error updating profile');
         }

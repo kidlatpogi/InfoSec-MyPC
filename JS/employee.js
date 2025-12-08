@@ -237,6 +237,9 @@ async function loadTabData(tabName) {
         case 'orders':
             await loadOrders();
             break;
+        case 'profile':
+            await loadProfileData();
+            break;
     }
 }
 
@@ -336,20 +339,38 @@ function viewProduct(productId) {
             const viewContent = document.getElementById('product-view-content');
             const viewTitle = document.getElementById('product-view-title');
 
+            const variants = product.variants || [];
+            const variantsHTML = variants.length > 0
+                ? variants.map(v => `
+                    <div style="padding: 0.75rem; background: var(--surface); border-radius: 6px; margin-bottom: 0.5rem;">
+                        <strong>${v.title}</strong> - ${formatPHP(v.price)} (Stock: ${v.stock})
+                    </div>
+                `).join('')
+                : '<p style="color: var(--text-light);">No variants</p>';
+
             viewTitle.textContent = product.name;
             viewContent.innerHTML = `
-                <div style="margin-bottom: 1.5rem;">
-                    <p><strong>ID:</strong> ${product.id}</p>
-                    <p><strong>Name:</strong> ${product.name}</p>
-                    <p><strong>Category:</strong> ${product.category_name || 'N/A'}</p>
-                    <p><strong>Base Price:</strong> ${formatPHP(product.base_price)}</p>
-                    <p><strong>Variants:</strong> ${product.variants?.length || 0}</p>
-                    ${product.variants ? `
-                        <details>
-                            <summary>Variant Details</summary>
-                            <pre>${JSON.stringify(product.variants, null, 2)}</pre>
-                        </details>
-                    ` : ''}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">` : '<div style="background: #f0f0f0; padding: 3rem; text-align: center; border-radius: 8px; margin-bottom: 1rem;">No Image</div>'}
+                        <h3 style="margin-top: 0;">Product Information</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>ID:</strong> ${product.id}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Name:</strong> ${product.name}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Category:</strong> ${product.category_name || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Created:</strong> ${new Date(product.created_at).toLocaleDateString() || 'N/A'}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0;">Variants (${variants.length})</h3>
+                        ${variantsHTML}
+                    </div>
                 </div>
             `;
 
@@ -516,6 +537,13 @@ function viewOrder(orderId) {
 // LOGOUT
 // ========================================
 
+function initProfileHandlers() {
+    const profileForm = document.getElementById('profile-edit-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileSubmit);
+    }
+}
+
 function initLogout() {
     const logoutBtn = document.getElementById('employee-logout-btn');
     if (logoutBtn) {
@@ -580,6 +608,176 @@ function initModals() {
 }
 
 // ========================================
+// PROFILE MANAGEMENT
+// ========================================
+
+async function loadProfileData() {
+    // Force refresh from localStorage
+    const userDataString = localStorage.getItem('mypc_user_data');
+    console.log('[loadProfileData] Raw localStorage:', userDataString);
+    
+    const user = userDataString ? JSON.parse(userDataString) : null;
+    console.log('[loadProfileData] Parsed user data:', user);
+    
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Populate form with current user data
+    // Combine first_name and last_name into full_name
+    const fullName = [user.first_name || '', user.last_name || ''].filter(Boolean).join(' ');
+    console.log('[loadProfileData] Setting full name to:', fullName);
+    
+    const fullNameInput = document.getElementById('profile-full-name');
+    if (fullNameInput) {
+        fullNameInput.value = fullName;
+        console.log('[loadProfileData] Full name input updated to:', fullNameInput.value);
+    } else {
+        console.error('[loadProfileData] Full name input not found!');
+    }
+    
+    const emailInput = document.getElementById('profile-email');
+    if (emailInput) {
+        emailInput.value = user.email || '';
+    }
+    
+    const phoneInput = document.getElementById('profile-phone');
+    if (phoneInput) {
+        phoneInput.value = user.phone || '';
+    }
+
+    // Clear password fields
+    document.getElementById('profile-current-password').value = '';
+    document.getElementById('profile-new-password').value = '';
+    document.getElementById('profile-confirm-password').value = '';
+}
+
+function resetProfileForm() {
+    document.getElementById('profile-edit-form').reset();
+    loadProfileData();
+}
+
+function handleProfileSubmit(e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById('profile-full-name').value.trim();
+    const currentPassword = document.getElementById('profile-current-password').value;
+    const newPassword = document.getElementById('profile-new-password').value;
+    const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+    if (!fullName) {
+        alert('Full name is required');
+        return;
+    }
+
+    // Split full name into first and last name
+    const nameParts = fullName.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // If changing password, validate
+    if (newPassword || confirmPassword || currentPassword) {
+        if (!currentPassword) {
+            alert('Please enter your current password');
+            return;
+        }
+        if (!newPassword) {
+            alert('Please enter a new password');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            alert('New passwords do not match');
+            return;
+        }
+        if (newPassword.length < 6) {
+            alert('Password must be at least 6 characters long');
+            return;
+        }
+    }
+
+    const updates = {
+        first_name: firstName,
+        last_name: lastName,
+        phone: document.getElementById('profile-phone').value.trim()
+    };
+
+    if (newPassword) {
+        updates.current_password = currentPassword;
+        updates.new_password = newPassword;
+    }
+
+    updateUserProfile(updates);
+}
+
+async function updateUserProfile(updates) {
+    try {
+        const response = await fetch('/HTML_PHP/auth.php?action=updateProfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                first_name: updates.first_name,
+                last_name: updates.last_name,
+                phone: updates.phone,
+                current_password: updates.current_password || '',
+                new_password: updates.new_password || ''
+            })
+        });
+
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse response:', e);
+            alert('Server error. Please try again.');
+            return;
+        }
+        
+        console.log('Response data:', data);
+
+        if (data.success) {
+            // Update localStorage with fresh data
+            const user = getUserData();
+            user.first_name = updates.first_name;
+            user.last_name = updates.last_name;
+            user.phone = updates.phone;
+            localStorage.setItem('user_data', JSON.stringify(user));
+
+            // Immediately update the welcome message
+            const fullNameDisplay = `${updates.first_name} ${updates.last_name}`;
+            
+            const welcomeEl = document.getElementById('employee-welcome');
+            if (welcomeEl) {
+                welcomeEl.textContent = `Welcome, ${updates.first_name} ${updates.last_name}`;
+            }
+            
+            // Clear password fields only
+            document.getElementById('profile-current-password').value = '';
+            document.getElementById('profile-new-password').value = '';
+            document.getElementById('profile-confirm-password').value = '';
+            
+            // Update form with new values
+            document.getElementById('profile-full-name').value = fullNameDisplay;
+            document.getElementById('profile-phone').value = updates.phone;
+            
+            console.log('Updated employee profile UI with:', fullNameDisplay);
+            
+            alert('Profile updated successfully!');
+        } else {
+            alert(data.message || 'Error updating profile');
+        }
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('Error updating profile');
+    }
+}
+
+// ========================================
 // INITIALIZATION
 // ========================================
 
@@ -596,6 +794,7 @@ function initEmployeePage() {
     initEmployeeTabs();
     initModals();
     initLogout();
+    initProfileHandlers();
 }
 
 // Wrapper function for router compatibility
@@ -610,5 +809,6 @@ window.editProduct = editProduct;
 window.editStock = editStock;
 window.deleteProduct = deleteProduct;
 window.viewOrder = viewOrder;
+window.resetProfileForm = resetProfileForm;
 
 // Auto-init removed to prevent double initialization by router
