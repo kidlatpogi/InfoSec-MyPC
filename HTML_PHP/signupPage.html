@@ -1,0 +1,80 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop">Shop</a>
+            <div id="auth-nav" style="display:flex;gap:1rem;align-items:center;">
+                <a href="/login" id="login-link">Login</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main class="container" style="min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center">
+    <section class="auth-panel">
+        <div class="auth-header">
+            <h2>Create Your Account</h2>
+            <p style="color:var(--text-light);margin-top:0.5rem;font-size:0.9rem">Join us to start shopping premium PC
+                components</p>
+        </div>
+        <form id="signup-form" novalidate>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-field">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" placeholder="John" required autocomplete="given-name">
+                    <span class="error" id="first-name-error"></span>
+                </div>
+                <div class="form-field">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" placeholder="Doe" required autocomplete="family-name">
+                    <span class="error" id="last-name-error"></span>
+                </div>
+                <div class="form-field" style="grid-column:1/-1;">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
+                    <span class="error" id="email-error"></span>
+                </div>
+                <div class="form-field" style="grid-column:1/-1;">
+                    <label for="phone">Phone (optional)</label>
+                    <input type="tel" id="phone" placeholder="09123456789" autocomplete="tel">
+                    <span class="error" id="phone-error"></span>
+                </div>
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <div style="position:relative;">
+                        <input type="password" id="password" placeholder="••••••••" required
+                            autocomplete="new-password">
+                        <svg onclick="togglePassword('password')"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:20px;height:20px;"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </div>
+                    <span class="error" id="password-error"></span>
+                </div>
+                <div class="form-field">
+                    <label for="confirm-password">Confirm Password</label>
+                    <div style="position:relative;">
+                        <input type="password" id="confirm-password" placeholder="••••••••" required
+                            autocomplete="new-password">
+                        <svg onclick="togglePassword('confirm-password')"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:20px;height:20px;"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </div>
+                    <span class="error" id="confirm-password-error"></span>
+                </div>
+            </div>
+            <button class="primary" type="submit" style="margin-top:1.5rem;width:100%;">Create Account</button>
+        </form>
+        <p style="text-align:center;margin-top:1rem;color:var(--text-light);">Already have an account? <a href="/login"
+                style="color:var(--primary);text-decoration:none;">Sign in</a></p>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container">© MyPC — Component Store</div>
+</footer>

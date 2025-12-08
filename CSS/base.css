@@ -1,0 +1,75 @@
+/* Base Styles - Variables, Typography, Layout */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root{
+    --bg:#ffffff;
+    --surface:#f8f9fa;
+    --card:#ffffff;
+    --text:#1a1a1a;
+    --text-light:#666666;
+    --accent:#000000;
+    --border:#e0e0e0;
+    --transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}
+
+#app{min-height:100vh;display:flex;flex-direction:column}
+
+.container{max-width:1200px;margin:0 auto;padding:1rem;flex:1}
+.site-header{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:0.75rem 0}
+
+.logo{font-weight:800;color:var(--accent);text-decoration:none;font-size:1.5rem;letter-spacing:-0.5px;transition:var(--transition)}
+.logo:hover{transform:scale(1.02)}
+
+.main-nav{display:flex;gap:2rem;align-items:center}
+.main-nav a{color:var(--text-light);text-decoration:none;font-weight:500;transition:var(--transition)}
+.main-nav a:hover{color:var(--accent)}
+
+.site-footer{padding:2rem 1rem;text-align:center;color:var(--text-light);margin-top:3rem;border-top:1px solid var(--border);background:var(--surface)}
+
+/* Animations */
+@keyframes slideInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes pageTransitionOut{from{opacity:1}to{opacity:0}}
+@keyframes pageTransitionIn{from{opacity:0}to{opacity:1}}
+
+/* Add to cart animations */
+@keyframes cartPulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes cartFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--fly-x),var(--fly-y)) scale(0.3)}}
+
+/* Page transition styles */
+body.page-exit{animation:pageTransitionOut 0.3s ease-out forwards}
+body.page-enter{animation:pageTransitionIn 0.3s ease-out}
+
+/* Mobile first - base responsive */
+@media (max-width:768px){
+  .header-inner{gap:1rem}
+  .main-nav{gap:1rem;flex-wrap:wrap}
+}
+
+@media (max-width:480px){
+  .container{padding:0.75rem}
+  .header-inner{flex-direction:column;gap:0.75rem}
+  .main-nav{justify-content:center}
+}
+
+/* Additional responsive header tweaks */
+@media (max-width:768px) {
+  .header-inner { flex-wrap: wrap; align-items: center; padding: 0.6rem 0; }
+  .main-nav { order: 1; width: 100%; justify-content: center; gap: 0.75rem; }
+  .header-right { order: 2; margin-left: 0; justify-content: flex-end; width: auto; }
+}
+
+@media (max-width:480px) {
+  /* Simplify header on very small screens */
+  .header-inner { flex-direction: row; align-items: center; gap: 0.5rem; }
+  .main-nav { display: none; } /* reduce clutter on cramped screens */
+  .header-right { gap: 0.5rem; }
+}
