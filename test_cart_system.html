@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart System Test - MyPC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { 
+            color: #667eea; 
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        .checklist {
+            list-style: none;
+        }
+        .checklist li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.2s;
+        }
+        .checklist li:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        .checklist li::before {
+            content: '☐';
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .info-box strong {
+            color: #1e40af;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning-box strong {
+            color: #92400e;
+        }
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status.ready {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.testing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Cart System Testing Guide</h1>
+        <p style="color: #6c757d; margin-bottom: 2rem;">
+            Complete cart functionality for customer dashboard - Real-time updates, add/remove items, and checkout process
+        </p>
+
+        <div class="info-box">
+            <strong>✅ Implementation Status:</strong> <span class="status ready">READY FOR TESTING</span>
+            <br><br>
+            All cart features have been implemented and are ready to test on the customer dashboard.
+        </div>
+
+        <div class="section">
+            <h2>🎯 Core Features Implemented</h2>
+            <ul class="checklist">
+                <li>Real-time cart count badge in header navigation</li>
+                <li>Add multiple products to cart with custom quantities</li>
+                <li>Slide-in cart drawer with all items displayed</li>
+                <li>Increase/decrease item quantities with +/- buttons</li>
+                <li>Remove individual items with confirmation</li>
+                <li>Live cart total calculation (₱ format)</li>
+                <li>Checkout button (disabled when cart empty)</li>
+                <li>Checkout page with order summary</li>
+                <li>Role-based access (customers only)</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Testing Workflow</h2>
+            <ol style="list-style-position: inside;">
+                <li style="margin: 1rem 0;">
+                    <strong>Start Server:</strong> Make sure PHP development server is running on port 8000
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Login as Customer:</strong> Create or use existing customer account (not employee/admin)
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Browse Products:</strong> Navigate to shop/home page to see product listings
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Add to Cart:</strong> Click "Add to cart" button on products
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>View Cart:</strong> Click the "Cart" button in header to open cart drawer
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Modify Quantities:</strong> Use +/- buttons to change quantities
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Remove Items:</strong> Click red "Remove" button to delete items
+                </li>
+                <li style="margin: 1rem 0;">
+                    <strong>Checkout:</strong> Click "Checkout" button when ready to complete order
+                </li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>📋 Manual Test Checklist</h2>
+            <div style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <h3 style="color: #667eea; margin-bottom: 0.5rem;">Customer Role Tests:</h3>
+                <ul class="checklist">
+                    <li>Cart badge shows "0" initially</li>
+                    <li>Add product → Badge updates to "1"</li>
+                    <li>Add more products → Badge shows total quantity</li>
+                    <li>Open cart drawer → See all items listed</li>
+                    <li>Each item shows: image, name, variant, price, quantity</li>
+                    <li>Click "+" → Quantity increases, total updates</li>
+                    <li>Click "−" → Quantity decreases, total updates</li>
+                    <li>Click "−" at qty 1 → Confirmation prompt appears</li>
+                    <li>Click "Remove" → Confirmation, then item deleted</li>
+                    <li>Cart total matches sum of all items</li>
+                    <li>Empty cart → Checkout button disabled</li>
+                    <li>With items → Checkout button enabled</li>
+                    <li>Click Checkout → Navigate to checkout page</li>
+                    <li>Checkout page shows all cart items</li>
+                    <li>Order total matches cart total</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <h3 style="color: #dc2626; margin-bottom: 0.5rem;">Staff Role Tests (Should NOT see cart):</h3>
+                <ul class="checklist">
+                    <li>Login as Employee → Cart button hidden</li>
+                    <li>Login as Admin → Cart button hidden</li>
+                    <li>Login as Superadmin → Cart button hidden</li>
+                    <li>Add to cart buttons hidden on all products</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Important Notes:</strong>
+            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                <li>Cart requires user to be logged in</li>
+                <li>Cart persists in database (not just session)</li>
+                <li>Stock validation prevents over-ordering</li>
+                <li>All actions update in real-time (no page refresh needed)</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Quick Start</h2>
+            <div class="button-group">
+                <a href="http://localhost:8000" class="btn btn-success" target="_blank">
+                    Open Application →
+                </a>
+                <a href="http://localhost:8000/login" class="btn" target="_blank">
+                    Login Page →
+                </a>
+                <a href="http://localhost:8000/signup" class="btn btn-secondary" target="_blank">
+                    Create Account →
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Technical Details</h2>
+            <div style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <p><strong>Frontend Files:</strong></p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><code>JS/script.js</code> - Cart logic, add/remove functions</li>
+                    <li><code>JS/checkout.js</code> - Checkout page handler</li>
+                    <li><code>CSS/cart.css</code> - Cart drawer styles</li>
+                    <li><code>CSS/components.css</code> - Button and form styles</li>
+                </ul>
+                
+                <p style="margin-top: 1rem;"><strong>Backend Files:</strong></p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><code>HTML_PHP/cart.php</code> - Cart API (GET/POST operations)</li>
+                    <li><code>HTML_PHP/auth.php</code> - User authentication</li>
+                </ul>
+
+                <p style="margin-top: 1rem;"><strong>Database Tables:</strong></p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><code>carts</code> - User shopping carts</li>
+                    <li><code>cart_items</code> - Individual cart items</li>
+                    <li><code>product_variants</code> - Product variants with stock</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Troubleshooting</h2>
+            <div style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <p><strong>If cart badge doesn't update:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Check browser console for errors</li>
+                    <li>Verify you're logged in as customer</li>
+                    <li>Clear browser cache and reload</li>
+                </ul>
+                
+                <p style="margin-top: 1rem;"><strong>If "Add to cart" fails:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Ensure product has variants in database</li>
+                    <li>Check variant stock is > 0</li>
+                    <li>Verify user is authenticated</li>
+                </ul>
+                
+                <p style="margin-top: 1rem;"><strong>If checkout button disabled:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Cart must have at least 1 item with quantity > 0</li>
+                    <li>Try refreshing the cart drawer</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e9ecef;">
+            <p style="color: #6c757d;">
+                <strong>All features implemented and ready for testing! 🎉</strong><br>
+                Open the application and start testing the cart system.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
