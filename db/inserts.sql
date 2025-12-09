@@ -157,14 +157,14 @@ INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) V
     INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
     (21, '/assets/AMD Motherboard/AORUS X670 ELITE AX.png', 'AORUS X670 ELITE AX', 0),
     (22, '/assets/AMD Motherboard/ASROCK B550 PHANTOM GAMING 4_AC.webp', 'ASRock B550 Phantom Gaming 4 AC', 0),
-    (23, '/assets/AMD Motherboard/ASUS CROSSHAIR X670E-E.jpg', 'ASUS ROG Crosshair X670E-E', 0),
-    (24, '/assets/AMD Motherboard/ASUS PRIME B550M-A_AC.webp', 'ASUS Prime B550M-A AC', 0),
-    (25, '/assets/AMD Motherboard/ASUS ROG STRIX X870-E-E GAMING.webp', 'ASUS ROG Strix X870-E-E Gaming', 0),
-    (26, '/assets/AMD Motherboard/ASUS ROG STRIX X870-F GAMING.webp', 'ASUS ROG Strix X870-F Gaming', 0),
-    (27, '/assets/AMD Motherboard/GIGABYTE B850 AORUS ELITE AX.webp', 'Gigabyte B850 Aorus Elite AX', 0),
-    (28, '/assets/AMD Motherboard/GIGABYTE X870E AORUS MASTER.jpg', 'Gigabyte X870E Aorus Master', 0),
-    (29, '/assets/AMD Motherboard/MSI MPG B850 EDGE WIFI.webp', 'MSI MPG B850 Edge WiFi', 0),
-    (30, '/assets/AMD Motherboard/MSI MPG X870E E CARBON WIFI.jpg', 'MSI MPG X870E-E Carbon WiFi', 0);
+    (23, '/assets/AMD Motherboard/ASROCK B650M HDV_M2.jpg', 'ASRock B650M HDV M.2', 0),
+    (24, '/assets/AMD Motherboard/ASROCK X870 STEEL LEGEND WIFI.webp', 'ASRock X870 Steel Legend WiFi', 0),
+    (25, '/assets/AMD Motherboard/ASUS ROG Strix B550-F Gaming_.webp', 'ASUS ROG Strix B550-F Gaming', 0),
+    (26, '/assets/AMD Motherboard/ASUS TUF GAMING B650-PLUS.png', 'ASUS TUF Gaming B650-Plus', 0),
+    (27, '/assets/AMD Motherboard/GIGABYTE B850M GAMING X WIFI6E.png', 'Gigabyte B850M Gaming X WiFi6E', 0),
+    (28, '/assets/AMD Motherboard/MSI MAG B850 Tomahawk MAX WIFI_.webp', 'MSI MAG B850 Tomahawk Max WiFi', 0),
+    (29, '/assets/AMD Motherboard/MSI MAG X870E TOMAHAWK WIFI.webp', 'MSI MAG X870E Tomahawk WiFi', 0),
+    (30, '/assets/AMD Motherboard/ROG STRIX X670E-GAMING WIFI.png', 'ROG STRIX X670E Gaming WiFi', 0);
 
     -- =====================================================
     -- CASE PRODUCTS (15 items, IDs 31-45)
@@ -463,6 +463,48 @@ INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) V
     (83, '/assets/HDD/Seagate Exos X16 enterprise_.jpg', 'Seagate Exos X16 16TB', 0),
     (84, '/assets/HDD/Seagate BarraCuda Pro 12TB_.webp', 'Seagate BarraCuda Pro 12TB', 0),
     (85, '/assets/HDD/Western Digital (WD) Black 8TB.webp', 'WD Black 8TB', 0);
+
+    -- =====================================================
+    -- PSU PRODUCTS (10 items, IDs 86-95)
+    -- =====================================================
+
+    INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
+    (6, 'PSU-CORSAIR-RM850X', 'Corsair RM850x', 'corsair-rm850x', '850W 80+ Gold Modular', '850W 80+ Gold certified fully modular power supply, 12-year warranty, 105 °C capacitor, flat cables, quiet 135 mm fan, ideal for high-end gaming and workstation builds.', 1),
+    (6, 'PSU-EVGA-SUPERNOVA-1000', 'EVGA SuperNOVA 1000 P5', 'evga-supernova-1000-p5', '1000W 80+ Platinum Semi-Modular', '1000W 80+ Platinum semi-modular PSU, 10-year warranty, 130mm fan, ECO mode, excellent 12-year lifespan for enthusiast overclocking and server workloads.', 1),
+    (6, 'PSU-THERMALTAKE-TOUGHPOWER-750', 'Thermaltake Toughpower GF3 750W', 'thermaltake-toughpower-gf3-750w', '750W 80+ Gold Full Modular', '750W 80+ Gold fully modular, 140mm fan, 135°C capacitors, modular cables for clean builds, 12-year warranty, perfect for mid-range gaming systems.', 1),
+    (6, 'PSU-COOLERMASTER-MWE-GOLD-750', 'Cooler Master MWE Gold V3 750W', 'cm-mwe-gold-v3-750w', '750W 80+ Gold Fully Modular', '750W 80+ Gold certified with full modularity, quiet 120mm fan, compact size, 10-year warranty, great for balanced gaming builds.', 1),
+    (6, 'PSU-GIGABYTE-UD750GM', 'Gigabyte UD750GM', 'gigabyte-ud750gm', '750W 80+ Gold Semi-Modular', '750W 80+ Gold semi-modular PSU, 105°C Japanese capacitors, 3-year warranty, efficient and reliable power for mainstream systems.', 1),
+    (6, 'PSU-MSI-MPG-A850G', 'MSI MPG A850G', 'msi-mpg-a850g', '850W 80+ Gold Modular', '850W 80+ Gold fully modular, 12-year warranty, 135mm fan, excellent stability for high-performance gaming rigs and streaming setups.', 1),
+    (6, 'PSU-NZXT-C1000', 'NZXT C1000', 'nzxt-c1000', '1000W 80+ Gold Fully Modular', '1000W 80+ Gold with modular cables, 10-year warranty, designed for enthusiast builds, extreme silence with semi-passive operation.', 1),
+    (6, 'PSU-CORSAIR-SF750', 'Corsair SF750', 'corsair-sf750', '750W 80+ Platinum SFX Full Modular', '750W 80+ Platinum SFX form factor, compact for ITX builds, 12-year warranty, quiet performance in space-constrained builds.', 1),
+    (6, 'PSU-SUPER-FLOWER-LEADEX-III', 'Super Flower Leadex III Gold', 'super-flower-leadex-iii-gold', '850W 80+ Gold Semi-Modular', '850W 80+ Gold semi-modular, Japanese quality capacitors, excellent efficiency, great for high-end builds with reliable power delivery.', 1),
+    (6, 'PSU-ASUS-ROG-THOR-1000', 'ASUS ROG THOR 1000W', 'asus-rog-thor-1000w', '1000W 80+ Platinum Premium Modular', '1000W 80+ Platinum fully modular with OLED display, premium build quality, 12-year warranty, overkill power for extreme enthusiast systems.', 1);
+
+    -- PSU Variants
+    INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
+    (86, 'PSU-CORSAIR-RM850X-BLK', 'Standard', 7995.00, 8),
+    (87, 'PSU-EVGA-SN1000-P5', 'Standard', 9995.00, 5),
+    (88, 'PSU-TT-GF3-750', 'Standard', 6495.00, 10),
+    (89, 'PSU-CM-MWE-750', 'Standard', 5995.00, 12),
+    (90, 'PSU-GB-UD750', 'Standard', 5495.00, 8),
+    (91, 'PSU-MSI-A850G', 'Standard', 8495.00, 6),
+    (92, 'PSU-NZXT-C1000', 'Standard', 9495.00, 4),
+    (93, 'PSU-CORSAIR-SF750', 'Standard', 8995.00, 5),
+    (94, 'PSU-SF-LEADEX-850', 'Standard', 7495.00, 7),
+    (95, 'PSU-ASUS-ROG-1000', 'Standard', 12995.00, 3);
+
+    -- PSU Images
+    INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
+    (86, '/assets/PSU/Corsair RM850x.jpg', 'Corsair RM850x', 0),
+    (87, '/assets/PSU/EVGA SuperNOVA 1000 P5.png', 'EVGA SuperNOVA 1000 P5', 0),
+    (88, '/assets/PSU/Thermaltake-Toughpower-GF3-750W-850W-1000W-1200W-80Plus-Gold-Power-Supply-btz-ph-1.webp', 'Thermaltake Toughpower GF3 750W', 0),
+    (89, '/assets/PSU/COOLERMASTER MWE GOLD V3 750W.png', 'Cooler Master MWE Gold V3 750W', 0),
+    (90, '/assets/PSU/Gigabyte UD750GM.jpg', 'Gigabyte UD750GM', 0),
+    (91, '/assets/PSU/MSI MPG A850G.jpg', 'MSI MPG A850G', 0),
+    (92, '/assets/PSU/NZXT C1000.jpg', 'NZXT C1000', 0),
+    (93, '/assets/PSU/CORSAIR SF750.webp', 'Corsair SF750', 0),
+    (94, '/assets/PSU/Super Flower Leadex III Gold.jpg', 'Super Flower Leadex III Gold', 0),
+    (95, '/assets/PSU/ROG THOR 1000W.webp', 'ASUS ROG THOR 1000W', 0);
 
     -- =====================================================
     -- USERS TABLE - Add Superadmin Account
