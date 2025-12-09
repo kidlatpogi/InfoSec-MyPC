@@ -198,120 +198,56 @@ class Router {
     reloadPageScripts(page) {
         document.querySelectorAll('script[data-page]').forEach(script => script.remove());
 
-        const script = document.createElement('script');
-        script.src = this.baseRoot + '/JS/script.js?v=' + Date.now();
-        script.dataset.page = page;
-        script.defer = false;
-        script.onload = () => {
-            if (window.initializePageScript) {
-                window.initializePageScript();
-            }
-            setTimeout(() => {
-                if (window.updateAuthNav) {
-                    window.updateAuthNav();
-                }
-            }, 50);
+        // Helper function to load a script and wait for it to complete
+        const loadScript = (src) => {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.dataset.page = page;
+                script.defer = false;
+                script.onload = () => resolve();
+                script.onerror = () => resolve(); // Continue even if script fails to load
+                document.body.appendChild(script);
+            });
         };
-        document.body.appendChild(script);
 
-        // Load auth script for login/signup pages
-        if (page === 'login' || page === 'signup') {
-            setTimeout(() => {
-                const authScript = document.createElement('script');
-                authScript.src = this.baseRoot + '/JS/auth.js?v=' + Date.now();
-                authScript.dataset.page = page;
-                authScript.defer = false;
-                document.body.appendChild(authScript);
-            }, 100);
-        }
+        // Load page-specific scripts first (in sequence), then script.js
+        (async () => {
+            try {
+                // Load page-specific scripts in order before script.js
+                if (page === 'auth' || page === 'login' || page === 'signup') {
+                    await loadScript(this.baseRoot + '/JS/auth.js?v=' + Date.now());
+                } else if (page === 'profile') {
+                    await loadScript(this.baseRoot + '/JS/profile.js?v=' + Date.now());
+                } else if (page === 'checkout') {
+                    await loadScript(this.baseRoot + '/JS/checkout.js?v=' + Date.now());
+                } else if (page === 'admin') {
+                    await loadScript(this.baseRoot + '/JS/admin.js?v=' + Date.now());
+                } else if (page === 'employee') {
+                    await loadScript(this.baseRoot + '/JS/employee.js?v=' + Date.now());
+                } else if (page === 'superadmin') {
+                    await loadScript(this.baseRoot + '/JS/superadmin.js?v=' + Date.now());
+                }
 
-        // Load profile script for profile page
-        if (page === 'profile') {
-            setTimeout(() => {
-                const profileScript = document.createElement('script');
-                profileScript.src = this.baseRoot + '/JS/profile.js?v=' + Date.now();
-                profileScript.dataset.page = page;
-                profileScript.defer = false;
-                profileScript.onload = () => {
-                    if (window.initProfilePage) {
-                        window.initProfilePage();
+                // Now load script.js which will call the page-specific init functions
+                await loadScript(this.baseRoot + '/JS/script.js?v=' + Date.now());
+
+                // Finally load page transition script
+                await loadScript(this.baseRoot + '/JS/pageTransition.js?v=' + Date.now());
+
+                // Call initialization and update functions after everything is loaded
+                if (window.initializePageScript) {
+                    window.initializePageScript();
+                }
+                setTimeout(() => {
+                    if (window.updateAuthNav) {
+                        window.updateAuthNav();
                     }
-                };
-                document.body.appendChild(profileScript);
-            }, 100);
-        }
-
-        // Load checkout script for checkout page
-        if (page === 'checkout') {
-            setTimeout(() => {
-                const checkoutScript = document.createElement('script');
-                checkoutScript.src = this.baseRoot + '/JS/checkout.js?v=' + Date.now();
-                checkoutScript.dataset.page = page;
-                checkoutScript.defer = false;
-                checkoutScript.onload = () => {
-                    if (window.initCheckoutPage) {
-                        window.initCheckoutPage();
-                    }
-                };
-                document.body.appendChild(checkoutScript);
-            }, 100);
-        }
-
-        // Load admin script for admin page
-        if (page === 'admin') {
-            setTimeout(() => {
-                const adminScript = document.createElement('script');
-                adminScript.src = this.baseRoot + '/JS/admin.js?v=' + Date.now();
-                adminScript.dataset.page = page;
-                adminScript.defer = false;
-                adminScript.onload = () => {
-                    if (window.initAdminPage) {
-                        window.initAdminPage();
-                    }
-                };
-                document.body.appendChild(adminScript);
-            }, 100);
-        }
-
-        // Load employee script for employee page
-        if (page === 'employee') {
-            setTimeout(() => {
-                const employeeScript = document.createElement('script');
-                employeeScript.src = this.baseRoot + '/JS/employee.js?v=' + Date.now();
-                employeeScript.dataset.page = page;
-                employeeScript.defer = false;
-                employeeScript.onload = () => {
-                    if (window.initEmployeePage) {
-                        window.initEmployeePage();
-                    }
-                };
-                document.body.appendChild(employeeScript);
-            }, 100);
-        }
-
-        // Load superadmin script for superadmin page
-        if (page === 'superadmin') {
-            setTimeout(() => {
-                const superadminScript = document.createElement('script');
-                superadminScript.src = this.baseRoot + '/JS/superadmin.js?v=' + Date.now();
-                superadminScript.dataset.page = page;
-                superadminScript.defer = false;
-                superadminScript.onload = () => {
-                    if (window.initSuperadminPage) {
-                        window.initSuperadminPage();
-                    }
-                };
-                document.body.appendChild(superadminScript);
-            }, 100);
-        }
-
-        setTimeout(() => {
-            const transitionScript = document.createElement('script');
-            transitionScript.src = this.baseRoot + '/JS/pageTransition.js?v=' + Date.now();
-            transitionScript.dataset.page = page;
-            transitionScript.defer = false;
-            document.body.appendChild(transitionScript);
-        }, 100);
+                }, 50);
+            } catch (error) {
+                console.error('Error loading page scripts:', error);
+            }
+        })();
     }
 }
 

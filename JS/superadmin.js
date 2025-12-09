@@ -153,6 +153,9 @@ function initSuperadminTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
+  // Mark tabs as ready to show them
+  document.body.classList.add('tabs-ready');
+
   tabBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const tabName = btn.getAttribute('data-tab');
@@ -182,6 +185,11 @@ function initSuperadminTabs() {
     loadTabData(savedTab);
   } else {
     // Fallback to admins tab if saved tab not found
+    const firstTabBtn = document.querySelector('[data-tab="admins"]');
+    if (firstTabBtn) {
+      firstTabBtn.classList.add('active');
+      document.getElementById('admins-tab')?.classList.add('active');
+    }
     loadTabData('admins');
   }
 
