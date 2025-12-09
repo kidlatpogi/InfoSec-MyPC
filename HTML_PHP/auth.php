@@ -14,6 +14,9 @@ ini_set('session.use_only_cookies', 1);
 
 session_start();
 
+// Force JSON response for all API calls
+header('Content-Type: application/json');
+
 // Regenerate session ID on login to prevent session fixation
 if (isset($_POST['action']) && $_POST['action'] === 'login' && !isset($_SESSION['user_id'])) {
     session_regenerate_id(true);
@@ -296,20 +299,24 @@ try {
     }
     
     // Verify password for sensitive operations
-    elseif ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'verifyPassword') {
+    elseif ($method === 'POST' && (isset($_GET['action']) && $_GET['action'] === 'verifyPassword' || 
+            isset($_POST['action']) && $_POST['action'] === 'verifyPassword')) {
+        // Check if user is logged in
         if (!isset($_SESSION['user_id'])) {
             sendError('Not logged in', 401);
         }
         
-        if (!isset($_POST['password'])) {
+        // Check if password is provided
+        if (empty($_POST['password'])) {
             sendError('Password is required');
         }
         
         $user_id = $_SESSION['user_id'];
         $password = $_POST['password'];
         
-        // Get user's password hash
+        // Get user's password hash from database
         $user = $db->fetchOne("SELECT password_hash FROM users WHERE id = ?", [$user_id]);
+        
         if (!$user) {
             sendError('User not found', 404);
         }
