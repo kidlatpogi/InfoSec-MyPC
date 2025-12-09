@@ -96,30 +96,48 @@ async function verifyPassword() {
                 return;
             }
 
+            // Compute the correct API path
+            const apiPath = (window.router && window.router.baseRoot) 
+              ? window.router.baseRoot + '/HTML_PHP/auth.php?action=verifyPassword'
+              : '/InfoSec-MyPC/HTML_PHP/auth.php?action=verifyPassword';
+            
             // Verify password via API
-            fetch('/HTML_PHP/auth.php?action=verifyPassword', {
+            fetch(apiPath, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({
-                    password: password
-                })
+                body: 'password=' + encodeURIComponent(password)
             })
-                .then(res => res.json())
+                .then(res => {
+                    // Check if response is actually JSON
+                    const contentType = res.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Expected JSON response but got ${contentType || 'unknown content type'}`);
+                    }
+                    return res.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('Response text:', text.substring(0, 500));
+                            throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
+                        }
+                    });
+                })
                 .then(data => {
                     passwordModal.remove();
                     if (data.success) {
                         resolve(true);
                     } else {
-                        alert('Incorrect password');
+                        alert('Incorrect password: ' + (data.error || 'Unknown error'));
                         resolve(false);
                     }
                 })
                 .catch(error => {
                     passwordModal.remove();
                     console.error('Password verification failed:', error);
-                    alert('Error verifying password');
+                    alert('Error verifying password: ' + error.message);
                     resolve(false);
                 });
         });

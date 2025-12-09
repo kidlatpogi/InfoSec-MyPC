@@ -3,7 +3,11 @@
  * Centralized API calls to backend
  */
 
-const API_BASE = '/HTML_PHP';
+// Compute API_BASE dynamically based on router's baseRoot
+let API_BASE = '/HTML_PHP';
+if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
+    API_BASE = window.router.baseRoot + '/HTML_PHP';
+}
 
 // Helper function to make API calls
 async function apiCall(endpoint, options = {}) {
