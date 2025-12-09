@@ -96,15 +96,35 @@ async function verifyPassword() {
         return;
       }
 
+      // Compute the correct API path
+      const apiPath = (window.router && window.router.baseRoot) 
+        ? window.router.baseRoot + '/HTML_PHP/auth.php?action=verifyPassword'
+        : '/InfoSec-MyPC/HTML_PHP/auth.php?action=verifyPassword';
+      
       // Verify password via API
-      fetch('/InfoSec-MyPC/HTML_PHP/auth.php?action=verifyPassword', {
+      fetch(apiPath, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'password=' + encodeURIComponent(password),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          // Check if response is actually JSON
+          const contentType = res.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error(`Expected JSON response but got ${contentType || 'unknown content type'}`);
+          }
+          return res.text().then(text => {
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error('Response text:', text.substring(0, 500));
+              throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
+            }
+          });
+        })
         .then((data) => {
           passwordModal.remove();
           console.log('Password verification response:', data);
