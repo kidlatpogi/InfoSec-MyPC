@@ -62,6 +62,18 @@
     display: block;
 }
 
+/* Prevent flicker on page load - hide all tabs until JS determines which one to show */
+body:not(.tabs-ready) .tab-content {
+    opacity: 0;
+    visibility: hidden;
+}
+
+body.tabs-ready .tab-content.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .tab-header {
     display: flex;
     justify-content: space-between;

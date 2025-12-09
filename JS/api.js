@@ -205,12 +205,12 @@ const CartAPI = {
             product_id: productId,
             quantity: quantity
         };
-        
+
         // Only add variant_id if it's a valid number
         if (variantId !== null && variantId !== undefined && variantId !== '') {
             params.variant_id = variantId;
         }
-        
+
         const body = toFormData(params);
 
         return await apiCall('cart.php', {

@@ -38,7 +38,7 @@ async function loadCheckoutData() {
             if (addressesData.addresses && addressesData.addresses.length > 0) {
                 // Get the first address (or primary address)
                 const address = addressesData.addresses[0];
-                
+
                 const addressEl = document.getElementById('address');
                 if (addressEl) {
                     addressEl.value = `${address.line1}${address.line2 ? ', ' + address.line2 : ''}`;
@@ -79,16 +79,16 @@ async function loadCheckoutItems() {
         if (!checkoutItemsEl) return;
 
         console.log('[loadCheckoutItems] Before loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
-        
+
         await loadCartFromBackend();
-        
+
         console.log('[loadCheckoutItems] After loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
 
         if (!window.CART_DATA || !window.CART_DATA.items || window.CART_DATA.items.length === 0) {
             console.warn('[loadCheckoutItems] Cart is empty or not loaded');
             checkoutItemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#d32f2f;">Your cart is empty. Please add items before checking out.</p>';
             if (checkoutTotalEl) checkoutTotalEl.textContent = formatPHP(0);
-            
+
             // Disable submit button
             const submitBtn = document.querySelector('#checkout-form button[type="submit"]');
             if (submitBtn) {
@@ -156,7 +156,7 @@ function initializeCheckoutForm() {
             const address = document.getElementById('address').value.trim();
             const city = document.getElementById('city').value.trim();
             const postal = document.getElementById('postal').value.trim();
-            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'cash';
 
             // Validate required fields
             if (!fullname || !email || !phone || !address || !city || !postal) {
@@ -164,14 +164,46 @@ function initializeCheckoutForm() {
                 return;
             }
 
-            // Submit order (this would typically call an API)
-            console.log('Order submitted:', {
-                fullname, email, phone, address, city, postal, paymentMethod
-            });
+            // Disable submit button during processing
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
 
-            // TODO: Call OrdersAPI.createOrder() here
-            alert('Order submitted successfully!');
-            window.router.navigateTo('/profile');
+            try {
+                // Create order without address (pass 0 which becomes null in backend)
+                // The shipping address will be stored as notes
+                const shippingInfo = `${fullname}\n${phone}\n${address}\n${city}, ${postal}`;
+                const orderData = await OrdersAPI.createOrder(0, paymentMethod, shippingInfo);
+
+                if (orderData.success) {
+                    // Clear cart from frontend
+                    window.CART_DATA = { items: [], subtotal: 0 };
+
+                    // Reload cart from backend (should be empty now)
+                    await loadCartFromBackend();
+
+                    // Update cart count
+                    if (window.updateCartCount) {
+                        window.updateCartCount();
+                    }
+
+                    alert('Order placed successfully! Order ID: ' + (orderData.order_id || 'N/A'));
+
+                    // Redirect to profile/orders page
+                    window.router?.navigateTo('/profile');
+                } else {
+                    throw new Error(orderData.message || 'Failed to create order');
+                }
+
+            } catch (error) {
+                console.error('Order creation error:', error);
+                alert('Error placing order: ' + error.message);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
 
         } catch (error) {
             console.error('Checkout error:', error);
@@ -180,11 +212,12 @@ function initializeCheckoutForm() {
     });
 }
 
+
 // ========================================
 // INITIALIZATION
 // ========================================
 
-window.initCheckoutPage = async function() {
+window.initCheckoutPage = async function () {
     console.log('[checkout.js] Initializing checkout page');
     await loadCheckoutData();
     initializeCheckoutForm();
