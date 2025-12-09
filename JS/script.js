@@ -74,6 +74,9 @@ function clearUserSession() {
     window.CURRENT_USER = null;
     localStorage.removeItem("mypc_user");
     localStorage.removeItem("mypc_user_data");
+
+    // Set logout flag to trigger other tabs
+    localStorage.setItem("mypc_logout_event", Date.now().toString());
 }
 
 // Unified logout helper
@@ -112,6 +115,40 @@ async function doLogout(ask = true) {
     }
 }
 
+// ========================================
+// CROSS-TAB LOGOUT SYNCHRONIZATION
+// ========================================
+
+// Listen for logout events from other tabs
+window.addEventListener('storage', function (e) {
+    // Check if logout event was triggered
+    if (e.key === 'mypc_logout_event') {
+        console.log('[Cross-tab Sync] Logout detected in another tab');
+
+        // Clear session data immediately
+        window.CURRENT_USER = null;
+
+        // Force a complete page reload to landing page (replace prevents back button)
+        window.location.replace("/");
+    }
+
+    // Also check if user data was removed (another way to detect logout)
+    if (e.key === 'mypc_user_data' && e.newValue === null) {
+        console.log('[Cross-tab Sync] User data cleared in another tab');
+
+        // Clear local reference
+        window.CURRENT_USER = null;
+
+        // Redirect to landing page if on a protected page
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/superadmin') || currentPath.includes('/admin') || currentPath.includes('/employee') || currentPath.includes('/profile')) {
+            // Force reload to ensure clean state
+            window.location.replace("/");
+        }
+    }
+});
+
+
 // Update auth navigation
 function updateAuthNav() {
     const authNav = document.getElementById("auth-nav");
@@ -133,7 +170,7 @@ function updateAuthNav() {
     } else {
         authNav.innerHTML = '<a href="/login" style="font-weight:600;margin-right:0.5rem">Login</a><a href="/signup" style="font-weight:600">Create account</a>';
     }
-    
+
     // Update cart visibility based on user role
     updateCartVisibility();
 }
@@ -143,14 +180,14 @@ function updateCartVisibility() {
     const cartToggle = document.getElementById("cart-toggle");
     const addToCartButtons = document.querySelectorAll("#prod-add, .add-to-cart, [data-action='add']");
     const user = getUserData();
-    
+
     // Hide cart for employee, admin, and superadmin roles
     const shouldHideCart = user && (user.role === 'employee' || user.role === 'admin' || user.role === 'superadmin');
-    
+
     if (cartToggle) {
         cartToggle.style.display = shouldHideCart ? 'none' : '';
     }
-    
+
     // Hide "Add to Cart" buttons for non-customer roles
     addToCartButtons.forEach(btn => {
         if (shouldHideCart) {
@@ -187,17 +224,17 @@ function syncAuthButton() {
 // Ensure image URL is properly wrapped through serve-image.php
 function ensureImageUrl(url) {
     if (!url) return '/assets/placeholder.jpg';
-    
+
     // If already wrapped with serve-image.php, return as-is
     if (url.includes('serve-image.php')) {
         return url;
     }
-    
+
     // If it's an /assets/ URL that wasn't wrapped, wrap it now
     if (url.startsWith('/assets/')) {
         return '/serve-image.php?path=' + encodeURIComponent(url);
     }
-    
+
     // Otherwise return as-is (could be a data URI or external URL)
     return url;
 }
@@ -356,7 +393,7 @@ async function renderProducts() {
     }
 
     const fragment = document.createDocumentFragment();
-    
+
     list.forEach((p) => {
         const el = document.createElement("article");
         el.className = "product";
@@ -387,12 +424,12 @@ async function renderProducts() {
         console.log("[renderProducts] Rendering product:", p.id, p.title, "with data-id on buttons");
         fragment.appendChild(el);
     });
-    
+
     grid.appendChild(fragment);
 
     renderPagination(data.pagination?.page || 1, data.pagination?.pages || 1);
     console.log("[renderProducts] Rendering complete");
-    
+
     // Update cart visibility based on user role
     updateCartVisibility();
 }
@@ -436,7 +473,7 @@ async function loadCartFromBackend() {
         console.log('[loadCartFromBackend] Fetching cart from API...');
         const data = await CartAPI.getCart();
         console.log('[loadCartFromBackend] API response:', data);
-        
+
         if (data && data.cart) {
             window.CART_DATA = data.cart;
             console.log('[loadCartFromBackend] Cart data set:', window.CART_DATA);
@@ -462,7 +499,7 @@ function updateCartCount() {
 async function addToCart(productSlug, qty = 1) {
     try {
         const user = getUserData();
-        
+
         if (!user) {
             alert("Please login to add items to cart");
             window.router?.navigateTo("/login");
@@ -471,7 +508,7 @@ async function addToCart(productSlug, qty = 1) {
 
         // Find product by slug
         const product = window.PRODUCTS.find(p => p.id === productSlug);
-        
+
         if (!product) {
             alert("Product not found");
             return;
@@ -480,7 +517,7 @@ async function addToCart(productSlug, qty = 1) {
         // Get variant if selected
         const variantSelect = document.querySelector(`.variant-select[data-id="${productSlug}"]`);
         const variantIdx = variantSelect ? parseInt(variantSelect.value || 0, 10) : 0;
-        
+
         // Get variant ID - if product has variants, use the selected one, otherwise use first available
         let variantId = null;
         if (product.variants && product.variants.length > 0) {
@@ -532,7 +569,7 @@ async function renderCartItems() {
     if (!window.CART_DATA.items || window.CART_DATA.items.length === 0 || totalQty === 0) {
         itemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Your cart is empty</p>';
         if (totalEl) totalEl.textContent = formatPHP(0);
-        
+
         // Disable checkout button when cart is empty
         const checkoutBtn = document.getElementById('checkout-btn');
         if (checkoutBtn) {
@@ -556,10 +593,10 @@ async function renderCartItems() {
     window.CART_DATA.items.forEach((item) => {
         const row = document.createElement("div");
         row.className = "cart-item";
-        
+
         const variantText = item.variant_title ? ` (${escapeHtml(item.variant_title)})` : '';
         const lineTotal = formatPHP(parseFloat(item.line_total || 0));
-        
+
         row.innerHTML = `
       <img src="${escapeHtml(ensureImageUrl(item.image_url))}" alt="${escapeHtml(item.name)}" onerror="this.src='/serve-image.php?path=%2Fassets%2Fplaceholder.jpg'">
       <div class="cart-details">
@@ -615,7 +652,7 @@ async function removeFromCart(cartItemId) {
         if (!confirm('Remove this item from cart?')) {
             return;
         }
-        
+
         await CartAPI.removeFromCart(cartItemId);
         await loadCartFromBackend();
         await renderCartItems();
@@ -701,7 +738,7 @@ if (!window.scriptChangeListenersAttached) {
 
     document.addEventListener("change", (e) => {
         const sel = e.target;
-        
+
         // Handle variant selection change
         if (sel.matches(".variant-select")) {
             const id = sel.getAttribute("data-id");
@@ -710,7 +747,7 @@ if (!window.scriptChangeListenersAttached) {
 
             const variant = prod.variants && prod.variants[parseInt(sel.value, 10)];
             if (!variant) return;
-            
+
             const variantPrice = parseFloat(variant.price || 0);
 
             // Update price in product card
@@ -732,27 +769,27 @@ if (!window.scriptChangeListenersAttached) {
             }
         }
     });
-    
+
     // Handle quantity input change
     document.addEventListener("input", (e) => {
         if (e.target.matches(".qty-input") || e.target.matches('input[type="number"][id*="qty"]')) {
             const input = e.target;
             const qty = Math.max(1, parseInt(input.value) || 1);
-            
+
             // Update price in product card
             const priceEl = input.closest(".product")?.querySelector(".price");
             if (priceEl) {
                 const basePrice = parseFloat(priceEl.getAttribute("data-base")) || 0;
                 priceEl.textContent = formatPHP(basePrice * qty);
             }
-            
+
             // Update price in product detail modal
             const modalPriceEl = document.querySelector(".product-detail-price");
             if (modalPriceEl && input.id && input.id.includes("modal-qty")) {
                 const basePrice = parseFloat(modalPriceEl.getAttribute("data-base")) || 0;
                 modalPriceEl.textContent = formatPHP(basePrice * qty);
             }
-            
+
             // Update price on single product page
             if (input.id === "prod-qty") {
                 const prodPriceEl = document.getElementById("prod-price");
@@ -827,7 +864,7 @@ function openProductDetail(productId) {
     modal.classList.add("open");
     backdrop.classList.add("open");
     console.log("[openProductDetail] Modal opened successfully");
-    
+
     // Update cart visibility for modal buttons
     updateCartVisibility();
 }
@@ -867,7 +904,7 @@ async function loadSingleProduct() {
         setText("prod-title", product.title);
         setText("prod-category", product.category_name);
         setText("prod-desc", product.description);
-        
+
         // Price and Variants
         const priceEl = document.getElementById("prod-price");
         let currentPrice = parseFloat(product.price);
@@ -878,51 +915,51 @@ async function loadSingleProduct() {
 
         // Handle variants if they exist
         if (product.variants && product.variants.length > 0) {
-             const qtyContainer = document.querySelector(".purchase-controls");
-             if (qtyContainer) {
-                 let variantContainer = document.getElementById("prod-variants-container");
-                 if (!variantContainer) {
-                     variantContainer = document.createElement("div");
-                     variantContainer.id = "prod-variants-container";
-                     variantContainer.style.marginBottom = "1rem";
-                     qtyContainer.parentNode.insertBefore(variantContainer, qtyContainer);
-                 }
-                 
-                 const options = product.variants.map((v, idx) => {
-                     return `<option value="${idx}" data-price="${v.price}" data-id="${v.id}">${v.title} - ${formatPHP(v.price)}</option>`;
-                 }).join("");
-                 
-                 variantContainer.innerHTML = `
+            const qtyContainer = document.querySelector(".purchase-controls");
+            if (qtyContainer) {
+                let variantContainer = document.getElementById("prod-variants-container");
+                if (!variantContainer) {
+                    variantContainer = document.createElement("div");
+                    variantContainer.id = "prod-variants-container";
+                    variantContainer.style.marginBottom = "1rem";
+                    qtyContainer.parentNode.insertBefore(variantContainer, qtyContainer);
+                }
+
+                const options = product.variants.map((v, idx) => {
+                    return `<option value="${idx}" data-price="${v.price}" data-id="${v.id}">${v.title} - ${formatPHP(v.price)}</option>`;
+                }).join("");
+
+                variantContainer.innerHTML = `
                     <label for="prod-variant-select" style="display:block;margin-bottom:0.5rem;font-weight:500;">Option</label>
                     <select id="prod-variant-select" class="variant-select" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:4px;">
                         ${options}
                     </select>
                  `;
-                 
-                 // Add change listener
-                 const select = document.getElementById("prod-variant-select");
-                 select.addEventListener("change", (e) => {
-                     const idx = e.target.value;
-                     const variant = product.variants[idx];
-                     if (variant) {
-                         const variantPrice = parseFloat(variant.price);
-                         if (priceEl) {
-                             priceEl.setAttribute("data-base", variantPrice);
-                             const qtyInput = document.getElementById("prod-qty");
-                             const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                             priceEl.textContent = formatPHP(variantPrice * qty);
-                         }
-                         const qtyInput = document.getElementById("prod-qty");
-                         if (qtyInput) qtyInput.max = variant.stock;
-                     }
-                 });
-                 
-                 // Trigger initial change
-                 select.dispatchEvent(new Event('change'));
-             }
+
+                // Add change listener
+                const select = document.getElementById("prod-variant-select");
+                select.addEventListener("change", (e) => {
+                    const idx = e.target.value;
+                    const variant = product.variants[idx];
+                    if (variant) {
+                        const variantPrice = parseFloat(variant.price);
+                        if (priceEl) {
+                            priceEl.setAttribute("data-base", variantPrice);
+                            const qtyInput = document.getElementById("prod-qty");
+                            const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                            priceEl.textContent = formatPHP(variantPrice * qty);
+                        }
+                        const qtyInput = document.getElementById("prod-qty");
+                        if (qtyInput) qtyInput.max = variant.stock;
+                    }
+                });
+
+                // Trigger initial change
+                select.dispatchEvent(new Event('change'));
+            }
         } else {
-             const qtyInput = document.getElementById("prod-qty");
-             if (qtyInput) qtyInput.max = product.stock;
+            const qtyInput = document.getElementById("prod-qty");
+            if (qtyInput) qtyInput.max = product.stock;
         }
 
         // Add to cart button
@@ -931,11 +968,11 @@ async function loadSingleProduct() {
             // Remove old listeners
             const newBtn = addBtn.cloneNode(true);
             addBtn.parentNode.replaceChild(newBtn, addBtn);
-            
+
             newBtn.onclick = async () => {
                 const qtyInput = document.getElementById("prod-qty");
                 const qty = qtyInput ? parseInt(qtyInput.value) : 1;
-                
+
                 let variantId = null;
                 const variantSelect = document.getElementById("prod-variant-select");
                 if (variantSelect) {
@@ -944,11 +981,11 @@ async function loadSingleProduct() {
                         variantId = product.variants[idx].id;
                     }
                 }
-                
+
                 try {
                     await CartAPI.addToCart(product.id, qty, variantId);
                     await loadCartFromBackend();
-                    
+
                     const originalText = newBtn.textContent;
                     newBtn.textContent = "✓ Added!";
                     newBtn.style.background = "#10b981";
@@ -967,7 +1004,7 @@ async function loadSingleProduct() {
         const container = document.querySelector(".product-detail");
         if (container) container.innerHTML = `<p class="error">Failed to load product details. ${e.message}</p>`;
     }
-    
+
     // Update cart visibility for this page
     updateCartVisibility();
 }
@@ -983,7 +1020,7 @@ async function initializePageScript() {
     await checkUserSession();
     updateAuthNav();
     syncAuthButton();
-    
+
     // Update cart visibility immediately
     updateCartVisibility();
 
@@ -1072,7 +1109,7 @@ async function initializePageScript() {
     // Add global quantity input validation and price update
     if (!window.qtyValidationAttached) {
         window.qtyValidationAttached = true;
-        
+
         document.addEventListener('input', (e) => {
             if (e.target.matches('.qty-input, input[type="number"][id*="qty"]')) {
                 let value = parseInt(e.target.value);

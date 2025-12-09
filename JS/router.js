@@ -104,6 +104,35 @@ class Router {
             window.CURRENT_PRODUCT_ID = prodMatch[1];
         }
 
+        // Auto-redirect logged-in users to their dashboard when visiting root
+        if (path === '/' && page === 'landing') {
+            const userData = this.getLoggedInUser();
+            if (userData && userData.role) {
+                // Redirect to appropriate dashboard based on role
+                let dashboardPath;
+                switch (userData.role.toLowerCase()) {
+                    case 'superadmin':
+                        dashboardPath = '/superadmin';
+                        break;
+                    case 'admin':
+                        dashboardPath = '/admin';
+                        break;
+                    case 'employee':
+                        dashboardPath = '/employee';
+                        break;
+                    default:
+                        // Regular users stay on landing page
+                        break;
+                }
+
+                if (dashboardPath) {
+                    // Redirect to dashboard
+                    this.navigateTo(dashboardPath);
+                    return;
+                }
+            }
+        }
+
         if (this.currentPage === page) return;
 
         this.currentPage = page;
@@ -114,6 +143,20 @@ class Router {
 
         this.loadPage(page);
     }
+
+    // Helper method to get logged-in user data
+    getLoggedInUser() {
+        try {
+            const userData = localStorage.getItem('mypc_user_data');
+            if (userData) {
+                return JSON.parse(userData);
+            }
+        } catch (e) {
+            console.error('Error reading user data:', e);
+        }
+        return null;
+    }
+
 
     loadPage(page) {
         const app = document.getElementById('app');

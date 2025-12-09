@@ -126,7 +126,6 @@ async function verifyPassword() {
     });
 }
 
-// ========================================
 // TAB NAVIGATION
 // ========================================
 
@@ -146,17 +145,40 @@ function initEmployeeTabs() {
             btn.classList.add('active');
             document.getElementById(`${tabName}-tab`)?.classList.add('active');
 
+            // Save the active tab to localStorage
+            localStorage.setItem('employee_active_tab', tabName);
+
             // Load data for the tab
             loadTabData(tabName);
         });
     });
 
-    // Load initial tab data
-    loadTabData('products');
+    // Restore the last active tab from localStorage, or default to 'products'
+    const savedTab = localStorage.getItem('employee_active_tab') || 'products';
+
+    // Find and activate the saved tab
+    const savedTabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+    if (savedTabBtn) {
+        // Remove active from all first
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Activate the saved tab
+        savedTabBtn.classList.add('active');
+        document.getElementById(`${savedTab}-tab`)?.classList.add('active');
+        loadTabData(savedTab);
+    } else {
+        // Fallback to products if saved tab doesn't exist
+        loadTabData('products');
+    }
+
+    // Mark tabs as ready to prevent flicker
+    document.body.classList.add('tabs-ready');
 
     // Setup search and filter listeners
     initEmployeeSearch();
 }
+
 
 // ========================================
 // SEARCH AND FILTERS
@@ -264,7 +286,7 @@ async function loadProducts() {
             const variants = product.variants || [];
             const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
             const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
-            
+
             row.innerHTML = `
                 <td>${product.id}</td>
                 <td>${product.name}</td>
@@ -585,21 +607,43 @@ function initModals() {
             const basePrice = parseFloat(document.getElementById('product-price').value);
             let variants = [];
 
+            // Validation
+            if (!name) {
+                alert('Product title is required');
+                return;
+            }
+
+            if (!category) {
+                alert('Category is required');
+                return;
+            }
+
+            if (isNaN(basePrice) || basePrice < 0) {
+                alert('Please enter a valid price');
+                return;
+            }
+
             const variantsStr = document.getElementById('product-variants').value.trim();
             if (variantsStr) {
                 try {
                     variants = JSON.parse(variantsStr);
+                    // Validate variants structure
+                    if (!Array.isArray(variants)) {
+                        alert('Variants must be an array');
+                        return;
+                    }
                 } catch (e) {
-                    alert('Invalid JSON format for variants');
+                    alert('Invalid JSON format for variants. Example: [{"title":"8GB","price":5000,"stock":10}]');
                     return;
                 }
             }
 
             try {
-                await ProductsAPI.createProduct(name, category, basePrice, variants);
-                alert('Product created successfully');
+                const result = await ProductsAPI.createProduct(name, category, basePrice, variants);
+                alert(result.message || 'Product created successfully!');
                 productModal.classList.remove('open');
-                loadProducts();
+                productForm.reset();
+                await loadProducts(); // Reload the products table
             } catch (error) {
                 alert('Error creating product: ' + error.message);
             }
@@ -615,10 +659,10 @@ async function loadProfileData() {
     // Force refresh from localStorage
     const userDataString = localStorage.getItem('mypc_user_data');
     console.log('[loadProfileData] Raw localStorage:', userDataString);
-    
+
     const user = userDataString ? JSON.parse(userDataString) : null;
     console.log('[loadProfileData] Parsed user data:', user);
-    
+
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -628,7 +672,7 @@ async function loadProfileData() {
     // Combine first_name and last_name into full_name
     const fullName = [user.first_name || '', user.last_name || ''].filter(Boolean).join(' ');
     console.log('[loadProfileData] Setting full name to:', fullName);
-    
+
     const fullNameInput = document.getElementById('profile-full-name');
     if (fullNameInput) {
         fullNameInput.value = fullName;
@@ -636,12 +680,12 @@ async function loadProfileData() {
     } else {
         console.error('[loadProfileData] Full name input not found!');
     }
-    
+
     const emailInput = document.getElementById('profile-email');
     if (emailInput) {
         emailInput.value = user.email || '';
     }
-    
+
     const phoneInput = document.getElementById('profile-phone');
     if (phoneInput) {
         phoneInput.value = user.phone || '';
@@ -728,7 +772,7 @@ async function updateUserProfile(updates) {
 
         const responseText = await response.text();
         console.log('Response text:', responseText);
-        
+
         let data;
         try {
             data = JSON.parse(responseText);
@@ -737,7 +781,7 @@ async function updateUserProfile(updates) {
             alert('Server error. Please try again.');
             return;
         }
-        
+
         console.log('Response data:', data);
 
         if (data.success) {
@@ -750,23 +794,23 @@ async function updateUserProfile(updates) {
 
             // Immediately update the welcome message
             const fullNameDisplay = `${updates.first_name} ${updates.last_name}`;
-            
+
             const welcomeEl = document.getElementById('employee-welcome');
             if (welcomeEl) {
                 welcomeEl.textContent = `Welcome, ${updates.first_name} ${updates.last_name}`;
             }
-            
+
             // Clear password fields only
             document.getElementById('profile-current-password').value = '';
             document.getElementById('profile-new-password').value = '';
             document.getElementById('profile-confirm-password').value = '';
-            
+
             // Update form with new values
             document.getElementById('profile-full-name').value = fullNameDisplay;
             document.getElementById('profile-phone').value = updates.phone;
-            
+
             console.log('Updated employee profile UI with:', fullNameDisplay);
-            
+
             alert('Profile updated successfully!');
         } else {
             alert(data.message || 'Error updating profile');
@@ -791,16 +835,83 @@ function initEmployeePage() {
         }
     }
 
+    // Prevent back button from leaving dashboard
+    preventBackButton();
+
     initEmployeeTabs();
     initModals();
     initLogout();
     initProfileHandlers();
 }
 
+// ========================================
+// PREVENT BACK BUTTON
+// ========================================
+
+function preventBackButton() {
+    // Push a dummy state to prevent going back
+    history.pushState(null, null, location.href);
+
+    // Listen for back button press
+    window.addEventListener('popstate', function (event) {
+        // Push state again to prevent going back
+        history.pushState(null, null, location.href);
+
+        // Optional: Show a message
+        // alert('Please use the Logout button to exit the dashboard.');
+    });
+}
+
+
 // Wrapper function for router compatibility
 function initializeEmployee() {
     return initEmployeePage();
 }
+
+
+// ========================================
+// SESSION VERIFICATION (PREVENT BACK BUTTON CACHE)
+// ========================================
+
+// Hide content initially to prevent flicker
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.15s';
+
+async function verifySession() {
+    try {
+        const userData = getUserData();
+        if (!userData) {
+            window.location.replace('/');
+            return false;
+        }
+
+        const response = await AuthAPI.getCurrentUser();
+        if (!response || !response.user) {
+            clearUserSession();
+            window.location.replace('/');
+            return false;
+        }
+
+        document.body.style.opacity = '1';
+        return true;
+    } catch (error) {
+        clearUserSession();
+        window.location.replace('/');
+        return false;
+    }
+}
+
+verifySession();
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        document.body.style.opacity = '0';
+        verifySession();
+    }
+});
+window.addEventListener('focus', function () {
+    document.body.style.opacity = '0';
+    verifySession();
+});
 
 // Make functions globally available
 window.initEmployeePage = initEmployeePage;
