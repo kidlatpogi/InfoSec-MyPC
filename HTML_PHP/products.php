@@ -115,35 +115,79 @@ try {
         $limit = isset($_GET['limit']) ? min(100, max(1, intval($_GET['limit']))) : 20;
         $offset = ($page - 1) * $limit;
 
-        // Build query
-        $sql = "SELECT p.id, p.sku, p.name, p.slug, p.short_description, 
-                       p.long_description, c.name as category_name, c.slug as category_slug
-                FROM products p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.active = 1";
-
+        // Build query with improved search
         $params = [];
+        
+        if ($search) {
+            $searchTerm = trim($search);
+            $searchLower = strtolower($searchTerm);
+            
+            // Build query with relevance scoring
+            $sql = "SELECT p.id, p.sku, p.name, p.slug, p.short_description, 
+                           p.long_description, c.name as category_name, c.slug as category_slug,
+                           CASE
+                             WHEN LOWER(p.name) = ? THEN 1000
+                             WHEN LOWER(p.name) LIKE ? THEN 900
+                             WHEN LOWER(p.name) LIKE ? THEN 800
+                             WHEN LOWER(c.name) = ? THEN 700
+                             WHEN LOWER(c.name) LIKE ? THEN 600
+                             WHEN LOWER(p.sku) LIKE ? THEN 500
+                             WHEN LOWER(p.short_description) LIKE ? THEN 400
+                             WHEN LOWER(p.name) LIKE ? THEN 300
+                             WHEN LOWER(p.long_description) LIKE ? THEN 200
+                             ELSE 0
+                           END as relevance
+                    FROM products p 
+                    LEFT JOIN categories c ON p.category_id = c.id 
+                    WHERE p.active = 1";
+            
+            // Add parameters for relevance scoring
+            $params[] = $searchLower;  // Exact name match
+            $params[] = $searchLower . '%';  // Name starts with
+            $params[] = '%' . $searchLower . '%';  // Name contains
+            $params[] = $searchLower;  // Category exact
+            $params[] = $searchLower . '%';  // Category starts
+            $params[] = '%' . $searchLower . '%';  // SKU contains
+            $params[] = '%' . $searchLower . '%';  // Short desc contains
+            $params[] = '%' . str_replace(' ', '%', $searchLower) . '%';  // Any word match
+            $params[] = '%' . $searchLower . '%';  // Long desc contains
+            
+        } else {
+            // No search - standard query
+            $sql = "SELECT p.id, p.sku, p.name, p.slug, p.short_description, 
+                           p.long_description, c.name as category_name, c.slug as category_slug
+                    FROM products p 
+                    LEFT JOIN categories c ON p.category_id = c.id 
+                    WHERE p.active = 1";
+        }
 
+        // Add category filter
         if ($category) {
             $sql .= " AND c.slug = ?";
             $params[] = $category;
         }
 
+        // Add search filter - prioritize name and category, exclude description-only matches
         if ($search) {
-            // Split search into words for better matching
-            $words = explode(' ', trim($search));
-            foreach ($words as $word) {
-                if (empty($word)) continue;
-                $sql .= " AND (p.name LIKE ? OR p.short_description LIKE ? OR p.long_description LIKE ? OR c.name LIKE ?)";
-                $term = "%{$word}%";
-                $params[] = $term;
-                $params[] = $term;
-                $params[] = $term;
-                $params[] = $term;
-            }
+            $searchLower = strtolower(trim($search));
+            $sql .= " AND (
+                LOWER(p.name) LIKE ? OR 
+                LOWER(c.name) LIKE ? OR
+                LOWER(p.sku) LIKE ?
+            )";
+            
+            $params[] = '%' . $searchLower . '%';
+            $params[] = '%' . $searchLower . '%';
+            $params[] = '%' . $searchLower . '%';
         }
 
-        $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+        // Order by relevance if searching, otherwise by date
+        if ($search) {
+            $sql .= " ORDER BY relevance DESC, p.created_at DESC LIMIT ? OFFSET ?";
+        } else {
+            $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+        }
+        
         $params[] = $limit;
         $params[] = $offset;
 
@@ -202,16 +246,16 @@ try {
         }
 
         if ($search) {
-            $words = explode(' ', trim($search));
-            foreach ($words as $word) {
-                if (empty($word)) continue;
-                $countSql .= " AND (p.name LIKE ? OR p.short_description LIKE ? OR p.long_description LIKE ? OR c.name LIKE ?)";
-                $term = "%{$word}%";
-                $countParams[] = $term;
-                $countParams[] = $term;
-                $countParams[] = $term;
-                $countParams[] = $term;
-            }
+            $searchLower = strtolower(trim($search));
+            $countSql .= " AND (
+                LOWER(p.name) LIKE ? OR 
+                LOWER(c.name) LIKE ? OR
+                LOWER(p.sku) LIKE ?
+            )";
+            
+            $countParams[] = '%' . $searchLower . '%';
+            $countParams[] = '%' . $searchLower . '%';
+            $countParams[] = '%' . $searchLower . '%';
         }
 
         $totalResult = $db->fetchOne($countSql, $countParams);

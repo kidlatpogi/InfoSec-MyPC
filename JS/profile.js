@@ -149,7 +149,6 @@ async function loadUserOrders() {
                     <p><strong>Date:</strong> ${orderDate}</p>
                     <p><strong>Total:</strong> ${formatPHP(order.total)}</p>
                     <p><strong>Items:</strong> ${itemsList}</p>
-                    <p><strong>Payment:</strong> ${order.payment_method.toUpperCase()} - ${order.payment_status}</p>
                 </div>
                 <div class="order-actions">
                     <button class="btn" onclick="viewOrderDetails(${order.id})">View Details</button>

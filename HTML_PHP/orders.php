@@ -32,7 +32,7 @@ try {
 
         // Get user info
         $user = $db->fetchOne(
-            "SELECT email, full_name as name, phone FROM users WHERE id = ?",
+            "SELECT email, CONCAT(first_name, ' ', last_name) as name, phone FROM users WHERE id = ?",
             [$user_id]
         );
 
@@ -150,8 +150,12 @@ try {
             // Commit transaction
             $db->commit();
 
+            // Format order number
+            $order_number = 'ORD-' . str_pad($order_id, 6, '0', STR_PAD_LEFT);
+
             sendSuccess([
                 'order_id' => $order_id,
+                'order_number' => $order_number,
                 'total' => $total
             ], 'Order created successfully');
 
@@ -162,18 +166,36 @@ try {
         }
     }
 
-    // Get user's orders
+    // Get user's orders (or all orders for admin/superadmin/employee)
     elseif ($method === 'GET' && !isset($_GET['id'])) {
-        $orders = $db->fetchAll(
-            "SELECT id, status, total, placed_at
-             FROM orders
-             WHERE user_id = ?
-             ORDER BY placed_at DESC",
-            [$user_id]
-        );
+        // Get current user role
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
+        
+        // Admins, superadmins, and employees can see all orders
+        if (in_array($role, ['admin', 'superadmin', 'employee'])) {
+            $orders = $db->fetchAll(
+                "SELECT o.id, o.user_id, o.status, o.total, o.subtotal, o.shipping, o.tax, o.placed_at as created_at,
+                        u.email as customer_email, CONCAT(u.first_name, ' ', u.last_name) as customer_name
+                 FROM orders o
+                 LEFT JOIN users u ON o.user_id = u.id
+                 ORDER BY o.placed_at DESC"
+            );
+        } else {
+            // Regular users only see their own orders
+            $orders = $db->fetchAll(
+                "SELECT id, status, total, subtotal, shipping, tax, placed_at as created_at
+                 FROM orders
+                 WHERE user_id = ?
+                 ORDER BY placed_at DESC",
+                [$user_id]
+            );
+        }
 
-        // Get items for each order
+        // Get items for each order and add order_number
         foreach ($orders as &$order) {
+            $order['order_number'] = 'ORD-' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
+            
             $items = $db->fetchAll(
                 "SELECT product_name, variant_title, unit_price, quantity, line_total
                  FROM order_items
@@ -189,20 +211,35 @@ try {
     // Get single order details
     elseif ($method === 'GET' && isset($_GET['id'])) {
         $order_id = intval($_GET['id']);
+        
+        // Get current user role
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
 
-        // Get order and verify ownership
-        $order = $db->fetchOne(
-            "SELECT * FROM orders WHERE id = ? AND user_id = ?",
-            [$order_id, $user_id]
-        );
+        // Get order (admins can view any order, users only their own)
+        if (in_array($role, ['admin', 'superadmin', 'employee'])) {
+            $order = $db->fetchOne(
+                "SELECT o.*, u.email as customer_email, CONCAT(u.first_name, ' ', u.last_name) as customer_name, 
+                        u.phone as customer_phone
+                 FROM orders o
+                 LEFT JOIN users u ON o.user_id = u.id
+                 WHERE o.id = ?",
+                [$order_id]
+            );
+        } else {
+            $order = $db->fetchOne(
+                "SELECT * FROM orders WHERE id = ? AND user_id = ?",
+                [$order_id, $user_id]
+            );
+        }
 
         if (!$order) {
             sendError('Order not found', 404);
         }
 
-        // Get order items
+        // Get order items with product details and images
         $items = $db->fetchAll(
-            "SELECT oi.*, p.slug
+            "SELECT oi.*, p.slug, p.name as product_name_full, p.image_url, pv.title as variant_title_full
              FROM order_items oi
              LEFT JOIN product_variants pv ON oi.variant_id = pv.id
              LEFT JOIN products p ON pv.product_id = p.id
@@ -211,8 +248,48 @@ try {
         );
 
         $order['items'] = $items;
+        $order['order_number'] = 'ORD-' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
 
         sendSuccess(['order' => $order]);
+    }
+    
+    // Update order status (admin only)
+    elseif ($method === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        // Check if user is admin/superadmin/employee
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
+        
+        if (!in_array($role, ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+        $new_status = isset($_POST['status']) ? sanitizeInput($_POST['status']) : '';
+        
+        if ($order_id <= 0) {
+            sendError('Invalid order ID');
+        }
+        
+        // Validate status
+        $valid_statuses = ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+        if (!in_array($new_status, $valid_statuses)) {
+            sendError('Invalid status');
+        }
+        
+        // Get order
+        $order = $db->fetchOne("SELECT id, status FROM orders WHERE id = ?", [$order_id]);
+        
+        if (!$order) {
+            sendError('Order not found', 404);
+        }
+        
+        // Update status
+        $db->query(
+            "UPDATE orders SET status = ? WHERE id = ?",
+            [$new_status, $order_id]
+        );
+        
+        sendSuccess([], 'Order status updated successfully');
     }
 
     // Cancel order (only if pending)

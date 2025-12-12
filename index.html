@@ -4,9 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost https://localhost">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost https://localhost">
+    <script>
+        // Set base URL dynamically
+        (function () {
+            const base = document.createElement('base');
+            const path = window.location.pathname;
+            const dir = path.substring(0, path.lastIndexOf('/') + 1);
+            base.href = window.location.origin + dir;
+            document.head.appendChild(base);
+        })();
+    </script>
     <title>MyPC - Premium PC Components Store</title>
-    <link rel="stylesheet" href="/CSS/styles.css?v=1">
+    <link rel="stylesheet" href="CSS/styles.css?v=1">
 </head>
 
 <body>
@@ -24,13 +35,13 @@
                 }
                 // Load API helper first
                 var apiScript = document.createElement('script');
-                apiScript.src = baseRoot.replace(/\/$/, '') + '/JS/api.js';
+                apiScript.src = 'JS/api.js';
                 apiScript.defer = false;
                 document.body.appendChild(apiScript);
 
                 // Then load router
                 var s = document.createElement('script');
-                s.src = baseRoot.replace(/\/$/, '') + '/JS/router.js';
+                s.src = 'JS/router.js';
                 s.defer = false;
                 document.body.appendChild(s);
             } catch (e) {

@@ -153,6 +153,29 @@ function initAdminTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
+  // Restore previously active tab or default to 'users'
+  const savedTab = localStorage.getItem('admin_active_tab') || 'users';
+  
+  // Immediately set the correct tab as active before any rendering
+  const savedTabBtn = document.querySelector(`[data-tab="${savedTab}"]`);
+  const savedTabContent = document.getElementById(`${savedTab}-tab`);
+  
+  if (savedTabBtn && savedTabContent) {
+    savedTabBtn.classList.add('active');
+    savedTabContent.classList.add('active');
+    loadTabData(savedTab);
+  } else {
+    // Fallback to users
+    const firstTabBtn = document.querySelector('[data-tab="users"]');
+    const firstTabContent = document.getElementById('users-tab');
+    if (firstTabBtn && firstTabContent) {
+      firstTabBtn.classList.add('active');
+      firstTabContent.classList.add('active');
+      loadTabData('users');
+    }
+  }
+
+  // Set up click handlers
   tabBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const tabName = btn.getAttribute('data-tab');
@@ -165,25 +188,13 @@ function initAdminTabs() {
       btn.classList.add('active');
       document.getElementById(`${tabName}-tab`)?.classList.add('active');
 
-      // Save active tab to localStorage
+      // Save current tab to localStorage
       localStorage.setItem('admin_active_tab', tabName);
 
       // Load data for the tab
       loadTabData(tabName);
     });
   });
-
-  // Restore active tab from localStorage
-  const savedTab = localStorage.getItem('admin_active_tab') || 'users';
-  const savedTabBtn = document.querySelector(`[data-tab="${savedTab}"]`);
-  if (savedTabBtn) {
-    savedTabBtn.classList.add('active');
-    document.getElementById(`${savedTab}-tab`)?.classList.add('active');
-    loadTabData(savedTab);
-  }
-
-  // Load initial tab data
-  loadTabData('users');
 
   // Setup search and filter listeners
   initAdminSearch();
@@ -430,6 +441,30 @@ async function loadProducts() {
   }
 }
 
+function getStatusColor(status) {
+  const statusColors = {
+    'pending': '#f59e0b',
+    'processing': '#3b82f6',
+    'shipped': '#8b5cf6',
+    'out_for_delivery': '#06b6d4',
+    'delivered': '#10b981',
+    'cancelled': '#ef4444'
+  };
+  return statusColors[status] || '#6b7280';
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    'pending': 'Pending',
+    'processing': 'Processing',
+    'shipped': 'Shipped',
+    'out_for_delivery': 'Out for Delivery personnel',
+    'delivered': 'Delivered',
+    'cancelled': 'Cancelled'
+  };
+  return labels[status] || status;
+}
+
 async function loadOrders() {
   const tbody = document.getElementById('orders-tbody');
   if (!tbody) return;
@@ -446,14 +481,13 @@ async function loadOrders() {
     tbody.innerHTML = '';
     data.orders.forEach((order) => {
       const row = document.createElement('tr');
-      const createdDate = new Date(order.created_at).toLocaleDateString();
+      const statusColor = getStatusColor(order.status);
+      const statusLabel = getStatusLabel(order.status);
       row.innerHTML = `
                 <td>${order.order_number}</td>
                 <td>${order.customer_name}</td>
                 <td>${order.customer_email}</td>
-                <td><span class="badge" style="background:#3b82f6">${
-                  order.status
-                }</span></td>
+                <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
                 <td>${formatPHP(order.total)}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewOrder(${
@@ -836,8 +870,184 @@ async function deleteEmployee(employeeId) {
 // ORDER ACTIONS
 // ========================================
 
-function viewOrder(orderId) {
-  alert(`View order ${orderId} - Feature not yet implemented`);
+async function viewOrder(orderId) {
+  try {
+    const data = await OrdersAPI.getOrder(orderId);
+    const order = data.order;
+    
+    if (!order) {
+      alert('Order not found');
+      return;
+    }
+    
+    const orderModal = document.getElementById('order-modal');
+    const orderContent = document.getElementById('order-modal-content');
+    const orderTitle = document.getElementById('order-modal-title');
+    
+    // Format date
+    const orderDate = new Date(order.placed_at || order.created_at).toLocaleString();
+    
+    // Status options with display names
+    const statusOptions = [
+      { value: 'pending', label: 'Pending', color: '#f59e0b' },
+      { value: 'processing', label: 'Processing', color: '#3b82f6' },
+      { value: 'shipped', label: 'Shipped', color: '#8b5cf6' },
+      { value: 'out_for_delivery', label: 'Out for Delivery personnel', color: '#06b6d4' },
+      { value: 'delivered', label: 'Delivered', color: '#10b981' },
+      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' }
+    ];
+    
+    const currentStatus = statusOptions.find(s => s.value === order.status) || statusOptions[0];
+    
+    // Build status dropdown
+    const statusDropdown = `
+      <select id="order-status-select" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: ${currentStatus.color}; color: white; font-weight: 500; cursor: pointer;">
+        ${statusOptions.map(status => `
+          <option value="${status.value}" ${status.value === order.status ? 'selected' : ''} 
+                  style="background: ${status.color}; color: white;">
+            ${status.label}
+          </option>
+        `).join('')}
+      </select>
+      <button id="update-status-btn" style="margin-left: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Update Status
+      </button>
+    `;
+    
+    // Build items HTML with product images
+    const itemsHTML = order.items.map(item => {
+      const imageUrl = item.image_url || '/assets/placeholder.png';
+      return `
+        <div style="display: grid; grid-template-columns: 80px 1fr auto auto auto; gap: 1rem; padding: 1rem; border-bottom: 1px solid #e5e7eb; align-items: center;">
+          <img src="${imageUrl}" alt="${item.product_name}" 
+               style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;"
+               onerror="this.src='/assets/placeholder.png'">
+          <div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">${item.product_name}</div>
+            <div style="color: #6b7280; font-size: 0.875rem;">${item.variant_title || 'Default'}</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Quantity</div>
+            <div style="font-weight: 600;">${item.quantity}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Unit Price</div>
+            <div style="font-weight: 600;">${formatPHP(item.unit_price)}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Total</div>
+            <div style="font-weight: 600; color: #3b82f6;">${formatPHP(item.line_total)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    orderContent.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+          <h3 style="margin-top: 0; margin-bottom: 1rem;">Order Information</h3>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Order Number:</strong> ${order.order_number}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Date:</strong> ${orderDate}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Status:</strong><br>
+            <div style="margin-top: 0.5rem;">
+              ${statusDropdown}
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin-top: 0; margin-bottom: 1rem;">Customer Information</h3>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Name:</strong> ${order.customer_name || 'N/A'}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Email:</strong> ${order.customer_email || 'N/A'}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Phone:</strong> ${order.customer_phone || 'N/A'}
+          </div>
+          ${order.shipping_address ? `
+            <div style="margin-top: 1rem;">
+              <strong>Shipping Address:</strong><br>
+              <div style="color: #6b7280; margin-top: 0.25rem;">${order.shipping_address}</div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      
+      <h3 style="margin-bottom: 1rem;">Order Items (${order.items.length})</h3>
+      <div style="background: #f9fafb; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+        ${itemsHTML}
+      </div>
+      
+      <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #bae6fd;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Subtotal:</span>
+          <span style="font-weight: 600;">${formatPHP(order.subtotal || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Shipping:</span>
+          <span style="font-weight: 600;">${formatPHP(order.shipping || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Tax:</span>
+          <span style="font-weight: 600;">${formatPHP(order.tax || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 2px solid #0284c7; margin-top: 0.5rem;">
+          <span style="font-size: 1.125rem; font-weight: 700;">Total:</span>
+          <span style="font-size: 1.125rem; font-weight: 700; color: #0284c7;">${formatPHP(order.total)}</span>
+        </div>
+      </div>
+    `;
+    
+    orderTitle.textContent = `Order Details - ${order.order_number}`;
+    orderModal.classList.add('open');
+    
+    // Add event listener for status update
+    setTimeout(() => {
+      const updateBtn = document.getElementById('update-status-btn');
+      const statusSelect = document.getElementById('order-status-select');
+      
+      if (updateBtn && statusSelect) {
+        updateBtn.addEventListener('click', async () => {
+          const newStatus = statusSelect.value;
+          if (newStatus === order.status) {
+            alert('Status is already set to this value');
+            return;
+          }
+          
+          if (!confirm(`Are you sure you want to change the order status to "${statusOptions.find(s => s.value === newStatus).label}"?`)) {
+            return;
+          }
+          
+          try {
+            await OrdersAPI.updateOrderStatus(orderId, newStatus);
+            alert('Order status updated successfully!');
+            orderModal.classList.remove('open');
+            loadOrders(); // Refresh the orders list
+          } catch (error) {
+            alert('Failed to update order status: ' + error.message);
+          }
+        });
+        
+        // Update button color when status changes
+        statusSelect.addEventListener('change', () => {
+          const selected = statusOptions.find(s => s.value === statusSelect.value);
+          if (selected) {
+            statusSelect.style.background = selected.color;
+          }
+        });
+      }
+    }, 100);
+    
+  } catch (error) {
+    console.error('Failed to load order:', error);
+    alert('Failed to load order details: ' + error.message);
+  }
 }
 
 function editStock(productId, currentStock) {

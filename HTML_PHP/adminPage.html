@@ -1,11 +1,16 @@
 <main class="container admin-container">
   <div class="admin-header">
-    <div style="display: flex; justify-content: space-between; align-items: center">
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
       <div>
         <h1>Admin Dashboard</h1>
         <p id="admin-welcome">Welcome, Admin</p>
       </div>
-      <button id="admin-logout-btn" class="primary" style="
+      <button
+        id="admin-logout-btn"
+        class="primary"
+        style="
           padding: 0.6rem 1.2rem;
           cursor: pointer;
           border: none;
@@ -13,7 +18,8 @@
           background: var(--accent);
           color: #fff;
           font-weight: 600;
-        ">
+        "
+      >
         Logout
       </button>
     </div>
@@ -35,7 +41,11 @@
     </div>
 
     <div class="search-filter">
-      <input type="text" id="user-search" placeholder="Search users by email or name..." />
+      <input
+        type="text"
+        id="user-search"
+        placeholder="Search users by email or name..."
+      />
     </div>
 
     <div class="table-wrapper">
@@ -69,7 +79,11 @@
     </div>
 
     <div class="search-filter">
-      <input type="text" id="employee-search" placeholder="Search employees by email or name..." />
+      <input
+        type="text"
+        id="employee-search"
+        placeholder="Search employees by email or name..."
+      />
     </div>
 
     <div class="table-wrapper">
@@ -103,7 +117,11 @@
     </div>
 
     <div class="search-filter">
-      <input type="text" id="product-search" placeholder="Search products by name or category..." />
+      <input
+        type="text"
+        id="product-search"
+        placeholder="Search products by name or category..."
+      />
     </div>
 
     <div class="table-wrapper">
@@ -137,7 +155,11 @@
     </div>
 
     <div class="search-filter">
-      <input type="text" id="order-search" placeholder="Search orders by order ID or customer email..." />
+      <input
+        type="text"
+        id="order-search"
+        placeholder="Search orders by order ID or customer email..."
+      />
     </div>
 
     <div class="table-wrapper">
@@ -145,10 +167,10 @@
         <thead>
           <tr>
             <th>Order ID</th>
+            <th>Customer Name</th>
             <th>Customer Email</th>
-            <th>Total</th>
             <th>Status</th>
-            <th>Date</th>
+            <th>Total</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -234,7 +256,11 @@
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="user-password" placeholder="Leave empty to keep current" />
+        <input
+          type="password"
+          id="user-password"
+          placeholder="Leave empty to keep current"
+        />
       </div>
       <div class="form-actions">
         <button type="button" class="secondary" data-action="cancel">
@@ -264,7 +290,11 @@
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="employee-password" placeholder="Leave empty to keep current" />
+        <input
+          type="password"
+          id="employee-password"
+          placeholder="Leave empty to keep current"
+        />
       </div>
       <div class="form-actions">
         <button type="button" class="secondary" data-action="cancel">
@@ -291,7 +321,12 @@
       <div class="form-row">
         <div class="form-group">
           <label>Category</label>
-          <input type="text" id="product-category" placeholder="CPU, GPU, RAM..." required />
+          <input
+            type="text"
+            id="product-category"
+            placeholder="CPU, GPU, RAM..."
+            required
+          />
         </div>
         <div class="form-group">
           <label>Price (₱)</label>
@@ -300,7 +335,11 @@
       </div>
       <div class="form-group">
         <label>Variants (JSON format)</label>
-        <textarea id="product-variants" placeholder='[{"label":"Standard","priceDelta":0}]' rows="3"></textarea>
+        <textarea
+          id="product-variants"
+          placeholder='[{"label":"Standard","priceDelta":0}]'
+          rows="3"
+        ></textarea>
       </div>
       <div class="form-actions">
         <button type="button" class="secondary" data-action="cancel">

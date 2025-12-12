@@ -80,9 +80,6 @@ function clearUserSession() {
   window.CURRENT_USER = null;
   localStorage.removeItem('mypc_user');
   localStorage.removeItem('mypc_user_data');
-
-  // Set logout flag to trigger other tabs
-  localStorage.setItem('mypc_logout_event', Date.now().toString());
 }
 
 // Unified logout helper

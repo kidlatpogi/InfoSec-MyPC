@@ -38,7 +38,7 @@ async function loadCheckoutData() {
             if (addressesData.addresses && addressesData.addresses.length > 0) {
                 // Get the first address (or primary address)
                 const address = addressesData.addresses[0];
-
+                
                 const addressEl = document.getElementById('address');
                 if (addressEl) {
                     addressEl.value = `${address.line1}${address.line2 ? ', ' + address.line2 : ''}`;
@@ -79,16 +79,16 @@ async function loadCheckoutItems() {
         if (!checkoutItemsEl) return;
 
         console.log('[loadCheckoutItems] Before loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
-
+        
         await loadCartFromBackend();
-
+        
         console.log('[loadCheckoutItems] After loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
 
         if (!window.CART_DATA || !window.CART_DATA.items || window.CART_DATA.items.length === 0) {
             console.warn('[loadCheckoutItems] Cart is empty or not loaded');
             checkoutItemsEl.innerHTML = '<p style="text-align:center;padding:2rem;color:#d32f2f;">Your cart is empty. Please add items before checking out.</p>';
             if (checkoutTotalEl) checkoutTotalEl.textContent = formatPHP(0);
-
+            
             // Disable submit button
             const submitBtn = document.querySelector('#checkout-form button[type="submit"]');
             if (submitBtn) {
@@ -156,7 +156,7 @@ function initializeCheckoutForm() {
             const address = document.getElementById('address').value.trim();
             const city = document.getElementById('city').value.trim();
             const postal = document.getElementById('postal').value.trim();
-            const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'cash';
+            const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
 
             // Validate required fields
             if (!fullname || !email || !phone || !address || !city || !postal) {
@@ -164,45 +164,92 @@ function initializeCheckoutForm() {
                 return;
             }
 
-            // Disable submit button during processing
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
+            if (!paymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
 
+            // Disable submit button to prevent double submission
+            const submitBtn = document.querySelector('#checkout-form button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+            }
+
+            // Split full name into first and last name
+            const nameParts = fullname.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ') || firstName;
+
+            // Save address first
+            let addressId;
             try {
-                // Create order without address (pass 0 which becomes null in backend)
-                // The shipping address will be stored as notes
-                const shippingInfo = `${fullname}\n${phone}\n${address}\n${city}, ${postal}`;
-                const orderData = await OrdersAPI.createOrder(0, paymentMethod, shippingInfo);
-
-                if (orderData.success) {
-                    // Clear cart from frontend
-                    window.CART_DATA = { items: [], subtotal: 0 };
-
-                    // Reload cart from backend (should be empty now)
-                    await loadCartFromBackend();
-
-                    // Update cart count
-                    if (window.updateCartCount) {
-                        window.updateCartCount();
-                    }
-
-                    alert('Order placed successfully! Order ID: ' + (orderData.order_id || 'N/A'));
-
-                    // Redirect to profile/orders page
-                    window.router?.navigateTo('/profile');
+                // Check if user already has addresses
+                const existingAddresses = await AddressesAPI.getAddresses();
+                console.log('Existing addresses:', existingAddresses);
+                
+                if (!existingAddresses.addresses || existingAddresses.addresses.length === 0) {
+                    // First address - save it as default
+                    console.log('No existing addresses, creating new one...');
+                    const addressResult = await AddressesAPI.addAddress(
+                        fullname,  // recipient name
+                        phone,
+                        address,   // address line 1
+                        city,
+                        postal,
+                        '',        // address line 2
+                        'Home',    // label
+                        true       // is default
+                    );
+                    console.log('Address created:', addressResult);
+                    addressId = addressResult.address_id;
                 } else {
-                    throw new Error(orderData.message || 'Failed to create order');
+                    // Use the first existing address or create new one
+                    console.log('Using existing address:', existingAddresses.addresses[0]);
+                    addressId = existingAddresses.addresses[0].id;
                 }
+                
+                console.log('Address ID to use for order:', addressId);
+            } catch (error) {
+                console.error('Error saving address:', error);
+                console.error('Error details:', error.message);
+                alert('Error saving address: ' + (error.message || 'Please try again.'));
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                }
+                return;
+            }
+
+            // Create the order
+            try {
+                const orderResult = await OrdersAPI.createOrder(
+                    addressId,
+                    paymentMethod,
+                    '' // notes (optional)
+                );
+
+                console.log('Order creation result:', orderResult);
+
+                // Order created successfully
+                alert('Order placed successfully! Order #' + (orderResult.order_number || orderResult.order_id));
+                
+                // Clear the cart
+                await CartAPI.clearCart();
+                window.CART_DATA = { items: [], total: 0 };
+                updateCartCount();
+                
+                // Redirect to profile page to see the order
+                window.router.navigateTo('/profile');
 
             } catch (error) {
-                console.error('Order creation error:', error);
-                alert('Error placing order: ' + error.message);
-            } finally {
-                // Re-enable submit button
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
+                console.error('Checkout error:', error);
+                console.error('Error details:', error.message, error.stack);
+                alert('Error processing checkout: ' + (error.message || 'Please try again.'));
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                }
             }
 
         } catch (error) {
@@ -212,12 +259,11 @@ function initializeCheckoutForm() {
     });
 }
 
-
 // ========================================
 // INITIALIZATION
 // ========================================
 
-window.initCheckoutPage = async function () {
+window.initCheckoutPage = async function() {
     console.log('[checkout.js] Initializing checkout page');
     await loadCheckoutData();
     initializeCheckoutForm();

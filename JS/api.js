@@ -4,9 +4,13 @@
  */
 
 // Compute API_BASE dynamically based on router's baseRoot
-let API_BASE = '/HTML_PHP';
+let API_BASE = '';
 if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
     API_BASE = window.router.baseRoot + '/HTML_PHP';
+} else if (typeof window !== 'undefined') {
+    const pathname = window.location.pathname;
+    const directory = pathname.substring(0, pathname.lastIndexOf('/'));
+    API_BASE = directory + '/HTML_PHP';
 }
 
 // Helper function to make API calls
@@ -189,6 +193,19 @@ const ProductsAPI = {
             method: 'POST',
             body
         });
+    },
+
+    // Update variant stock
+    async updateVariantStock(variantId, stock) {
+        const body = toFormData({
+            action: 'updateVariantStock',
+            variant_id: variantId,
+            stock: stock
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
     }
 };
 
@@ -298,6 +315,20 @@ const OrdersAPI = {
         const body = toFormData({
             action: 'cancel',
             order_id: orderId
+        });
+
+        return await apiCall('orders.php', {
+            method: 'POST',
+            body
+        });
+    },
+    
+    // Update order status (admin only)
+    async updateOrderStatus(orderId, status) {
+        const body = toFormData({
+            action: 'update_status',
+            order_id: orderId,
+            status: status
         });
 
         return await apiCall('orders.php', {
@@ -456,12 +487,12 @@ const AddressesAPI = {
         const body = toFormData({
             action: 'addAddress',
             label,
-            recipient_name: recipientName,
             phone,
-            address_line1: addressLine1,
-            address_line2: addressLine2,
+            line1: addressLine1,
+            line2: addressLine2,
             city,
             postal_code: postalCode,
+            country: 'Philippines',
             is_default: isDefault ? 1 : 0
         });
         return await apiCall('management.php', {

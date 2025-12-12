@@ -465,23 +465,20 @@ try {
             sendError('Unauthorized', 403);
         }
         
-        // Accept both 'line1' and 'address_line1' for backwards compatibility
-        $line1 = isset($_POST['line1']) ? sanitizeInput($_POST['line1']) : 
-                 (isset($_POST['address_line1']) ? sanitizeInput($_POST['address_line1']) : null);
-        $line2 = isset($_POST['line2']) ? sanitizeInput($_POST['line2']) : 
-                 (isset($_POST['address_line2']) ? sanitizeInput($_POST['address_line2']) : null);
-        
-        // Validate required fields
-        if (!$line1 || !isset($_POST['city']) || !isset($_POST['postal_code'])) {
-            sendError('Missing required fields: address, city, and postal code are required');
+        $required = ['line1', 'city', 'postal_code', 'country'];
+        $missing = validateRequired($required, $_POST);
+        if (!empty($missing)) {
+            sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
         $label = isset($_POST['label']) ? sanitizeInput($_POST['label']) : null;
         $phone = isset($_POST['phone']) ? sanitizeInput($_POST['phone']) : null;
+        $line1 = sanitizeInput($_POST['line1']);
+        $line2 = isset($_POST['line2']) ? sanitizeInput($_POST['line2']) : null;
         $city = sanitizeInput($_POST['city']);
         $state = isset($_POST['state']) ? sanitizeInput($_POST['state']) : null;
         $postal_code = sanitizeInput($_POST['postal_code']);
-        $country = isset($_POST['country']) ? sanitizeInput($_POST['country']) : 'Philippines'; // Default to Philippines
+        $country = sanitizeInput($_POST['country']);
         
         $address_id = $db->insert(
             "INSERT INTO addresses (user_id, label, line1, line2, city, state, postal_code, country, phone) 
@@ -667,7 +664,6 @@ try {
         
         $name = $_POST['name'] ?? null;
         $category = $_POST['category'] ?? null;
-        $basePrice = isset($_POST['base_price']) ? floatval($_POST['base_price']) : 0;
         $variants = isset($_POST['variants']) ? json_decode($_POST['variants'], true) : [];
         
         if (!$name || !$category) {
@@ -678,36 +674,29 @@ try {
         $cat = $db->fetchOne("SELECT id FROM categories WHERE name = ? OR slug = ?", [$category, strtolower(str_replace(' ', '-', $category))]);
         $categoryId = $cat['id'] ?? 1;
         
-        // Create product using insert() which returns the ID
+        // Create product
         $slug = strtolower(str_replace(' ', '-', $name)) . '-' . time();
-        $productId = $db->insert(
+        $db->execute(
             "INSERT INTO products (name, slug, category_id, active) VALUES (?, ?, ?, 1)",
             [$name, $slug, $categoryId]
         );
         
-        // Create variants - if none provided, create a default variant
+        $productId = $db->lastInsertId();
+        
+        // Create variants if provided
         if (!empty($variants)) {
             foreach ($variants as $variant) {
-                $db->insert(
+                $db->execute(
                     "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
                     [$productId, $variant['title'] ?? 'Standard', $variant['price'] ?? 0, $variant['stock'] ?? 0]
                 );
             }
-        } else {
-            // Create default variant with base price
-            $db->insert(
-                "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
-                [$productId, 'Standard', $basePrice, 0]
-            );
         }
         
         // Log audit
-        logAuditEvent('CREATE', 'product', $productId, $current_user['id'], ['name' => $name, 'category' => $category]);
+        logAuditEvent('CREATE', 'product', $productId, $current_user['id'], ['name' => $name]);
         
-        sendSuccess([
-            'product_id' => $productId,
-            'message' => 'Product created successfully'
-        ]);
+        sendSuccess(['product_id' => $productId]);
     }
     
     // Update product
@@ -754,81 +743,6 @@ try {
         logAuditEvent('UPDATE', 'product', $productId, $current_user['id'], ['name' => $name]);
         
         sendSuccess(['message' => 'Product updated']);
-    }
-
-    // Update product stock (distributes across all variants)
-    elseif ($action === 'updateProductStock') {
-        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
-            sendError('Unauthorized', 403);
-        }
-        
-        if ($method !== 'POST') {
-            sendError('Invalid request method', 400);
-        }
-        
-        $productId = $_POST['product_id'] ?? null;
-        $newTotalStock = isset($_POST['stock_quantity']) ? intval($_POST['stock_quantity']) : null;
-        
-        if (!$productId || $newTotalStock === null) {
-            sendError('Product ID and stock quantity are required');
-        }
-
-        if ($newTotalStock < 0) {
-            sendError('Stock cannot be negative');
-        }
-        
-        // Get all variants for this product
-        $variants = $db->fetchAll(
-            "SELECT id, stock FROM product_variants WHERE product_id = ?",
-            [$productId]
-        );
-
-        if (empty($variants)) {
-            sendError('No variants found for this product', 404);
-        }
-
-        // Calculate current total stock
-        $currentTotalStock = array_sum(array_column($variants, 'stock'));
-        
-        // Distribute new stock proportionally across variants
-        // If current total is 0, distribute equally
-        if ($currentTotalStock == 0) {
-            $stockPerVariant = floor($newTotalStock / count($variants));
-            $remainder = $newTotalStock % count($variants);
-            
-            foreach ($variants as $index => $variant) {
-                $newStock = $stockPerVariant + ($index < $remainder ? 1 : 0);
-                $db->execute(
-                    "UPDATE product_variants SET stock = ? WHERE id = ?",
-                    [$newStock, $variant['id']]
-                );
-            }
-        } else {
-            // Distribute proportionally based on current distribution
-            $remainder = $newTotalStock;
-            foreach ($variants as $index => $variant) {
-                if ($index === count($variants) - 1) {
-                    // Last variant gets the remainder to avoid rounding errors
-                    $newStock = $remainder;
-                } else {
-                    $proportion = $variant['stock'] / $currentTotalStock;
-                    $newStock = floor($newTotalStock * $proportion);
-                    $remainder -= $newStock;
-                }
-                
-                $db->execute(
-                    "UPDATE product_variants SET stock = ? WHERE id = ?",
-                    [$newStock, $variant['id']]
-                );
-            }
-        }
-        
-        // Log audit
-        logAuditEvent('UPDATE', 'product_stock', $productId, $current_user['id'], 
-            ['previous_total_stock' => $currentTotalStock, 'new_total_stock' => $newTotalStock]
-        );
-        
-        sendSuccess(['message' => 'Stock updated successfully', 'total_stock' => $newTotalStock]);
     }
 
     // Update variant stock

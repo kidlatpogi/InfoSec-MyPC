@@ -153,9 +153,29 @@ function initSuperadminTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
-  // Mark tabs as ready to show them
-  document.body.classList.add('tabs-ready');
+  // Restore previously active tab or default to 'admins'
+  const savedTab = localStorage.getItem('superadmin_active_tab') || 'admins';
+  
+  // Immediately set the correct tab as active before any rendering
+  const savedTabBtn = document.querySelector(`[data-tab="${savedTab}"]`);
+  const savedTabContent = document.getElementById(`${savedTab}-tab`);
+  
+  if (savedTabBtn && savedTabContent) {
+    savedTabBtn.classList.add('active');
+    savedTabContent.classList.add('active');
+    loadTabData(savedTab);
+  } else {
+    // Fallback to admins
+    const firstTabBtn = document.querySelector('[data-tab="admins"]');
+    const firstTabContent = document.getElementById('admins-tab');
+    if (firstTabBtn && firstTabContent) {
+      firstTabBtn.classList.add('active');
+      firstTabContent.classList.add('active');
+      loadTabData('admins');
+    }
+  }
 
+  // Set up click handlers
   tabBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const tabName = btn.getAttribute('data-tab');
@@ -168,30 +188,13 @@ function initSuperadminTabs() {
       btn.classList.add('active');
       document.getElementById(`${tabName}-tab`)?.classList.add('active');
 
-      // Save active tab to localStorage
+      // Save current tab to localStorage
       localStorage.setItem('superadmin_active_tab', tabName);
 
       // Load data for the tab
       loadTabData(tabName);
     });
   });
-
-  // Restore active tab from localStorage
-  const savedTab = localStorage.getItem('superadmin_active_tab') || 'admins';
-  const savedTabBtn = document.querySelector(`[data-tab="${savedTab}"]`);
-  if (savedTabBtn) {
-    savedTabBtn.classList.add('active');
-    document.getElementById(`${savedTab}-tab`)?.classList.add('active');
-    loadTabData(savedTab);
-  } else {
-    // Fallback to admins tab if saved tab not found
-    const firstTabBtn = document.querySelector('[data-tab="admins"]');
-    if (firstTabBtn) {
-      firstTabBtn.classList.add('active');
-      document.getElementById('admins-tab')?.classList.add('active');
-    }
-    loadTabData('admins');
-  }
 
   // Setup search and filter listeners
   initSuperadminSearch();
@@ -448,7 +451,7 @@ async function loadProducts() {
     }
 
     tbody.innerHTML = '';
-    data.products.forEach((product) => {
+    data.products.forEach((product, index) => {
       const row = document.createElement('tr');
       // Calculate price and stock from variants
       const variants = product.variants || [];
@@ -462,12 +465,12 @@ async function loadProducts() {
       );
 
       row.innerHTML = `
-                <td>${product.id}</td>
+                <td>${index + 1}</td>
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
                 <td>${variants.length}</td>
-                <td>${totalStock}</td>
+                <td id="stock-${product.id}">${totalStock}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewProduct(${
                       product.id
@@ -477,7 +480,7 @@ async function loadProducts() {
                     })">Edit</button>
                     <button class="btn btn-sm" onclick="editStock(${
                       product.id
-                    }, ${totalStock})">Stock</button>
+                    })">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${
                       product.id
                     })">Delete</button>
@@ -490,6 +493,30 @@ async function loadProducts() {
     tbody.innerHTML =
       '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
   }
+}
+
+function getStatusColor(status) {
+  const statusColors = {
+    'pending': '#f59e0b',
+    'processing': '#3b82f6',
+    'shipped': '#8b5cf6',
+    'out_for_delivery': '#06b6d4',
+    'delivered': '#10b981',
+    'cancelled': '#ef4444'
+  };
+  return statusColors[status] || '#6b7280';
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    'pending': 'Pending',
+    'processing': 'Processing',
+    'shipped': 'Shipped',
+    'out_for_delivery': 'Out for Delivery personnel',
+    'delivered': 'Delivered',
+    'cancelled': 'Cancelled'
+  };
+  return labels[status] || status;
 }
 
 async function loadOrders() {
@@ -508,14 +535,13 @@ async function loadOrders() {
     tbody.innerHTML = '';
     data.orders.forEach((order) => {
       const row = document.createElement('tr');
-      const createdDate = new Date(order.created_at).toLocaleDateString();
+      const statusColor = getStatusColor(order.status);
+      const statusLabel = getStatusLabel(order.status);
       row.innerHTML = `
                 <td>${order.order_number}</td>
                 <td>${order.customer_name}</td>
                 <td>${order.customer_email}</td>
-                <td><span class="badge" style="background:#3b82f6">${
-                  order.status
-                }</span></td>
+                <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
                 <td>${formatPHP(order.total)}</td>
                 <td>
                     <button class="btn btn-sm" onclick="viewOrder(${
@@ -682,7 +708,7 @@ function editProduct(productId) {
             );
             alert('Product updated successfully');
             productModal.classList.remove('open');
-            loadProducts();
+            await loadProducts();
           } catch (error) {
             alert('Error updating product: ' + error.message);
           }
@@ -702,7 +728,7 @@ async function deleteProduct(productId) {
       try {
         await ProductsAPI.deleteProduct(productId);
         alert('Product deleted successfully');
-        loadProducts();
+        await loadProducts();
       } catch (error) {
         alert('Error deleting product: ' + error.message);
       }
@@ -710,42 +736,114 @@ async function deleteProduct(productId) {
   );
 }
 
-function editStock(productId, currentStock) {
+async function editStock(productId) {
   const stockModal = document.getElementById('stock-modal');
   const stockForm = document.getElementById('stock-form');
-  const stockInput = document.getElementById('stock-input');
-  const currentStockDisplay = document.getElementById('current-stock-display');
+  const variantsContainer = document.getElementById('stock-variants-container');
   const modalTitle = document.getElementById('stock-modal-title');
 
-  // Set current stock display and input
-  currentStockDisplay.textContent = currentStock;
-  stockInput.value = currentStock;
-  modalTitle.textContent = `Edit Product Stock (ID: ${productId})`;
-
-  // Show modal
-  stockModal.classList.add('open');
-
-  // Handle form submission
-  stockForm.onsubmit = async (e) => {
-    e.preventDefault();
-
-    const newStock = parseInt(stockInput.value, 10);
-
-    if (isNaN(newStock) || newStock < 0) {
-      alert('Please enter a valid stock quantity');
+  // Fetch product data to get variants
+  try {
+    const data = await ProductsAPI.getAllProducts();
+    const product = data.products.find((p) => p.id == productId);
+    
+    if (!product) {
+      alert('Product not found');
       return;
     }
 
-    try {
-      await ProductsAPI.updateProductStock(productId, newStock);
-      stockModal.classList.remove('open');
-      alert('Stock updated successfully');
-      // Reload products table
-      await loadProducts();
-    } catch (error) {
-      alert('Error updating stock: ' + error.message);
+    const variants = product.variants || [];
+    modalTitle.textContent = `Edit Stock: ${product.name}`;
+
+    // Clear and populate variants
+    variantsContainer.innerHTML = '';
+    
+    if (variants.length === 0) {
+      variantsContainer.innerHTML = '<p style="color: #666;">No variants found for this product</p>';
+    } else {
+      variants.forEach((variant, index) => {
+        const variantDiv = document.createElement('div');
+        variantDiv.className = 'stock-variant-item';
+        variantDiv.style.cssText = 'margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px;';
+        
+        variantDiv.innerHTML = `
+          <div style="margin-bottom: 0.5rem;">
+            <strong>${variant.title || 'Standard'}</strong> - ${formatPHP(variant.price || 0)}
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <label style="min-width: 80px;">Stock:</label>
+            <button type="button" class="btn-stock-decrease" data-variant-id="${variant.id}" style="width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; border: 1px solid #ddd; background: #f5f5f5; border-radius: 4px;">−</button>
+            <input type="number" class="variant-stock-input" data-variant-id="${variant.id}" value="${variant.stock || 0}" min="0" style="width: 100px; text-align: center; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;" />
+            <button type="button" class="btn-stock-increase" data-variant-id="${variant.id}" style="width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; border: 1px solid #ddd; background: #f5f5f5; border-radius: 4px;">+</button>
+          </div>
+        `;
+        
+        variantsContainer.appendChild(variantDiv);
+      });
+
+      // Add event listeners for increase/decrease buttons
+      document.querySelectorAll('.btn-stock-increase').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const variantId = btn.dataset.variantId;
+          const input = document.querySelector(`.variant-stock-input[data-variant-id="${variantId}"]`);
+          input.value = parseInt(input.value || 0) + 1;
+        });
+      });
+
+      document.querySelectorAll('.btn-stock-decrease').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const variantId = btn.dataset.variantId;
+          const input = document.querySelector(`.variant-stock-input[data-variant-id="${variantId}"]`);
+          const currentValue = parseInt(input.value || 0);
+          if (currentValue > 0) {
+            input.value = currentValue - 1;
+          }
+        });
+      });
     }
-  };
+
+    // Show modal
+    stockModal.classList.add('open');
+
+    // Handle form submission
+    stockForm.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const inputs = document.querySelectorAll('.variant-stock-input');
+      const updates = [];
+      
+      inputs.forEach(input => {
+        const variantId = input.dataset.variantId;
+        const stock = parseInt(input.value || 0);
+        if (stock < 0) {
+          alert('Stock cannot be negative');
+          throw new Error('Invalid stock value');
+        }
+        updates.push({ variant_id: variantId, stock });
+      });
+
+      try {
+        // Update all variant stocks
+        for (const update of updates) {
+          await ProductsAPI.updateVariantStock(update.variant_id, update.stock);
+        }
+        
+        stockModal.classList.remove('open');
+        alert('Stock updated successfully');
+        
+        // Update the stock display in the table immediately without full reload
+        const newTotalStock = updates.reduce((sum, u) => sum + u.stock, 0);
+        const stockCell = document.getElementById(`stock-${productId}`);
+        if (stockCell) {
+          stockCell.textContent = newTotalStock;
+        }
+      } catch (error) {
+        alert('Error updating stock: ' + error.message);
+      }
+    };
+  } catch (error) {
+    alert('Error loading product: ' + error.message);
+  }
 }
 
 // ========================================
@@ -1021,8 +1119,184 @@ async function deleteEmployee(employeeId) {
 // ORDER ACTIONS
 // ========================================
 
-function viewOrder(orderId) {
-  alert(`View order ${orderId} - Feature not yet implemented`);
+async function viewOrder(orderId) {
+  try {
+    const data = await OrdersAPI.getOrder(orderId);
+    const order = data.order;
+    
+    if (!order) {
+      alert('Order not found');
+      return;
+    }
+    
+    const orderModal = document.getElementById('order-modal');
+    const orderContent = document.getElementById('order-modal-content');
+    const orderTitle = document.getElementById('order-modal-title');
+    
+    // Format date
+    const orderDate = new Date(order.placed_at || order.created_at).toLocaleString();
+    
+    // Status options with display names
+    const statusOptions = [
+      { value: 'pending', label: 'Pending', color: '#f59e0b' },
+      { value: 'processing', label: 'Processing', color: '#3b82f6' },
+      { value: 'shipped', label: 'Shipped', color: '#8b5cf6' },
+      { value: 'out_for_delivery', label: 'Out for Delivery personnel', color: '#06b6d4' },
+      { value: 'delivered', label: 'Delivered', color: '#10b981' },
+      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' }
+    ];
+    
+    const currentStatus = statusOptions.find(s => s.value === order.status) || statusOptions[0];
+    
+    // Build status dropdown
+    const statusDropdown = `
+      <select id="order-status-select" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: ${currentStatus.color}; color: white; font-weight: 500; cursor: pointer;">
+        ${statusOptions.map(status => `
+          <option value="${status.value}" ${status.value === order.status ? 'selected' : ''} 
+                  style="background: ${status.color}; color: white;">
+            ${status.label}
+          </option>
+        `).join('')}
+      </select>
+      <button id="update-status-btn" style="margin-left: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Update Status
+      </button>
+    `;
+    
+    // Build items HTML with product images
+    const itemsHTML = order.items.map(item => {
+      const imageUrl = item.image_url || '/assets/placeholder.png';
+      return `
+        <div style="display: grid; grid-template-columns: 80px 1fr auto auto auto; gap: 1rem; padding: 1rem; border-bottom: 1px solid #e5e7eb; align-items: center;">
+          <img src="${imageUrl}" alt="${item.product_name}" 
+               style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;"
+               onerror="this.src='/assets/placeholder.png'">
+          <div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">${item.product_name}</div>
+            <div style="color: #6b7280; font-size: 0.875rem;">${item.variant_title || 'Default'}</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Quantity</div>
+            <div style="font-weight: 600;">${item.quantity}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Unit Price</div>
+            <div style="font-weight: 600;">${formatPHP(item.unit_price)}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="color: #6b7280; font-size: 0.75rem; margin-bottom: 0.25rem;">Total</div>
+            <div style="font-weight: 600; color: #3b82f6;">${formatPHP(item.line_total)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    orderContent.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+          <h3 style="margin-top: 0; margin-bottom: 1rem;">Order Information</h3>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Order Number:</strong> ${order.order_number}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Date:</strong> ${orderDate}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Status:</strong><br>
+            <div style="margin-top: 0.5rem;">
+              ${statusDropdown}
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin-top: 0; margin-bottom: 1rem;">Customer Information</h3>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Name:</strong> ${order.customer_name || 'N/A'}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Email:</strong> ${order.customer_email || 'N/A'}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong>Phone:</strong> ${order.customer_phone || 'N/A'}
+          </div>
+          ${order.shipping_address ? `
+            <div style="margin-top: 1rem;">
+              <strong>Shipping Address:</strong><br>
+              <div style="color: #6b7280; margin-top: 0.25rem;">${order.shipping_address}</div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      
+      <h3 style="margin-bottom: 1rem;">Order Items (${order.items.length})</h3>
+      <div style="background: #f9fafb; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+        ${itemsHTML}
+      </div>
+      
+      <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #bae6fd;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Subtotal:</span>
+          <span style="font-weight: 600;">${formatPHP(order.subtotal || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Shipping:</span>
+          <span style="font-weight: 600;">${formatPHP(order.shipping || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Tax:</span>
+          <span style="font-weight: 600;">${formatPHP(order.tax || 0)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 2px solid #0284c7; margin-top: 0.5rem;">
+          <span style="font-size: 1.125rem; font-weight: 700;">Total:</span>
+          <span style="font-size: 1.125rem; font-weight: 700; color: #0284c7;">${formatPHP(order.total)}</span>
+        </div>
+      </div>
+    `;
+    
+    orderTitle.textContent = `Order Details - ${order.order_number}`;
+    orderModal.classList.add('open');
+    
+    // Add event listener for status update
+    setTimeout(() => {
+      const updateBtn = document.getElementById('update-status-btn');
+      const statusSelect = document.getElementById('order-status-select');
+      
+      if (updateBtn && statusSelect) {
+        updateBtn.addEventListener('click', async () => {
+          const newStatus = statusSelect.value;
+          if (newStatus === order.status) {
+            alert('Status is already set to this value');
+            return;
+          }
+          
+          if (!confirm(`Are you sure you want to change the order status to "${statusOptions.find(s => s.value === newStatus).label}"?`)) {
+            return;
+          }
+          
+          try {
+            await OrdersAPI.updateOrderStatus(orderId, newStatus);
+            alert('Order status updated successfully!');
+            orderModal.classList.remove('open');
+            loadOrders(); // Refresh the orders list
+          } catch (error) {
+            alert('Failed to update order status: ' + error.message);
+          }
+        });
+        
+        // Update button color when status changes
+        statusSelect.addEventListener('change', () => {
+          const selected = statusOptions.find(s => s.value === statusSelect.value);
+          if (selected) {
+            statusSelect.style.background = selected.color;
+          }
+        });
+      }
+    }, 100);
+    
+  } catch (error) {
+    console.error('Failed to load order:', error);
+    alert('Failed to load order details: ' + error.message);
+  }
 }
 
 // ========================================
@@ -1211,11 +1485,13 @@ function initModals() {
       }
 
       try {
-        await ProductsAPI.createProduct(name, category, basePrice, variants);
-        alert('Product created successfully');
+        const result = await ProductsAPI.createProduct(name, category, basePrice, variants);
         productModal.classList.remove('open');
-        loadProducts();
+        
+        // Reload products table immediately to show the new product with correct numbering
+        await loadProducts();
       } catch (error) {
+        console.error('Error creating product:', error);
         alert('Error creating product: ' + error.message);
       }
     };

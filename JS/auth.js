@@ -42,9 +42,6 @@ function initLoginPage() {
                 localStorage.setItem('mypc_user_data', JSON.stringify(data.user));
                 window.CURRENT_USER = data.user;
 
-                // Trigger login event for other tabs
-                localStorage.setItem('mypc_login_event', Date.now().toString());
-
                 // Show success message
                 alert('Login successful! Welcome back.');
 
@@ -168,9 +165,6 @@ function initSignupPage() {
                 localStorage.setItem('mypc_user', data.user.email);
                 localStorage.setItem('mypc_user_data', JSON.stringify(data.user));
                 window.CURRENT_USER = data.user;
-
-                // Trigger login event for other tabs
-                localStorage.setItem('mypc_login_event', Date.now().toString());
 
                 // Show success message
                 alert('Account created successfully! Welcome to MyPC.');
