@@ -693,6 +693,8 @@ function updateCartTotal() {
   
   // Only sum up selected items
   let selectedTotal = 0;
+  const hasSelectedItems = window.CART_DATA.items?.some(item => item.selected === true) || false;
+  
   window.CART_DATA.items?.forEach(item => {
     if (item.selected === true) {
       selectedTotal += parseFloat(item.line_total || 0);
@@ -700,6 +702,22 @@ function updateCartTotal() {
   });
   
   totalEl.textContent = formatPHP(selectedTotal || 0);
+  
+  // Disable/enable checkout button based on selected items
+  const checkoutBtn = document.getElementById('checkout-btn');
+  if (checkoutBtn) {
+    if (hasSelectedItems) {
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.opacity = '1';
+      checkoutBtn.style.cursor = 'pointer';
+      checkoutBtn.title = '';
+    } else {
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.opacity = '0.5';
+      checkoutBtn.style.cursor = 'not-allowed';
+      checkoutBtn.title = 'Select at least one item to proceed';
+    }
+  }
 }
 
 async function changeCartQty(cartItemId, delta) {
