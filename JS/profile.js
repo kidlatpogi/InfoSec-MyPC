@@ -659,6 +659,7 @@ async function initProfilePage() {
 
 // Make functions globally available
 window.initProfilePage = initProfilePage;
+window.switchSection = switchSection;
 window.viewOrderDetails = viewOrderDetails;
 window.cancelOrder = cancelOrder;
 window.editAddress = editAddress;
