@@ -286,12 +286,13 @@ const CartAPI = {
 
 const OrdersAPI = {
     // Create order
-    async createOrder(addressId, paymentMethod, notes = '') {
+    async createOrder(addressId, paymentMethod, notes = '', selectedCartItemIds = []) {
         const body = toFormData({
             action: 'create',
             address_id: addressId,
             payment_method: paymentMethod,
-            ...(notes && { notes })
+            ...(notes && { notes }),
+            ...(selectedCartItemIds && selectedCartItemIds.length > 0 && { selected_items: JSON.stringify(selectedCartItemIds) })
         });
 
         return await apiCall('orders.php', {

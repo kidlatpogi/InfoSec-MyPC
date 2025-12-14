@@ -474,7 +474,26 @@ async function loadCartFromBackend() {
     console.log('[loadCartFromBackend] API response:', data);
 
     if (data && data.cart) {
+      // Preserve selected state from previous items if they still exist
+      const selectedMap = {};
+      if (window.CART_DATA && window.CART_DATA.items) {
+        window.CART_DATA.items.forEach(item => {
+          if (item.selected === true) {
+            selectedMap[item.cart_item_id] = true;
+          }
+        });
+      }
+      
+      // Set new cart data
       window.CART_DATA = data.cart;
+      
+      // Restore selected state for items that still exist
+      window.CART_DATA.items.forEach(item => {
+        if (selectedMap[item.cart_item_id]) {
+          item.selected = true;
+        }
+      });
+      
       console.log('[loadCartFromBackend] Cart data set:', window.CART_DATA);
       updateCartCount();
     } else {
@@ -618,6 +637,7 @@ async function renderCartItems() {
     const lineTotal = formatPHP(parseFloat(item.line_total || 0));
 
     row.innerHTML = `
+      <input type="checkbox" class="cart-item-checkbox" data-cart-item-id="${item.cart_item_id}" ${item.selected === true ? 'checked' : ''} style="margin-right: 0.5rem; cursor: pointer; width: 18px; height: 18px;">
       <img src="${escapeHtml(
         ensureImageUrl(item.image_url)
       )}" alt="${escapeHtml(
@@ -647,9 +667,39 @@ async function renderCartItems() {
       </div>
     `;
     itemsEl.appendChild(row);
+    
+    // Add event listener to track checkbox changes
+    const checkbox = row.querySelector('.cart-item-checkbox');
+    if (checkbox) {
+      checkbox.addEventListener('change', (e) => {
+        // Update the item's selected status in CART_DATA
+        const cartItem = window.CART_DATA.items.find(i => i.cart_item_id == e.target.dataset.cartItemId);
+        if (cartItem) {
+          cartItem.selected = e.target.checked;
+        }
+        // Recalculate total when checkbox changes
+        updateCartTotal();
+      });
+    }
   });
 
-  if (totalEl) totalEl.textContent = formatPHP(window.CART_DATA.subtotal || 0);
+  // Calculate and display total for only selected items
+  updateCartTotal();
+}
+
+function updateCartTotal() {
+  const totalEl = document.getElementById('cart-total');
+  if (!totalEl) return;
+  
+  // Only sum up selected items
+  let selectedTotal = 0;
+  window.CART_DATA.items?.forEach(item => {
+    if (item.selected === true) {
+      selectedTotal += parseFloat(item.line_total || 0);
+    }
+  });
+  
+  totalEl.textContent = formatPHP(selectedTotal || 0);
 }
 
 async function changeCartQty(cartItemId, delta) {

@@ -23,6 +23,15 @@ try {
         $address_id = isset($_POST['address_id']) ? intval($_POST['address_id']) : 0;
         $payment_method = isset($_POST['payment_method']) ? sanitizeInput($_POST['payment_method']) : 'cod';
         $notes = isset($_POST['notes']) ? sanitizeInput($_POST['notes']) : null;
+        
+        // Get selected cart item IDs (if provided)
+        $selected_items = [];
+        if (isset($_POST['selected_items'])) {
+            $selected_items = json_decode($_POST['selected_items'], true);
+            if (!is_array($selected_items)) {
+                $selected_items = [];
+            }
+        }
 
         // Validate payment method
         $valid_methods = ['cod', 'card', 'gcash', 'paymaya', 'bank_transfer'];
@@ -64,20 +73,27 @@ try {
 
         $cart_id = $cart['id'];
 
-        // Get cart items
-        $cart_items = $db->fetchAll(
-            "SELECT ci.variant_id, ci.quantity,
+        // Get cart items - if selected_items provided, filter by those IDs
+        $query = "SELECT ci.id as cart_item_id, ci.variant_id, ci.quantity,
                     p.name, p.sku,
                     pv.title, pv.price, pv.stock
              FROM cart_items ci
              JOIN product_variants pv ON ci.variant_id = pv.id
              JOIN products p ON pv.product_id = p.id
-             WHERE ci.cart_id = ?",
-            [$cart_id]
-        );
+             WHERE ci.cart_id = ?";
+        
+        $params = [$cart_id];
+        
+        if (!empty($selected_items)) {
+            $placeholders = implode(',', array_fill(0, count($selected_items), '?'));
+            $query .= " AND ci.id IN ($placeholders)";
+            $params = array_merge([$cart_id], $selected_items);
+        }
+        
+        $cart_items = $db->fetchAll($query, $params);
 
         if (empty($cart_items)) {
-            sendError('Cart is empty');
+            sendError('Cart is empty or no items selected');
         }
 
         // Start transaction
@@ -144,8 +160,15 @@ try {
                 );
             }
 
-            // Clear cart
-            $db->query("DELETE FROM cart_items WHERE cart_id = ?", [$cart_id]);
+            // Clear cart - only remove the items that were ordered
+            if (!empty($selected_items)) {
+                // Remove only selected items
+                $placeholders = implode(',', array_fill(0, count($selected_items), '?'));
+                $db->query("DELETE FROM cart_items WHERE cart_id = ? AND id IN ($placeholders)", array_merge([$cart_id], $selected_items));
+            } else {
+                // Remove all items if no selection was made (backward compatibility)
+                $db->query("DELETE FROM cart_items WHERE cart_id = ?", [$cart_id]);
+            }
 
             // Commit transaction
             $db->commit();

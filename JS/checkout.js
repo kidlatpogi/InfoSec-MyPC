@@ -4,6 +4,28 @@
  */
 
 // ========================================
+// HELPER FUNCTIONS
+// ========================================
+
+function updateSelectedTotal() {
+    const checkoutTotalEl = document.getElementById('checkout-total');
+    if (!checkoutTotalEl) return;
+    
+    // Calculate total from selected items in CART_DATA
+    let total = 0;
+    
+    if (window.CART_DATA && window.CART_DATA.items) {
+        window.CART_DATA.items.forEach(item => {
+            if (item.selected === true) {
+                total += parseFloat(item.line_total || 0);
+            }
+        });
+    }
+    
+    checkoutTotalEl.textContent = formatPHP(total || 0);
+}
+
+// ========================================
 // CHECKOUT DATA LOADING
 // ========================================
 
@@ -111,20 +133,46 @@ async function loadCheckoutItems() {
 
         checkoutItemsEl.innerHTML = '';
         window.CART_DATA.items.forEach((item) => {
-            console.log('[loadCheckoutItems] Rendering item:', item);
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'summary-row';
-            itemDiv.innerHTML = `
-                <span>${item.name}${item.variant_title ? ' (' + item.variant_title + ')' : ''} x ${item.quantity}</span>
-                <span>${formatPHP(item.unit_price * item.quantity)}</span>
-            `;
-            checkoutItemsEl.appendChild(itemDiv);
+            // Only show items that were selected in the cart
+            if (item.selected === true) {
+                console.log('[loadCheckoutItems] Rendering selected item:', item);
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'summary-row';
+                itemDiv.style.display = 'flex';
+                itemDiv.style.justifyContent = 'space-between';
+                itemDiv.style.alignItems = 'center';
+                
+                const labelSpan = document.createElement('span');
+                labelSpan.textContent = `${item.name}${item.variant_title ? ' (' + item.variant_title + ')' : ''} x ${item.quantity}`;
+                
+                const priceSpan = document.createElement('span');
+                priceSpan.textContent = formatPHP(item.unit_price * item.quantity);
+                
+                itemDiv.appendChild(labelSpan);
+                itemDiv.appendChild(priceSpan);
+                checkoutItemsEl.appendChild(itemDiv);
+            }
         });
 
-        if (checkoutTotalEl) {
-            console.log('[loadCheckoutItems] Setting total to:', window.CART_DATA.subtotal);
-            checkoutTotalEl.textContent = formatPHP(window.CART_DATA.subtotal || 0);
+        // Add "Select All" functionality
+        const selectAllCheckbox = document.getElementById('select-all-items');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', (e) => {
+                const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+                itemCheckboxes.forEach(checkbox => {
+                    checkbox.checked = e.target.checked;
+                    // Update CART_DATA when select all is used
+                    const cartItem = window.CART_DATA.items.find(i => i.cart_item_id == checkbox.dataset.cartItemId);
+                    if (cartItem) {
+                        cartItem.selected = e.target.checked;
+                    }
+                });
+                updateSelectedTotal();
+            });
         }
+
+        // Calculate and display the total for selected items
+        updateSelectedTotal();
 
     } catch (error) {
         console.error('Failed to load checkout items:', error);
@@ -146,6 +194,13 @@ function initializeCheckoutForm() {
             // Validate cart
             if (!window.CART_DATA.items || window.CART_DATA.items.length === 0) {
                 alert('Your cart is empty');
+                return;
+            }
+
+            // Check if at least one item was selected in the cart
+            const selectedItems = window.CART_DATA.items.filter(item => item.selected === true);
+            if (selectedItems.length === 0) {
+                alert('Please select at least one item from your cart to checkout');
                 return;
             }
 
@@ -223,10 +278,16 @@ function initializeCheckoutForm() {
 
             // Create the order
             try {
+                // Collect selected cart item IDs from CART_DATA
+                const selectedCartItemIds = window.CART_DATA.items
+                    .filter(item => item.selected === true)
+                    .map(item => item.cart_item_id);
+
                 const orderResult = await OrdersAPI.createOrder(
                     addressId,
                     paymentMethod,
-                    '' // notes (optional)
+                    '', // notes (optional)
+                    selectedCartItemIds // pass selected items
                 );
 
                 console.log('Order creation result:', orderResult);
@@ -234,7 +295,7 @@ function initializeCheckoutForm() {
                 // Order created successfully
                 alert('Order placed successfully! Order #' + (orderResult.order_number || orderResult.order_id));
                 
-                // Clear the cart
+                // Clear the cart (or just remove selected items)
                 await CartAPI.clearCart();
                 window.CART_DATA = { items: [], total: 0 };
                 updateCartCount();
