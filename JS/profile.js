@@ -106,11 +106,13 @@ async function loadUserOrders() {
             return;
         }
 
-        // Update stats
+        // Update stats - exclude cancelled orders
+        const activeOrders = data.orders.filter(order => order.status !== 'cancelled');
+        
         const totalOrdersStat = document.querySelector('.stat-box:nth-child(1) .stat-number');
-        if (totalOrdersStat) totalOrdersStat.textContent = data.orders.length;
+        if (totalOrdersStat) totalOrdersStat.textContent = activeOrders.length;
 
-        const totalSpent = data.orders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
+        const totalSpent = activeOrders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
         const totalSpentStat = document.querySelector('.stat-box:nth-child(2) .stat-number');
         if (totalSpentStat) totalSpentStat.textContent = formatPHP(totalSpent);
 
