@@ -7,22 +7,52 @@
 // HELPER FUNCTIONS
 // ========================================
 
+function calculateShippingFee(subtotal) {
+    // ₱150 shipping for orders below ₱5,000; free for ₱5,000 and above
+    return subtotal >= 5000 ? 0 : 150;
+}
+
 function updateSelectedTotal() {
-    const checkoutTotalEl = document.getElementById('checkout-total');
-    if (!checkoutTotalEl) return;
+    const subtotalEl = document.getElementById('checkout-subtotal');
+    const shippingEl = document.getElementById('checkout-shipping');
+    const taxEl = document.getElementById('checkout-tax');
+    const totalEl = document.getElementById('checkout-total');
     
-    // Calculate total from selected items in CART_DATA
-    let total = 0;
+    if (!subtotalEl || !totalEl) return;
+    
+    // Calculate subtotal from selected items in CART_DATA
+    let subtotal = 0;
     
     if (window.CART_DATA && window.CART_DATA.items) {
         window.CART_DATA.items.forEach(item => {
             if (item.selected === true) {
-                total += parseFloat(item.line_total || 0);
+                subtotal += parseFloat(item.line_total || 0);
             }
         });
     }
     
-    checkoutTotalEl.textContent = formatPHP(total || 0);
+    // Calculate shipping fee
+    const shippingFee = calculateShippingFee(subtotal);
+    
+    // Calculate tax (12% VAT)
+    const tax = subtotal * 0.12;
+    
+    // Calculate total
+    const total = subtotal + shippingFee + tax;
+    
+    // Update display
+    subtotalEl.textContent = formatPHP(subtotal || 0);
+    if (shippingEl) shippingEl.textContent = formatPHP(shippingFee);
+    if (taxEl) taxEl.textContent = formatPHP(tax);
+    totalEl.textContent = formatPHP(total || 0);
+    
+    // Store in window for checkout submission
+    window.checkoutCalculations = {
+        subtotal,
+        shippingFee,
+        tax,
+        total
+    };
 }
 
 // ========================================

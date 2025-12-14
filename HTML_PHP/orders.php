@@ -262,7 +262,7 @@ try {
 
         // Get order items with product details and images
         $items = $db->fetchAll(
-            "SELECT oi.*, p.slug, p.name as product_name_full, p.image_url, pv.title as variant_title_full
+            "SELECT oi.*, p.slug, p.name as product_name_full, pv.title as variant_title_full
              FROM order_items oi
              LEFT JOIN product_variants pv ON oi.variant_id = pv.id
              LEFT JOIN products p ON pv.product_id = p.id
@@ -380,6 +380,8 @@ try {
 
 } catch (Exception $e) {
     error_log("Orders API Error: " . $e->getMessage());
-    sendError('An error occurred. Please try again later.', 500);
+    error_log("Orders API Error Stack: " . $e->getTraceAsString());
+    // Return detailed error in development mode
+    sendError('An error occurred: ' . $e->getMessage(), 500);
 }
 ?>

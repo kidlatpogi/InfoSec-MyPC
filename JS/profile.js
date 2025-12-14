@@ -177,13 +177,98 @@ async function loadUserOrders() {
 async function viewOrderDetails(orderId) {
     try {
         const data = await OrdersAPI.getOrder(orderId);
-        if (data.order) {
-            alert(`Order Details:\n\nOrder #${data.order.order_number}\nStatus: ${data.order.status}\nTotal: ${formatPHP(data.order.total)}\n\nShipping Address:\n${data.order.shipping_address}`);
+        console.log('Order data:', data);
+        
+        if (data && data.order) {
+            const order = data.order;
+            displayOrderModal(order);
+        } else {
+            alert('Order not found');
         }
     } catch (error) {
         console.error('Failed to load order details:', error);
-        alert('Failed to load order details');
+        alert('Failed to load order details: ' + (error.message || 'Unknown error'));
     }
+}
+
+function displayOrderModal(order) {
+    const modal = document.getElementById('order-details-modal');
+    const backdrop = document.getElementById('order-details-backdrop');
+    const titleEl = document.getElementById('order-modal-title');
+    const contentEl = document.getElementById('order-modal-content');
+    
+    // Set title
+    titleEl.textContent = `Order #${order.order_number || order.id}`;
+    
+    // Build HTML content
+    let itemsHTML = '';
+    if (order.items && order.items.length > 0) {
+        itemsHTML = order.items.map(item => `
+            <div class="order-item">
+                <div class="order-item-name">${item.product_name}</div>
+                <div class="order-item-variant">${item.variant_title || 'Standard'}</div>
+                <div class="order-item-details">
+                    <span>${item.quantity}x ${formatPHP(item.unit_price)}</span>
+                    <span><strong>${formatPHP(item.line_total)}</strong></span>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        itemsHTML = '<p>No items in this order</p>';
+    }
+    
+    const statusBadgeClass = `order-status-badge ${order.status}`;
+    
+    contentEl.innerHTML = `
+        <div class="order-info-section">
+            <h3>Order Information</h3>
+            <div class="order-info-row">
+                <span class="label">Status:</span>
+                <span class="value"><div class="${statusBadgeClass}">${order.status.toUpperCase()}</div></span>
+            </div>
+            <div class="order-info-row">
+                <span class="label">Order Date:</span>
+                <span class="value">${new Date(order.placed_at).toLocaleDateString()}</span>
+            </div>
+        </div>
+        
+        <div class="order-info-section">
+            <h3>Items Ordered</h3>
+            <ul class="order-items-list">
+                ${itemsHTML}
+            </ul>
+        </div>
+        
+        <div class="order-summary-box">
+            <div class="order-summary-row">
+                <span class="label">Subtotal:</span>
+                <span class="value">${formatPHP(order.subtotal)}</span>
+            </div>
+            <div class="order-summary-row">
+                <span class="label">Shipping:</span>
+                <span class="value">${formatPHP(order.shipping)}</span>
+            </div>
+            <div class="order-summary-row">
+                <span class="label">Tax (12%):</span>
+                <span class="value">${formatPHP(order.tax)}</span>
+            </div>
+            <div class="order-summary-row total">
+                <span class="label">Total:</span>
+                <span class="value">${formatPHP(order.total)}</span>
+            </div>
+        </div>
+    `;
+    
+    // Show modal
+    modal.classList.add('open');
+    backdrop.classList.add('open');
+}
+
+function closeOrderModal() {
+    const modal = document.getElementById('order-details-modal');
+    const backdrop = document.getElementById('order-details-backdrop');
+    modal.classList.remove('open');
+    backdrop.classList.remove('open');
 }
 
 async function cancelOrder(orderId) {
@@ -655,11 +740,25 @@ async function initProfilePage() {
     initProfileEditForm();
     initAddressManagement();
     initOrderSorting();
+    initOrderDetailsModal();
     
     // If coming from checkout, show orders section
     if (window.showOrdersAfterCheckout) {
         switchSection('orders');
         window.showOrdersAfterCheckout = false;
+    }
+}
+
+function initOrderDetailsModal() {
+    const closeBtn = document.getElementById('order-modal-close');
+    const backdrop = document.getElementById('order-details-backdrop');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeOrderModal);
+    }
+    
+    if (backdrop) {
+        backdrop.addEventListener('click', closeOrderModal);
     }
 }
 
@@ -671,5 +770,6 @@ window.cancelOrder = cancelOrder;
 window.editAddress = editAddress;
 window.deleteAddress = deleteAddress;
 window.loadAddresses = loadAddresses;
+window.closeOrderModal = closeOrderModal;
 
 // Auto-init removed to prevent double initialization by router
