@@ -472,11 +472,11 @@ function initAddressManagement() {
     const addressModal = document.getElementById('address-modal');
     const addressForm = document.getElementById('address-form');
     const modalTitle = document.getElementById('address-modal-title');
-    let editingAddressId = null;
+    window.editingAddressId = null;
 
     if (addAddressBtn) {
         addAddressBtn.addEventListener('click', () => {
-            editingAddressId = null;
+            window.editingAddressId = null;
             modalTitle.textContent = 'Add New Address';
             document.getElementById('address-label').value = '';
             document.getElementById('address-recipient').value = '';
@@ -504,9 +504,22 @@ function initAddressManagement() {
         const isDefault = document.getElementById('address-default').checked;
 
         try {
-            if (editingAddressId) {
+            // Check if setting as default and another default exists (only for new addresses)
+            if (isDefault && !window.editingAddressId) {
+                const data = await AddressesAPI.getAddresses();
+                const hasDefault = data.addresses && data.addresses.some(addr => addr.is_default);
+                
+                if (hasDefault) {
+                    const confirmChange = confirm('An address is already set as default. Would you like to change it to this new address?');
+                    if (!confirmChange) {
+                        return;
+                    }
+                }
+            }
+
+            if (window.editingAddressId) {
                 // Update existing address
-                await AddressesAPI.updateAddress(editingAddressId, {
+                await AddressesAPI.updateAddress(window.editingAddressId, {
                     label,
                     recipient_name: recipientName,
                     phone,
@@ -542,68 +555,39 @@ function initAddressManagement() {
 
 async function editAddress(addressId) {
     const addressModal = document.getElementById('address-modal');
-    const addressForm = document.getElementById('address-form');
     const modalTitle = document.getElementById('address-modal-title');
 
-    // Fetch current address data
-    const addresses = await AddressesAPI.getAddresses();
-    const address = addresses.find(a => a.id == addressId);
+    try {
+        // Fetch current address data
+        const data = await AddressesAPI.getAddresses();
+        const address = data.addresses.find(a => a.id == addressId);
 
-    if (!address) {
-        alert('Address not found');
-        return;
-    }
-
-    // Populate form with current data
-    document.getElementById('address-label').value = address.label || '';
-    document.getElementById('address-recipient').value = address.recipient_name || '';
-    document.getElementById('address-phone').value = address.phone || '';
-    document.getElementById('address-line1').value = address.address || '';
-    document.getElementById('address-line2').value = address.address_line_2 || '';
-    document.getElementById('address-city').value = address.city || '';
-    document.getElementById('address-postal').value = address.postal_code || '';
-    document.getElementById('address-default').checked = address.is_default || false;
-
-    // Set modal title
-    modalTitle.textContent = `Edit Address: ${address.label}`;
-
-    // Show modal
-    addressModal.classList.add('open');
-
-    // Create a new form handler for this edit
-    const newForm = addressForm.cloneNode(true);
-    addressForm.parentNode.replaceChild(newForm, addressForm);
-
-    newForm.onsubmit = async (e) => {
-        e.preventDefault();
-
-        const label = document.getElementById('address-label').value.trim();
-        const recipientName = document.getElementById('address-recipient').value.trim();
-        const phone = document.getElementById('address-phone').value.trim();
-        const addressLine1 = document.getElementById('address-line1').value.trim();
-        const addressLine2 = document.getElementById('address-line2').value.trim();
-        const city = document.getElementById('address-city').value.trim();
-        const postalCode = document.getElementById('address-postal').value.trim();
-        const isDefault = document.getElementById('address-default').checked;
-
-        try {
-            await AddressesAPI.updateAddress(addressId, {
-                label,
-                recipient_name: recipientName,
-                phone,
-                address: addressLine1,
-                address_line_2: addressLine2,
-                city,
-                postal_code: postalCode,
-                is_default: isDefault
-            });
-            alert('Address updated successfully');
-            addressModal.classList.remove('open');
-            loadAddresses();
-        } catch (error) {
-            alert('Error updating address: ' + error.message);
+        if (!address) {
+            alert('Address not found');
+            return;
         }
-    };
+
+        // Set as currently editing
+        window.editingAddressId = addressId;
+
+        // Populate form with current data
+        document.getElementById('address-label').value = address.label || '';
+        document.getElementById('address-recipient').value = address.recipient_name || '';
+        document.getElementById('address-phone').value = address.phone || '';
+        document.getElementById('address-line1').value = address.address || '';
+        document.getElementById('address-line2').value = address.address_line_2 || '';
+        document.getElementById('address-city').value = address.city || '';
+        document.getElementById('address-postal').value = address.postal_code || '';
+        document.getElementById('address-default').checked = address.is_default || false;
+
+        // Set modal title
+        modalTitle.textContent = `Edit Address: ${address.label}`;
+
+        // Show modal
+        addressModal.classList.add('open');
+    } catch (error) {
+        alert('Error loading address: ' + error.message);
+    }
 }
 
 async function deleteAddress(addressId) {
