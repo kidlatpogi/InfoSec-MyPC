@@ -444,8 +444,7 @@ async function loadAddresses() {
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                     <div>
                         <strong>${addr.label || 'Address'}</strong>
-                        <p>${addr.recipient_name}</p>
-                        <p>${addr.address_line1}${addr.address_line2 ? ', ' + addr.address_line2 : ''}</p>
+                        <p>${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}</p>
                         <p>${addr.city} ${addr.postal_code}</p>
                         <p>📞 ${addr.phone}</p>
                         ${addr.is_default ? '<span class="badge" style="background:#10b981;color:white">Default</span>' : ''}
@@ -479,7 +478,6 @@ function initAddressManagement() {
             window.editingAddressId = null;
             modalTitle.textContent = 'Add New Address';
             document.getElementById('address-label').value = '';
-            document.getElementById('address-recipient').value = '';
             document.getElementById('address-phone').value = '';
             document.getElementById('address-line1').value = '';
             document.getElementById('address-line2').value = '';
@@ -495,7 +493,6 @@ function initAddressManagement() {
         e.preventDefault();
 
         const label = document.getElementById('address-label').value.trim();
-        const recipientName = document.getElementById('address-recipient').value.trim();
         const phone = document.getElementById('address-phone').value.trim();
         const addressLine1 = document.getElementById('address-line1').value.trim();
         const addressLine2 = document.getElementById('address-line2').value.trim();
@@ -521,10 +518,9 @@ function initAddressManagement() {
                 // Update existing address
                 await AddressesAPI.updateAddress(window.editingAddressId, {
                     label,
-                    recipient_name: recipientName,
                     phone,
-                    address: addressLine1,
-                    address_line_2: addressLine2,
+                    line1: addressLine1,
+                    line2: addressLine2,
                     city,
                     postal_code: postalCode,
                     is_default: isDefault
@@ -532,7 +528,7 @@ function initAddressManagement() {
                 alert('Address updated successfully');
             } else {
                 // Add new address
-                await AddressesAPI.addAddress(recipientName, phone, addressLine1, city, postalCode, addressLine2, label, isDefault);
+                await AddressesAPI.addAddress('', phone, addressLine1, city, postalCode, addressLine2, label, isDefault);
                 alert('Address added successfully');
             }
             addressModal.classList.remove('open');
@@ -572,10 +568,9 @@ async function editAddress(addressId) {
 
         // Populate form with current data
         document.getElementById('address-label').value = address.label || '';
-        document.getElementById('address-recipient').value = address.recipient_name || '';
         document.getElementById('address-phone').value = address.phone || '';
-        document.getElementById('address-line1').value = address.address || '';
-        document.getElementById('address-line2').value = address.address_line_2 || '';
+        document.getElementById('address-line1').value = address.line1 || '';
+        document.getElementById('address-line2').value = address.line2 || '';
         document.getElementById('address-city').value = address.city || '';
         document.getElementById('address-postal').value = address.postal_code || '';
         document.getElementById('address-default').checked = address.is_default || false;
