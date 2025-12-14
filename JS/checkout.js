@@ -300,15 +300,11 @@ function initializeCheckoutForm() {
                 window.CART_DATA = { items: [], total: 0 };
                 updateCartCount();
                 
-                // Redirect to profile page and show orders section
-                window.router.navigateTo('/profile');
+                // Set flag to show orders section after page load
+                window.showOrdersAfterCheckout = true;
                 
-                // After navigation completes, switch to orders section
-                setTimeout(() => {
-                    if (window.switchSection) {
-                        window.switchSection('orders');
-                    }
-                }, 500);
+                // Redirect to profile page
+                window.router.navigateTo('/profile');
 
             } catch (error) {
                 console.error('Checkout error:', error);

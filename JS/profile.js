@@ -655,6 +655,12 @@ async function initProfilePage() {
     initProfileEditForm();
     initAddressManagement();
     initOrderSorting();
+    
+    // If coming from checkout, show orders section
+    if (window.showOrdersAfterCheckout) {
+        switchSection('orders');
+        window.showOrdersAfterCheckout = false;
+    }
 }
 
 // Make functions globally available
