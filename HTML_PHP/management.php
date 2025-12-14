@@ -445,7 +445,7 @@ try {
         }
         
         $addresses = $db->fetchAll(
-            "SELECT id, label, line1, line2, city, state, postal_code, country, phone, created_at 
+            "SELECT id, label, line1, line2, city, state, postal_code, country, phone, is_default, created_at 
              FROM addresses WHERE user_id = ? ORDER BY created_at DESC",
             [$target_user_id]
         );
@@ -479,11 +479,20 @@ try {
         $state = isset($_POST['state']) ? sanitizeInput($_POST['state']) : null;
         $postal_code = sanitizeInput($_POST['postal_code']);
         $country = sanitizeInput($_POST['country']);
+        $is_default = isset($_POST['is_default']) ? (int)$_POST['is_default'] : 0;
+        
+        // If setting as default, unset any existing default for this user
+        if ($is_default) {
+            $db->execute(
+                "UPDATE addresses SET is_default = 0 WHERE user_id = ? AND is_default = 1",
+                [$target_user_id]
+            );
+        }
         
         $address_id = $db->insert(
-            "INSERT INTO addresses (user_id, label, line1, line2, city, state, postal_code, country, phone) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [$target_user_id, $label, $line1, $line2, $city, $state, $postal_code, $country, $phone]
+            "INSERT INTO addresses (user_id, label, line1, line2, city, state, postal_code, country, phone, is_default) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [$target_user_id, $label, $line1, $line2, $city, $state, $postal_code, $country, $phone, $is_default]
         );
         
         sendSuccess(['address_id' => $address_id], 'Address added successfully');
@@ -543,6 +552,19 @@ try {
         if (isset($_POST['country'])) {
             $updates[] = "country = ?";
             $params[] = sanitizeInput($_POST['country']);
+        }
+        if (isset($_POST['is_default'])) {
+            $is_default = (int)$_POST['is_default'];
+            $updates[] = "is_default = ?";
+            $params[] = $is_default;
+            
+            // If setting this address as default, unset other defaults for this user
+            if ($is_default) {
+                $db->execute(
+                    "UPDATE addresses SET is_default = 0 WHERE user_id = ? AND id != ?",
+                    [$address['user_id'], $address_id]
+                );
+            }
         }
         
         if (empty($updates)) {

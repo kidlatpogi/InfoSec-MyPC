@@ -1,6 +1,11 @@
     USE mypc_db;
 
     -- =====================================================
+    -- ADD MISSING COLUMNS IF NOT EXISTS
+    -- =====================================================
+    ALTER TABLE addresses ADD COLUMN IF NOT EXISTS is_default TINYINT(1) NOT NULL DEFAULT 0;
+
+    -- =====================================================
     -- CATEGORIES INSERT
     -- =====================================================
 

@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     postal_code VARCHAR(30),
     country VARCHAR(100) NOT NULL DEFAULT 'Philippines',
     phone VARCHAR(50),
+    is_default TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX (user_id),
     CONSTRAINT fk_address_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
