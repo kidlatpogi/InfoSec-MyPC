@@ -625,8 +625,11 @@ function editProduct(productId) {
           product.name || product.title || '';
         document.getElementById('product-category').value =
           product.category || '';
-        document.getElementById('product-price').value =
-          product.price || product.base_price || 0;
+        // Price field removed from UI - use 0 as default
+        const priceField = document.getElementById('product-price');
+        if (priceField) {
+          priceField.value = product.price || product.base_price || 0;
+        }
         document.getElementById('product-variants').value = JSON.stringify(
           product.variants || [],
           null,
@@ -649,14 +652,13 @@ function editProduct(productId) {
           const category = document
             .getElementById('product-category')
             .value.trim();
-          const price = parseFloat(
-            document.getElementById('product-price').value
-          );
+          // Price is no longer in the form - use 0
+          const price = 0;
           const variantsJSON = document
             .getElementById('product-variants')
             .value.trim();
 
-          if (!title || !category || !price) {
+          if (!title || !category) {
             alert('Please fill in all required fields');
             return;
           }
@@ -1383,9 +1385,8 @@ function initModals() {
       e.preventDefault();
       const name = document.getElementById('product-title').value.trim();
       const category = document.getElementById('product-category').value.trim();
-      const basePrice = parseFloat(
-        document.getElementById('product-price').value
-      );
+      // Price field removed from UI - use 0
+      const basePrice = 0;
       let variants = [];
 
       const variantsStr = document
@@ -1398,6 +1399,11 @@ function initModals() {
           alert('Invalid JSON format for variants');
           return;
         }
+      }
+
+      if (!name || !category) {
+        alert('Please fill in all required fields');
+        return;
       }
 
       try {

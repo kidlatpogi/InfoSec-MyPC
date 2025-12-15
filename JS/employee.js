@@ -466,7 +466,11 @@ function editProduct(productId) {
                 // Populate form
                 document.getElementById('product-title').value = product.name;
                 document.getElementById('product-category').value = product.category_name || '';
-                document.getElementById('product-price').value = product.base_price;
+                // Price field removed from UI - use 0
+                const priceField = document.getElementById('product-price');
+                if (priceField) {
+                  priceField.value = product.base_price;
+                }
                 document.getElementById('product-variants').value = product.variants ? JSON.stringify(product.variants, null, 2) : '';
 
                 // Set modal title
@@ -480,7 +484,8 @@ function editProduct(productId) {
                     e.preventDefault();
                     const name = document.getElementById('product-title').value.trim();
                     const category = document.getElementById('product-category').value.trim();
-                    const basePrice = parseFloat(document.getElementById('product-price').value);
+                    // Price field removed from UI - use 0
+                    const basePrice = 0;
                     let variants = [];
 
                     const variantsStr = document.getElementById('product-variants').value.trim();
@@ -491,6 +496,11 @@ function editProduct(productId) {
                             alert('Invalid JSON format for variants');
                             return;
                         }
+                    }
+
+                    if (!name || !category) {
+                        alert('Please fill in all required fields');
+                        return;
                     }
 
                     try {
@@ -1005,7 +1015,8 @@ function initModals() {
             e.preventDefault();
             const name = document.getElementById('product-title').value.trim();
             const category = document.getElementById('product-category').value.trim();
-            const basePrice = parseFloat(document.getElementById('product-price').value);
+            // Price field removed from UI - use 0
+            const basePrice = 0;
             let variants = [];
 
             const variantsStr = document.getElementById('product-variants').value.trim();
