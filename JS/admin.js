@@ -692,6 +692,121 @@ function editProduct(productId) {
 }
 
 // ========================================
+// VARIANT EDITOR
+// ========================================
+
+let currentVariants = [];
+let variantsModalOpen = false;
+
+function openVariantsEditor() {
+  console.log('Opening variants editor...');
+  const variantsJSON = document.getElementById('product-variants').value.trim();
+  
+  try {
+    currentVariants = variantsJSON ? JSON.parse(variantsJSON) : [];
+    console.log('Loaded variants:', currentVariants);
+  } catch (e) {
+    console.error('Invalid JSON:', e);
+    alert('Invalid JSON in variants field. Starting with empty variants.');
+    currentVariants = [];
+  }
+
+  renderVariantsEditor();
+  const modal = document.getElementById('variants-modal');
+  if (modal) {
+    modal.classList.add('open');
+    variantsModalOpen = true;
+    console.log('Variants modal opened');
+  } else {
+    console.error('Variants modal not found!');
+  }
+}
+
+function renderVariantsEditor() {
+  const container = document.getElementById('variants-list');
+  const jsonDisplay = document.getElementById('variants-json-display');
+
+  if (!container || !jsonDisplay) {
+    console.error('Variants editor containers not found!');
+    return;
+  }
+
+  if (currentVariants.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">No variants yet. Click "+ Add Variant" to create one.</p>';
+  } else {
+    container.innerHTML = currentVariants.map((variant, idx) => `
+      <div style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Variant Name</label>
+            <input type="text" value="${variant.title || variant.label || ''}" 
+              onchange="updateVariant(${idx}, 'title', this.value)"
+              placeholder="e.g., Standard, Pro, Boxed"
+              style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Price (₱)</label>
+            <input type="number" value="${variant.price || 0}" min="0" step="100"
+              onchange="updateVariant(${idx}, 'price', parseFloat(this.value))"
+              style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Stock Quantity</label>
+          <input type="number" value="${variant.stock || 0}" min="0"
+            onchange="updateVariant(${idx}, 'stock', parseInt(this.value))"
+            style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(${idx})" style="background-color: #d32f2f; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">
+          🗑️ Remove Variant
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Update JSON display
+  jsonDisplay.textContent = JSON.stringify(currentVariants, null, 2);
+}
+
+function updateVariant(idx, field, value) {
+  if (currentVariants[idx]) {
+    currentVariants[idx][field] = value;
+    console.log('Updated variant:', idx, field, value);
+    renderVariantsEditor();
+  }
+}
+
+function removeVariant(idx) {
+  if (confirm(`Remove variant "${currentVariants[idx]?.title || 'Variant'}"?`)) {
+    currentVariants.splice(idx, 1);
+    renderVariantsEditor();
+  }
+}
+
+function addVariant() {
+  currentVariants.push({
+    title: `Variant ${currentVariants.length + 1}`,
+    price: 0,
+    stock: 0
+  });
+  console.log('Added new variant');
+  renderVariantsEditor();
+}
+
+function saveVariants() {
+  if (currentVariants.length === 0) {
+    if (!confirm('No variants added. Continue without variants?')) {
+      return;
+    }
+  }
+  
+  document.getElementById('product-variants').value = JSON.stringify(currentVariants);
+  document.getElementById('variants-modal').classList.remove('open');
+  variantsModalOpen = false;
+  console.log('Variants saved');
+}
+
+// ========================================
 // USER ACTIONS
 // ========================================
 
@@ -1295,6 +1410,24 @@ function initModals() {
       }
     };
   });
+
+  // Variants editor buttons
+  const editVariantsBtn = document.getElementById('edit-variants-btn');
+  const addVariantBtn = document.getElementById('add-variant-btn');
+  const variantsSaveBtn = document.getElementById('variants-save-btn');
+  
+  if (editVariantsBtn) {
+    editVariantsBtn.addEventListener('click', openVariantsEditor);
+    console.log('✓ Edit Variants button listener added');
+  }
+  if (addVariantBtn) {
+    addVariantBtn.addEventListener('click', addVariant);
+    console.log('✓ Add Variant button listener added');
+  }
+  if (variantsSaveBtn) {
+    variantsSaveBtn.addEventListener('click', saveVariants);
+    console.log('✓ Save Variants button listener added');
+  }
 }
 
 // ========================================
@@ -1525,6 +1658,11 @@ window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.editStock = editStock;
 window.deleteProduct = deleteProduct;
+window.openVariantsEditor = openVariantsEditor;
+window.addVariant = addVariant;
+window.removeVariant = removeVariant;
+window.updateVariant = updateVariant;
+window.saveVariants = saveVariants;
 window.editUser = editUser;
 window.deleteUser = deleteUser;
 window.editEmployee = editEmployee;

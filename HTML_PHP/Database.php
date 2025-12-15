@@ -49,8 +49,10 @@ class Database {
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            error_log("Query Error: " . $e->getMessage() . " | SQL: " . $sql);
-            throw new Exception("Database query failed");
+            $errorInfo = $this->pdo->errorInfo();
+            $errorMsg = "Database query failed: " . ($errorInfo[2] ?? $e->getMessage());
+            error_log("Query Error: " . $errorMsg . " | SQL: " . $sql . " | Params: " . json_encode($params));
+            throw new Exception($errorMsg);
         }
     }
 

@@ -182,11 +182,37 @@
                 <label>Variants (JSON format)</label>
                 <textarea id="product-variants" placeholder='[{"label":"Standard","priceDelta":0}]' rows="3"></textarea>
             </div>
+            <div style="margin-bottom: 1rem;">
+              <button type="button" class="primary" id="edit-variants-btn" style="width: 100%; padding: 0.8rem;">
+                Edit Variants
+              </button>
+            </div>
             <div class="form-actions">
                 <button type="button" class="secondary" data-action="cancel">Cancel</button>
                 <button type="submit" class="primary">Save Product</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Variants Editor Modal -->
+<div id="variants-modal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h2>Edit Product Variants</h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div style="padding: 1.5rem; max-height: 500px; overflow-y: auto;">
+            <div id="variants-list"></div>
+            <button type="button" class="secondary" id="add-variant-btn" style="margin: 1rem 0;">+ Add Variant</button>
+            <hr style="margin: 1.5rem 0;">
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">JSON Preview (Read-Only):</p>
+            <textarea id="variants-json-display" readonly style="width: 100%; height: 120px; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 0.8rem;"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="secondary" data-action="cancel">Cancel</button>
+            <button type="button" id="variants-save-btn" class="primary">Save Variants</button>
+        </div>
     </div>
 </div>
 
