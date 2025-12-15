@@ -463,13 +463,18 @@ async function loadCategories() {
 
 async function loadProducts() {
   const tbody = document.getElementById('products-tbody');
-  if (!tbody) return;
+  if (!tbody) {
+    console.error('products-tbody element not found');
+    return;
+  }
 
   tbody.innerHTML =
     '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
   try {
+    console.log('Fetching products...');
     const data = await ProductsAPI.getAllProducts();
+    console.log('Products loaded:', data);
 
     if (!data.products || data.products.length === 0) {
       tbody.innerHTML =
@@ -517,8 +522,9 @@ async function loadProducts() {
     });
   } catch (error) {
     console.error('Failed to load products:', error);
+    const errorMsg = error.message || 'Unknown error';
     tbody.innerHTML =
-      '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products</td></tr>';
+      `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
   }
 }
 

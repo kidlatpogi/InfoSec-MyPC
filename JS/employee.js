@@ -313,12 +313,17 @@ async function loadCategories() {
 
 async function loadProducts() {
     const tbody = document.getElementById('products-tbody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('products-tbody element not found');
+        return;
+    }
 
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
+        console.log('Fetching products...');
         const data = await ProductsAPI.getAllProducts();
+        console.log('Products loaded:', data);
 
         if (!data.products || data.products.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
