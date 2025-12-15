@@ -751,14 +751,43 @@ try {
             [$name, $categoryId, $productId]
         );
         
-        // Delete old variants and create new ones
-        $db->execute("DELETE FROM product_variants WHERE product_id = ?", [$productId]);
+        // Handle variant updates/inserts
+        // Get existing variants
+        $existingVariants = $db->fetchAll("SELECT id, title FROM product_variants WHERE product_id = ?", [$productId]);
+        $existingVariantTitles = array_column($existingVariants, 'title', 'id');
+        
+        // Collect new variant titles
+        $newVariantTitles = array_column($variants, 'title');
+        
+        // Update or insert variants
         if (!empty($variants)) {
             foreach ($variants as $variant) {
-                $db->execute(
-                    "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
-                    [$productId, $variant['title'] ?? 'Standard', $variant['price'] ?? 0, $variant['stock'] ?? 0]
-                );
+                $variantTitle = $variant['title'] ?? 'Standard';
+                $variantPrice = $variant['price'] ?? 0;
+                $variantStock = $variant['stock'] ?? 0;
+                
+                // Check if variant with this title exists
+                $existingId = null;
+                foreach ($existingVariantTitles as $id => $title) {
+                    if ($title === $variantTitle) {
+                        $existingId = $id;
+                        break;
+                    }
+                }
+                
+                if ($existingId) {
+                    // Update existing variant
+                    $db->execute(
+                        "UPDATE product_variants SET price = ?, stock = ? WHERE id = ?",
+                        [$variantPrice, $variantStock, $existingId]
+                    );
+                } else {
+                    // Insert new variant
+                    $db->execute(
+                        "INSERT INTO product_variants (product_id, title, price, stock) VALUES (?, ?, ?, ?)",
+                        [$productId, $variantTitle, $variantPrice, $variantStock]
+                    );
+                }
             }
         }
         
