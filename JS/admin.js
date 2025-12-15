@@ -380,6 +380,33 @@ async function loadEmployees() {
   }
 }
 
+// ========================================
+// CATEGORY MANAGEMENT
+// ========================================
+
+async function loadCategories() {
+  try {
+    const data = await ProductsAPI.getCategories();
+    const categorySelect = document.getElementById('product-category');
+    
+    if (!categorySelect) return;
+    
+    // Clear existing options except the first one
+    categorySelect.innerHTML = '<option value="">-- Select a Category --</option>';
+    
+    if (data.categories && Array.isArray(data.categories)) {
+      data.categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.name;
+        option.textContent = category.name;
+        categorySelect.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error);
+  }
+}
+
 async function loadProducts() {
   const tbody = document.getElementById('products-tbody');
   if (!tbody) return;
@@ -611,6 +638,9 @@ function editProduct(productId) {
     const productModal = document.getElementById('product-modal');
     const productForm = document.getElementById('product-form');
     const modalTitle = document.getElementById('product-modal-title');
+
+    // Load categories
+    loadCategories();
 
     // Fetch product data
     ProductsAPI.getProduct(productId)
@@ -1377,6 +1407,9 @@ function initModals() {
     // Reset form for new entry
     productForm.reset();
     modalTitle.textContent = 'Add New Product';
+
+    // Load categories
+    loadCategories();
 
     productModal.classList.add('open');
 
