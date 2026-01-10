@@ -145,7 +145,7 @@
 
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="tel" id="edit-phone" value="+63 912 345 6789" required>
+                                <input type="tel" id="edit-phone" value="" required pattern="[0-9]{11}" maxlength="11" minlength="11" placeholder="09123456789" title="Phone number must be exactly 11 digits">
                             </div>
 
                             <div class="form-group">
@@ -380,7 +380,7 @@
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="address-phone" required />
+                    <input type="tel" id="address-phone" required pattern="[0-9]{11}" maxlength="11" minlength="11" placeholder="09123456789" title="Phone number must be exactly 11 digits" />
                 </div>
                 <div class="form-group">
                     <label>Address Line 1</label>

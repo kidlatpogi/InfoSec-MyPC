@@ -23,6 +23,7 @@ async function apiCall(endpoint, options = {}) {
     try {
         const response = await fetch(url, {
             ...options,
+            credentials: 'include', // Include cookies for session authentication
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 ...options.headers
@@ -365,6 +366,11 @@ const OrdersAPI = {
             method: 'POST',
             body
         });
+    },
+    
+    // Get sales analytics (admin/superadmin only)
+    async getSalesAnalytics(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+        return await apiCall(`sales_analytics.php?year=${year}&month=${month}`);
     }
 };
 

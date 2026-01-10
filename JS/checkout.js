@@ -249,6 +249,12 @@ function initializeCheckoutForm() {
                 return;
             }
 
+            // Validate phone number (must be exactly 11 digits)
+            if (!/^\d{11}$/.test(phone)) {
+                alert('Phone number must be exactly 11 digits');
+                return;
+            }
+
             if (!paymentMethod) {
                 alert('Please select a payment method');
                 return;

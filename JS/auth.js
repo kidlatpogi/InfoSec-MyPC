@@ -117,9 +117,9 @@ function initSignupPage() {
             hasError = true;
         }
 
-        // 4. Validate Phone (Only numbers allowed)
-        if (phone && !/^\d+$/.test(phone)) {
-            document.getElementById('phone-error').textContent = 'Phone number must contain only numbers';
+        // 4. Validate Phone (Must be exactly 11 digits)
+        if (phone && !/^\d{11}$/.test(phone)) {
+            document.getElementById('phone-error').textContent = 'Phone number must be exactly 11 digits';
             hasError = true;
         }
 

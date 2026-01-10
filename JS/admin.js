@@ -4,6 +4,30 @@
  */
 
 // ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+// Format currency (PHP Peso)
+function formatPHP(n) {
+  return (
+    '₱' +
+    parseFloat(n || 0).toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
+
+// Get user data from localStorage
+function getUserData() {
+  try {
+    return JSON.parse(localStorage.getItem('user')) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ========================================
 // CONFIRMATION DIALOG HELPER
 // ========================================
 
@@ -552,9 +576,6 @@ async function loadProducts() {
                     <button class="btn btn-sm" onclick="editProduct(${
                       product.id
                     })">Edit</button>
-                    <button class="btn btn-sm" onclick="editStock(${
-                      product.id
-                    }, ${totalStock})">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${
                       product.id
                     })">Delete</button>
@@ -573,10 +594,11 @@ function getStatusColor(status) {
   const statusColors = {
     'pending': '#f59e0b',
     'processing': '#3b82f6',
+    'paid': '#06b6d4',
     'shipped': '#8b5cf6',
-    'out_for_delivery': '#06b6d4',
-    'delivered': '#10b981',
-    'cancelled': '#ef4444'
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#6b7280'
   };
   return statusColors[status] || '#6b7280';
 }
@@ -585,10 +607,11 @@ function getStatusLabel(status) {
   const labels = {
     'pending': 'Pending',
     'processing': 'Processing',
+    'paid': 'Paid',
     'shipped': 'Shipped',
-    'out_for_delivery': 'Out for Delivery personnel',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled'
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    'refunded': 'Refunded'
   };
   return labels[status] || status;
 }
@@ -646,7 +669,8 @@ function viewProduct(productId) {
 
   // Fetch product data
   ProductsAPI.getProduct(productId)
-    .then((product) => {
+    .then((data) => {
+      const product = data.product;
       if (!product || !product.id) {
         alert('Product not found');
         return;
@@ -696,7 +720,7 @@ function viewProduct(productId) {
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <strong>Category:</strong> ${
-                              product.category || 'N/A'
+                              product.category_name || product.category || 'N/A'
                             }
                         </div>
                         <div style="margin-bottom: 1rem;">
@@ -745,7 +769,8 @@ function editProduct(productId) {
 
     // Fetch product data
     ProductsAPI.getProduct(productId)
-      .then((product) => {
+      .then((data) => {
+        const product = data.product;
         if (!product || !product.id) {
           alert('Product not found');
           return;
@@ -755,7 +780,7 @@ function editProduct(productId) {
         document.getElementById('product-title').value =
           product.name || product.title || '';
         document.getElementById('product-category').value =
-          product.category || '';
+          product.category_name || product.category || '';
         // Price field removed from UI - use 0 as default
         const priceField = document.getElementById('product-price');
         if (priceField) {
@@ -1174,14 +1199,15 @@ async function viewOrder(orderId) {
     // Format date
     const orderDate = new Date(order.placed_at || order.created_at).toLocaleString();
     
-    // Status options with display names
+    // Status options with display names (matches database enum)
     const statusOptions = [
       { value: 'pending', label: 'Pending', color: '#f59e0b' },
       { value: 'processing', label: 'Processing', color: '#3b82f6' },
+      { value: 'paid', label: 'Paid', color: '#06b6d4' },
       { value: 'shipped', label: 'Shipped', color: '#8b5cf6' },
-      { value: 'out_for_delivery', label: 'Out for Delivery personnel', color: '#06b6d4' },
-      { value: 'delivered', label: 'Delivered', color: '#10b981' },
-      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' }
+      { value: 'completed', label: 'Completed', color: '#10b981' },
+      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' },
+      { value: 'refunded', label: 'Refunded', color: '#6b7280' }
     ];
     
     const currentStatus = statusOptions.find(s => s.value === order.status) || statusOptions[0];
@@ -1683,6 +1709,7 @@ function handleProfileSubmit(e) {
   e.preventDefault();
 
   const fullName = document.getElementById('profile-full-name').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
   const currentPassword = document.getElementById(
     'profile-current-password'
   ).value;
@@ -1693,6 +1720,12 @@ function handleProfileSubmit(e) {
 
   if (!fullName) {
     alert('Full name is required');
+    return;
+  }
+
+  // Validate phone number (must be exactly 11 digits if provided)
+  if (phone && !/^\d{11}$/.test(phone)) {
+    alert('Phone number must be exactly 11 digits');
     return;
   }
 
@@ -1841,8 +1874,10 @@ window.updateVariant = updateVariant;
 window.saveVariants = saveVariants;
 window.editUser = editUser;
 window.deleteUser = deleteUser;
+window.reactivateUser = reactivateUser;
 window.editEmployee = editEmployee;
 window.deleteEmployee = deleteEmployee;
+window.reactivateEmployee = reactivateEmployee;
 window.viewOrder = viewOrder;
 window.resetProfileForm = resetProfileForm;
 

@@ -1185,19 +1185,28 @@ async function initializePageScript() {
   updateCartVisibility();
 
   // Check if this is admin/employee/superadmin page
+  // Note: router.js handles loading and initializing these scripts with proper onload callbacks
   if (document.getElementById('superadmin-welcome')) {
     console.log('[initializePageScript] Detected superadmin page');
-    initializeSuperAdmin?.();
+    // The superadmin script is loaded by router.js with onload callback
+    // Only call if already loaded (e.g., on page refresh)
+    if (typeof window.initializeSuperAdmin === 'function') {
+      window.initializeSuperAdmin();
+    }
     return;
   }
   if (document.getElementById('admin-welcome')) {
     console.log('[initializePageScript] Detected admin page');
-    initializeAdmin?.();
+    if (typeof window.initializeAdmin === 'function') {
+      window.initializeAdmin();
+    }
     return;
   }
   if (document.getElementById('employee-welcome')) {
     console.log('[initializePageScript] Detected employee page');
-    initializeEmployee?.();
+    if (typeof window.initializeEmployee === 'function') {
+      window.initializeEmployee();
+    };
     return;
   }
 

@@ -374,6 +374,12 @@ function initProfileEditForm() {
             return;
         }
 
+        // Validate phone number (must be exactly 11 digits)
+        if (phone && !/^\d{11}$/.test(phone)) {
+            alert('Phone number must be exactly 11 digits');
+            return;
+        }
+
         // Split full name into first and last name
         const nameParts = fullName.split(' ');
         const firstName = nameParts[0] || '';
@@ -598,6 +604,12 @@ function initAddressManagement() {
         const city = document.getElementById('address-city').value.trim();
         const postalCode = document.getElementById('address-postal').value.trim();
         const isDefault = document.getElementById('address-default').checked;
+
+        // Validate phone number (must be exactly 11 digits)
+        if (!/^\d{11}$/.test(phone)) {
+            alert('Phone number must be exactly 11 digits');
+            return;
+        }
 
         try {
             // Check if setting as default and another default exists

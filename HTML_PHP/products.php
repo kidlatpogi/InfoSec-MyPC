@@ -82,7 +82,7 @@ try {
 
         // Get product reviews
         $reviews = $db->fetchAll(
-            "SELECT r.*, u.full_name 
+            "SELECT r.*, CONCAT(u.first_name, ' ', u.last_name) as full_name 
              FROM reviews r 
              LEFT JOIN users u ON r.user_id = u.id 
              WHERE r.product_id = ? 

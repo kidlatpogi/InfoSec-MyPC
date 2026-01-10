@@ -295,8 +295,8 @@ try {
             sendError('Invalid order ID');
         }
         
-        // Validate status
-        $valid_statuses = ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+        // Validate status (matches database enum: pending, processing, paid, shipped, completed, cancelled, refunded)
+        $valid_statuses = ['pending', 'processing', 'paid', 'shipped', 'completed', 'cancelled', 'refunded'];
         if (!in_array($new_status, $valid_statuses)) {
             sendError('Invalid status');
         }
@@ -433,6 +433,147 @@ try {
             $db->rollback();
             throw $e;
         }
+    }
+    
+    // Get sales analytics data
+    elseif ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'sales_analytics') {
+        // Check if user is admin/superadmin
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
+        
+        if (!in_array($role, ['admin', 'superadmin'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        $year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
+        
+        // Get monthly sales for the specified year
+        $monthlySales = $db->fetchAll(
+            "SELECT 
+                MONTH(placed_at) as month,
+                COUNT(*) as order_count,
+                SUM(total) as total_sales,
+                SUM(subtotal) as subtotal,
+                SUM(tax) as total_tax,
+                SUM(shipping) as total_shipping
+             FROM orders 
+             WHERE YEAR(placed_at) = ? 
+               AND status NOT IN ('cancelled')
+             GROUP BY MONTH(placed_at)
+             ORDER BY MONTH(placed_at)",
+            [$year]
+        );
+        
+        // Get yearly sales summary (last 5 years)
+        $yearlySales = $db->fetchAll(
+            "SELECT 
+                YEAR(placed_at) as year,
+                COUNT(*) as order_count,
+                SUM(total) as total_sales,
+                SUM(subtotal) as subtotal,
+                SUM(tax) as total_tax,
+                SUM(shipping) as total_shipping
+             FROM orders 
+             WHERE status NOT IN ('cancelled')
+             GROUP BY YEAR(placed_at)
+             ORDER BY YEAR(placed_at) DESC
+             LIMIT 5"
+        );
+        
+        // Get today's sales
+        $todaySales = $db->fetchOne(
+            "SELECT 
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             WHERE DATE(placed_at) = CURDATE() 
+               AND status NOT IN ('cancelled')"
+        );
+        
+        // Get this month's sales
+        $thisMonthSales = $db->fetchOne(
+            "SELECT 
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             WHERE YEAR(placed_at) = YEAR(CURDATE()) 
+               AND MONTH(placed_at) = MONTH(CURDATE())
+               AND status NOT IN ('cancelled')"
+        );
+        
+        // Get this year's sales
+        $thisYearSales = $db->fetchOne(
+            "SELECT 
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             WHERE YEAR(placed_at) = YEAR(CURDATE())
+               AND status NOT IN ('cancelled')"
+        );
+        
+        // Get top selling products
+        $topProducts = $db->fetchAll(
+            "SELECT 
+                oi.product_name,
+                SUM(oi.quantity) as total_quantity,
+                SUM(oi.line_total) as total_revenue,
+                COUNT(DISTINCT oi.order_id) as order_count
+             FROM order_items oi
+             JOIN orders o ON oi.order_id = o.id
+             WHERE o.status NOT IN ('cancelled', 'refunded')
+             GROUP BY oi.product_name
+             ORDER BY total_quantity DESC
+             LIMIT 10"
+        );
+        
+        // Get sales by status
+        $salesByStatus = $db->fetchAll(
+            "SELECT 
+                status,
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             GROUP BY status
+             ORDER BY order_count DESC"
+        );
+        
+        // Get completed orders count (for analytics)
+        $completedOrders = $db->fetchOne(
+            "SELECT 
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             WHERE status = 'completed'"
+        );
+        
+        // Fill in missing months with 0
+        $monthlyData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyData[$m] = [
+                'month' => $m,
+                'order_count' => 0,
+                'total_sales' => 0,
+                'subtotal' => 0,
+                'total_tax' => 0,
+                'total_shipping' => 0
+            ];
+        }
+        
+        foreach ($monthlySales as $row) {
+            $monthlyData[$row['month']] = $row;
+        }
+        
+        sendSuccess([
+            'monthly' => array_values($monthlyData),
+            'yearly' => $yearlySales,
+            'today' => $todaySales,
+            'this_month' => $thisMonthSales,
+            'this_year' => $thisYearSales,
+            'selected_year' => $year,
+            'top_products' => $topProducts,
+            'sales_by_status' => $salesByStatus,
+            'completed_orders' => $completedOrders
+        ]);
     }
     
     // Invalid action

@@ -4,6 +4,30 @@
  */
 
 // ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+// Format currency (PHP Peso)
+function formatPHP(n) {
+  return (
+    '₱' +
+    parseFloat(n || 0).toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
+
+// Get user data from localStorage
+function getUserData() {
+  try {
+    return JSON.parse(localStorage.getItem('user')) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ========================================
 // CONFIRMATION DIALOG HELPER
 // ========================================
 
@@ -153,8 +177,8 @@ function initSuperadminTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
-  // Restore previously active tab or default to 'admins'
-  const savedTab = localStorage.getItem('superadmin_active_tab') || 'admins';
+  // Restore previously active tab or default to 'dashboard'
+  const savedTab = localStorage.getItem('superadmin_active_tab') || 'dashboard';
   
   // Immediately set the correct tab as active before any rendering
   const savedTabBtn = document.querySelector(`[data-tab="${savedTab}"]`);
@@ -165,13 +189,13 @@ function initSuperadminTabs() {
     savedTabContent.classList.add('active');
     loadTabData(savedTab);
   } else {
-    // Fallback to admins
-    const firstTabBtn = document.querySelector('[data-tab="admins"]');
-    const firstTabContent = document.getElementById('admins-tab');
+    // Fallback to dashboard
+    const firstTabBtn = document.querySelector('[data-tab="dashboard"]');
+    const firstTabContent = document.getElementById('dashboard-tab');
     if (firstTabBtn && firstTabContent) {
       firstTabBtn.classList.add('active');
       firstTabContent.classList.add('active');
-      loadTabData('admins');
+      loadTabData('dashboard');
     }
   }
 
@@ -302,6 +326,9 @@ function filterTable(tableBodyId) {
 
 async function loadTabData(tabName) {
   switch (tabName) {
+    case 'dashboard':
+      await loadSalesDashboard();
+      break;
     case 'admins':
       await loadAdmins();
       break;
@@ -558,9 +585,6 @@ async function loadProducts() {
                     <button class="btn btn-sm" onclick="editProduct(${
                       product.id
                     })">Edit</button>
-                    <button class="btn btn-sm" onclick="editStock(${
-                      product.id
-                    })">Stock</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteProduct(${
                       product.id
                     })">Delete</button>
@@ -580,10 +604,11 @@ function getStatusColor(status) {
   const statusColors = {
     'pending': '#f59e0b',
     'processing': '#3b82f6',
+    'paid': '#06b6d4',
     'shipped': '#8b5cf6',
-    'out_for_delivery': '#06b6d4',
-    'delivered': '#10b981',
-    'cancelled': '#ef4444'
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#6b7280'
   };
   return statusColors[status] || '#6b7280';
 }
@@ -592,10 +617,11 @@ function getStatusLabel(status) {
   const labels = {
     'pending': 'Pending',
     'processing': 'Processing',
+    'paid': 'Paid',
     'shipped': 'Shipped',
-    'out_for_delivery': 'Out for Delivery personnel',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled'
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    'refunded': 'Refunded'
   };
   return labels[status] || status;
 }
@@ -1283,14 +1309,15 @@ async function viewOrder(orderId) {
     // Format date
     const orderDate = new Date(order.placed_at || order.created_at).toLocaleString();
     
-    // Status options with display names
+    // Status options with display names (matches database enum)
     const statusOptions = [
       { value: 'pending', label: 'Pending', color: '#f59e0b' },
       { value: 'processing', label: 'Processing', color: '#3b82f6' },
+      { value: 'paid', label: 'Paid', color: '#06b6d4' },
       { value: 'shipped', label: 'Shipped', color: '#8b5cf6' },
-      { value: 'out_for_delivery', label: 'Out for Delivery personnel', color: '#06b6d4' },
-      { value: 'delivered', label: 'Delivered', color: '#10b981' },
-      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' }
+      { value: 'completed', label: 'Completed', color: '#10b981' },
+      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' },
+      { value: 'refunded', label: 'Refunded', color: '#6b7280' }
     ];
     
     const currentStatus = statusOptions.find(s => s.value === order.status) || statusOptions[0];
@@ -1915,6 +1942,7 @@ function handleProfileSubmit(e) {
   e.preventDefault();
 
   const fullName = document.getElementById('profile-full-name').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
   const currentPassword = document.getElementById(
     'profile-current-password'
   ).value;
@@ -1925,6 +1953,12 @@ function handleProfileSubmit(e) {
 
   if (!fullName) {
     alert('Full name is required');
+    return;
+  }
+
+  // Validate phone number (must be exactly 11 digits if provided)
+  if (phone && !/^\d{11}$/.test(phone)) {
+    alert('Phone number must be exactly 11 digits');
     return;
   }
 
@@ -2035,6 +2069,663 @@ async function updateUserProfile(updates) {
 }
 
 // ========================================
+// SALES DASHBOARD
+// ========================================
+
+let monthlyChart = null;
+let yearlyChart = null;
+
+// Store current analytics data and period
+let currentAnalyticsData = null;
+let currentPeriod = 'daily';
+
+async function loadSalesDashboard(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+  try {
+    // Load Chart.js if not already loaded
+    if (typeof Chart === 'undefined') {
+      await loadChartJS();
+    }
+
+    console.log('Loading sales dashboard for year:', year, 'month:', month);
+    
+    const data = await OrdersAPI.getSalesAnalytics(year, month);
+    console.log('Sales analytics data:', data);
+    
+    // Store data for period switching
+    currentAnalyticsData = data;
+    
+    // Update summary cards
+    updateSalesSummary(data);
+    
+    // Populate year selector
+    populateYearSelector(data.yearly, data.selected_year);
+    
+    // Initialize period tabs
+    initPeriodTabs();
+    
+    // Render charts based on current period
+    renderSalesChart(currentPeriod);
+    renderYearlyChart(data.yearly);
+    renderStatusChart(data.sales_by_status);
+    renderTopProducts(data.top_products);
+    
+  } catch (error) {
+    console.error('Error loading sales dashboard:', error);
+    console.error('Error message:', error?.message);
+    const topProductsList = document.getElementById('top-products-list');
+    const errorMsg = error && error.message ? error.message : 'Unknown error - please try logging in again';
+    if (topProductsList) {
+      topProductsList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 1rem;">Error loading analytics: ' + errorMsg + '</p>';
+    }
+  }
+}
+
+function initPeriodTabs() {
+  const periodBtns = document.querySelectorAll('.period-btn');
+  periodBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active state
+      periodBtns.forEach(b => {
+        b.style.background = 'transparent';
+        b.style.color = '#666';
+      });
+      btn.style.background = '#667eea';
+      btn.style.color = 'white';
+      
+      // Update current period and re-render chart
+      currentPeriod = btn.dataset.period;
+      renderSalesChart(currentPeriod);
+    });
+  });
+}
+
+function renderSalesChart(period) {
+  if (!currentAnalyticsData) return;
+  
+  switch (period) {
+    case 'daily':
+      renderDailyChart(currentAnalyticsData.daily, currentAnalyticsData.selected_year, currentAnalyticsData.selected_month);
+      break;
+    case 'weekly':
+      renderWeeklyChart(currentAnalyticsData.weekly, currentAnalyticsData.selected_year);
+      break;
+    case 'monthly':
+      renderMonthlyChart(currentAnalyticsData.monthly, currentAnalyticsData.selected_year);
+      break;
+    case 'yearly':
+      renderYearlySalesChart(currentAnalyticsData.yearly);
+      break;
+  }
+}
+
+function loadChartJS() {
+  return new Promise((resolve, reject) => {
+    if (typeof Chart !== 'undefined') {
+      resolve();
+      return;
+    }
+    
+    const script = document.createElement('script');
+    // Use local Chart.js to avoid CSP issues
+    script.src = window.router ? window.router.baseRoot + '/JS/chart.min.js' : '/JS/chart.min.js';
+    script.onload = resolve;
+    script.onerror = (e) => {
+      console.error('Failed to load Chart.js:', e);
+      reject(new Error('Failed to load Chart.js library'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function updateSalesSummary(data) {
+  // Today's sales
+  const todaySales = document.getElementById('today-sales');
+  const todayOrders = document.getElementById('today-orders');
+  if (todaySales) todaySales.textContent = formatPHP(data.today?.total_sales || 0);
+  if (todayOrders) todayOrders.textContent = `${data.today?.order_count || 0} orders`;
+  
+  // This week's sales
+  const weekSales = document.getElementById('week-sales');
+  const weekOrders = document.getElementById('week-orders');
+  if (weekSales) weekSales.textContent = formatPHP(data.this_week?.total_sales || 0);
+  if (weekOrders) weekOrders.textContent = `${data.this_week?.order_count || 0} orders`;
+  
+  // This month's sales
+  const monthSales = document.getElementById('month-sales');
+  const monthOrders = document.getElementById('month-orders');
+  if (monthSales) monthSales.textContent = formatPHP(data.this_month?.total_sales || 0);
+  if (monthOrders) monthOrders.textContent = `${data.this_month?.order_count || 0} orders`;
+  
+  // This year's sales
+  const yearSales = document.getElementById('year-sales');
+  const yearOrders = document.getElementById('year-orders');
+  if (yearSales) yearSales.textContent = formatPHP(data.this_year?.total_sales || 0);
+  if (yearOrders) yearOrders.textContent = `${data.this_year?.order_count || 0} orders`;
+  
+  // Completed orders
+  const completedSales = document.getElementById('completed-sales');
+  const completedOrders = document.getElementById('completed-orders');
+  if (completedSales) completedSales.textContent = formatPHP(data.completed_orders?.total_sales || 0);
+  if (completedOrders) completedOrders.textContent = `${data.completed_orders?.order_count || 0} orders`;
+}
+
+function populateYearSelector(yearlyData, selectedYear) {
+  const yearSelect = document.getElementById('chart-year-select');
+  if (!yearSelect) return;
+  
+  // Get unique years from data, or generate recent years
+  const currentYear = new Date().getFullYear();
+  const years = new Set();
+  
+  // Add years from data
+  if (yearlyData && yearlyData.length > 0) {
+    yearlyData.forEach(y => years.add(parseInt(y.year)));
+  }
+  
+  // Add current and recent years
+  for (let i = 0; i < 5; i++) {
+    years.add(currentYear - i);
+  }
+  
+  // Sort descending
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  
+  yearSelect.innerHTML = sortedYears.map(y => 
+    `<option value="${y}" ${y == selectedYear ? 'selected' : ''}>${y}</option>`
+  ).join('');
+  
+  // Add change listener
+  yearSelect.onchange = () => {
+    loadSalesDashboard(parseInt(yearSelect.value));
+  };
+}
+
+function renderMonthlyChart(monthlyData, year) {
+  const ctx = document.getElementById('monthly-sales-chart');
+  if (!ctx) return;
+  
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const salesData = monthlyData.map(m => parseFloat(m.total_sales) || 0);
+  const ordersData = monthlyData.map(m => parseInt(m.order_count) || 0);
+  
+  // Destroy existing chart
+  if (monthlyChart) {
+    monthlyChart.destroy();
+  }
+  
+  monthlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'Sales (₱)',
+          data: salesData,
+          backgroundColor: 'rgba(102, 126, 234, 0.8)',
+          borderColor: 'rgba(102, 126, 234, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Orders',
+          data: ordersData,
+          type: 'line',
+          borderColor: 'rgba(17, 153, 142, 1)',
+          backgroundColor: 'rgba(17, 153, 142, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: 'rgba(17, 153, 142, 1)',
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              if (context.dataset.label === 'Sales (₱)') {
+                return `Sales: ${formatPHP(context.raw)}`;
+              }
+              return `Orders: ${context.raw}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Sales (₱)'
+          },
+          ticks: {
+            callback: function(value) {
+              return '₱' + value.toLocaleString();
+            }
+          }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Orders'
+          },
+          grid: {
+            drawOnChartArea: false
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderDailyChart(dailyData, year, month) {
+  const ctx = document.getElementById('monthly-sales-chart');
+  if (!ctx) return;
+  
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  const labels = dailyData.map(d => d.day);
+  const salesData = dailyData.map(d => parseFloat(d.total_sales) || 0);
+  const ordersData = dailyData.map(d => parseInt(d.order_count) || 0);
+  
+  // Destroy existing chart
+  if (monthlyChart) {
+    monthlyChart.destroy();
+  }
+  
+  monthlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Sales (₱)',
+          data: salesData,
+          backgroundColor: 'rgba(102, 126, 234, 0.8)',
+          borderColor: 'rgba(102, 126, 234, 1)',
+          borderWidth: 1,
+          borderRadius: 4,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Orders',
+          data: ordersData,
+          type: 'line',
+          borderColor: 'rgba(17, 153, 142, 1)',
+          backgroundColor: 'rgba(17, 153, 142, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 2,
+          pointBackgroundColor: 'rgba(17, 153, 142, 1)',
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        title: {
+          display: true,
+          text: `Daily Sales - ${monthNames[month - 1]} ${year}`,
+          font: { size: 14 }
+        },
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            title: (items) => `Day ${items[0].label}`,
+            label: (ctx) => ctx.dataset.label === 'Sales (₱)' ? `Sales: ${formatPHP(ctx.raw)}` : `Orders: ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        y: { type: 'linear', position: 'left', beginAtZero: true, ticks: { callback: v => '₱' + v.toLocaleString() } },
+        y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+function renderWeeklyChart(weeklyData, year) {
+  const ctx = document.getElementById('monthly-sales-chart');
+  if (!ctx) return;
+  
+  // Filter to only show weeks with data or up to current week
+  const currentWeek = Math.ceil((new Date() - new Date(year, 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+  const maxWeek = year === new Date().getFullYear() ? Math.min(currentWeek + 1, 52) : 52;
+  const filteredData = weeklyData.slice(0, maxWeek);
+  
+  const labels = filteredData.map(w => `W${w.week}`);
+  const salesData = filteredData.map(w => parseFloat(w.total_sales) || 0);
+  const ordersData = filteredData.map(w => parseInt(w.order_count) || 0);
+  
+  if (monthlyChart) {
+    monthlyChart.destroy();
+  }
+  
+  monthlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Sales (₱)',
+          data: salesData,
+          backgroundColor: 'rgba(252, 74, 26, 0.8)',
+          borderColor: 'rgba(252, 74, 26, 1)',
+          borderWidth: 1,
+          borderRadius: 4,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Orders',
+          data: ordersData,
+          type: 'line',
+          borderColor: 'rgba(247, 183, 51, 1)',
+          backgroundColor: 'rgba(247, 183, 51, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 2,
+          pointBackgroundColor: 'rgba(247, 183, 51, 1)',
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        title: { display: true, text: `Weekly Sales - ${year}`, font: { size: 14 } },
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.dataset.label === 'Sales (₱)' ? `Sales: ${formatPHP(ctx.raw)}` : `Orders: ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        y: { type: 'linear', position: 'left', beginAtZero: true, ticks: { callback: v => '₱' + v.toLocaleString() } },
+        y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+function renderYearlySalesChart(yearlyData) {
+  const ctx = document.getElementById('monthly-sales-chart');
+  if (!ctx) return;
+  
+  const sortedData = [...(yearlyData || [])].sort((a, b) => a.year - b.year);
+  const labels = sortedData.map(y => y.year);
+  const salesData = sortedData.map(y => parseFloat(y.total_sales) || 0);
+  const ordersData = sortedData.map(y => parseInt(y.order_count) || 0);
+  
+  if (monthlyChart) {
+    monthlyChart.destroy();
+  }
+  
+  monthlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Sales (₱)',
+          data: salesData,
+          backgroundColor: ['rgba(102, 126, 234, 0.8)', 'rgba(17, 153, 142, 0.8)', 'rgba(252, 74, 26, 0.8)', 'rgba(247, 183, 51, 0.8)', 'rgba(118, 75, 162, 0.8)'],
+          borderColor: ['rgba(102, 126, 234, 1)', 'rgba(17, 153, 142, 1)', 'rgba(252, 74, 26, 1)', 'rgba(247, 183, 51, 1)', 'rgba(118, 75, 162, 1)'],
+          borderWidth: 1,
+          borderRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Orders',
+          data: ordersData,
+          type: 'line',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        title: { display: true, text: 'Yearly Sales Overview', font: { size: 14 } },
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.dataset.label === 'Sales (₱)' ? `Sales: ${formatPHP(ctx.raw)}` : `Orders: ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        y: { type: 'linear', position: 'left', beginAtZero: true, ticks: { callback: v => '₱' + v.toLocaleString() } },
+        y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+function renderYearlyChart(yearlyData) {
+  const ctx = document.getElementById('yearly-sales-chart');
+  if (!ctx) return;
+  
+  // Sort by year ascending for display
+  const sortedData = [...(yearlyData || [])].sort((a, b) => a.year - b.year);
+  
+  const years = sortedData.map(y => y.year);
+  const salesData = sortedData.map(y => parseFloat(y.total_sales) || 0);
+  const ordersData = sortedData.map(y => parseInt(y.order_count) || 0);
+  
+  // Destroy existing chart
+  if (yearlyChart) {
+    yearlyChart.destroy();
+  }
+  
+  yearlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: 'Total Sales (₱)',
+          data: salesData,
+          backgroundColor: [
+            'rgba(252, 74, 26, 0.8)',
+            'rgba(247, 183, 51, 0.8)',
+            'rgba(17, 153, 142, 0.8)',
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)'
+          ],
+          borderColor: [
+            'rgba(252, 74, 26, 1)',
+            'rgba(247, 183, 51, 1)',
+            'rgba(17, 153, 142, 1)',
+            'rgba(102, 126, 234, 1)',
+            'rgba(118, 75, 162, 1)'
+          ],
+          borderWidth: 1,
+          borderRadius: 8
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const idx = context.dataIndex;
+              const orders = ordersData[idx];
+              return [
+                `Sales: ${formatPHP(context.raw)}`,
+                `Orders: ${orders}`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '₱' + value.toLocaleString();
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+let statusChart = null;
+
+function renderStatusChart(salesByStatus) {
+  const ctx = document.getElementById('status-chart');
+  if (!ctx) return;
+  
+  console.log('Rendering status chart:', salesByStatus);
+  
+  const statusColors = {
+    'pending': '#f59e0b',
+    'processing': '#3b82f6',
+    'paid': '#06b6d4',
+    'shipped': '#8b5cf6',
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#6b7280'
+  };
+  
+  const statusLabels = {
+    'pending': 'Pending',
+    'processing': 'Processing',
+    'paid': 'Paid',
+    'shipped': 'Shipped',
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    'refunded': 'Refunded'
+  };
+  
+  const data = salesByStatus || [];
+  const labels = data.map(s => statusLabels[s.status] || s.status);
+  const counts = data.map(s => parseInt(s.order_count) || 0);
+  const colors = data.map(s => statusColors[s.status] || '#6b7280');
+  
+  // Destroy existing chart
+  if (statusChart) {
+    statusChart.destroy();
+  }
+  
+  statusChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: counts,
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            padding: 15,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.raw / total) * 100).toFixed(1);
+              return `${context.label}: ${context.raw} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderTopProducts(topProducts) {
+  const container = document.getElementById('top-products-list');
+  if (!container) return;
+  
+  console.log('Rendering top products:', topProducts);
+  
+  if (!topProducts || topProducts.length === 0) {
+    container.innerHTML = '<p style="color: #666; text-align: center; padding: 2rem;">No sales data available yet</p>';
+    return;
+  }
+  
+  const html = topProducts.map((product, index) => `
+    <div style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #eee; ${index === 0 ? 'background: #f0fdf4;' : ''}">
+      <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index < 3 ? ['#fbbf24', '#9ca3af', '#cd7f32'][index] : '#e5e7eb'}; color: ${index < 3 ? '#fff' : '#666'}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-right: 1rem;">
+        ${index + 1}
+      </div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${product.product_name}">
+          ${product.product_name}
+        </div>
+        <div style="font-size: 0.8rem; color: #666;">
+          ${product.total_quantity} units sold • ${product.order_count} orders
+        </div>
+      </div>
+      <div style="text-align: right; margin-left: 1rem;">
+        <div style="font-weight: 700; color: #10b981;">${formatPHP(product.total_revenue)}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  container.innerHTML = html;
+}
+
+// ========================================
 
 function initLogout() {
   document
@@ -2094,12 +2785,15 @@ window.editAdmin = editAdmin;
 window.deleteAdmin = deleteAdmin;
 window.editUser = editUser;
 window.deleteUser = deleteUser;
+window.reactivateUser = reactivateUser;
 window.editEmployee = editEmployee;
 window.deleteEmployee = deleteEmployee;
+window.reactivateEmployee = reactivateEmployee;
 window.viewOrder = viewOrder;
 window.deleteOrder = deleteOrder;
 window.resetProfileForm = resetProfileForm;
 window.handleProfileSubmit = handleProfileSubmit;
 window.loadAuditLogs = loadAuditLogs;
+window.loadSalesDashboard = loadSalesDashboard;
 
 // Auto-init removed to prevent double initialization by router
