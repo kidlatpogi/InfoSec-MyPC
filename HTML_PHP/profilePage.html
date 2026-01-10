@@ -305,9 +305,9 @@
                         <div class="setting-item">
                             <div>
                                 <h3 style="color: #d32f2f;">Delete Account</h3>
-                                <p>Permanently delete your account and all data</p>
+                                <p>Permanently deactivate your account</p>
                             </div>
-                            <button class="btn" style="color: #d32f2f; border-color: #d32f2f;">Delete</button>
+                            <button class="btn" style="color: #d32f2f; border-color: #d32f2f;" onclick="deleteMyAccount()">Delete</button>
                         </div>
                     </div>
                 </section>
@@ -413,8 +413,8 @@
     </div>
 
     <!-- Order Details Modal -->
-    <div class="order-details-backdrop" id="order-details-backdrop" style="opacity: 0; visibility: hidden;"></div>
-    <div class="order-details-modal" id="order-details-modal" style="opacity: 0; visibility: hidden;">
+    <div class="order-details-backdrop" id="order-details-backdrop"></div>
+    <div class="order-details-modal" id="order-details-modal">
         <div class="order-modal-header">
             <h2 id="order-modal-title">Order Details</h2>
             <button class="order-modal-close" id="order-modal-close">✕</button>

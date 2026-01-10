@@ -172,6 +172,9 @@
 }
 
 .order-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
   padding: 1rem;
   margin-bottom: 0.8rem;
   background: var(--bg-secondary);
@@ -183,6 +186,21 @@
 .order-item:hover {
   border-color: var(--accent);
   background: rgba(255, 215, 0, 0.05);
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.order-item-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .order-item-name {
