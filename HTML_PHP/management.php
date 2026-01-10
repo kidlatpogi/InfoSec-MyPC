@@ -180,10 +180,28 @@ try {
             sendError('Unauthorized', 403);
         }
         
-        $users = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, role, created_at 
-             FROM users WHERE role = 'user' ORDER BY created_at DESC"
-        );
+        // Optional filter: include_archived=1 to show all, include_archived=2 to show only archived
+        $includeArchived = isset($_GET['include_archived']) ? (int)$_GET['include_archived'] : 0;
+        
+        if ($includeArchived === 2) {
+            // Only archived users
+            $users = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'user' AND is_archived = 1 ORDER BY archived_at DESC"
+            );
+        } elseif ($includeArchived === 1) {
+            // All users (active and archived)
+            $users = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'user' ORDER BY created_at DESC"
+            );
+        } else {
+            // Only active users (default)
+            $users = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'user' AND (is_archived = 0 OR is_archived IS NULL) ORDER BY created_at DESC"
+            );
+        }
         
         sendSuccess(['users' => $users]);
     }
@@ -281,7 +299,7 @@ try {
         sendSuccess([], 'User updated successfully');
     }
     
-    // Delete user
+    // Delete user (actually archives them - soft delete)
     elseif ($action === 'deleteUser') {
         if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
@@ -296,9 +314,37 @@ try {
             sendError('User ID required');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND role = 'user'", [$target_user_id]);
-        logAuditEvent('DELETE', 'user', $target_user_id, $user_id, ['action' => 'delete_user']);
-        sendSuccess([], 'User deleted successfully');
+        // Archive the user instead of deleting (soft delete)
+        $db->query(
+            "UPDATE users SET is_archived = 1, archived_at = NOW() WHERE id = ? AND role = 'user'",
+            [$target_user_id]
+        );
+        logAuditEvent('ARCHIVE', 'user', $target_user_id, $user_id, ['action' => 'archive_user']);
+        sendSuccess([], 'User archived successfully');
+    }
+    
+    // Reactivate user (un-archive)
+    elseif ($action === 'reactivateUser') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $target_user_id = $_POST['user_id'] ?? null;
+        if (!$target_user_id) {
+            sendError('User ID required');
+        }
+        
+        // Reactivate the user (set is_archived = 0)
+        $db->query(
+            "UPDATE users SET is_archived = 0, archived_at = NULL WHERE id = ? AND role = 'user'",
+            [$target_user_id]
+        );
+        logAuditEvent('REACTIVATE', 'user', $target_user_id, $user_id, ['action' => 'reactivate_user']);
+        sendSuccess([], 'User reactivated successfully');
     }
     
     // ========================================
@@ -310,11 +356,29 @@ try {
             sendError('Unauthorized', 403);
         }
         
+        // Optional filter: include_archived=1 to show all, include_archived=2 to show only archived
+        $includeArchived = isset($_GET['include_archived']) ? (int)$_GET['include_archived'] : 0;
+        
         // In the new schema, employees have role='employee'
-        $employees = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, role, created_at 
-             FROM users WHERE role = 'employee' ORDER BY created_at DESC"
-        );
+        if ($includeArchived === 2) {
+            // Only archived employees
+            $employees = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'employee' AND is_archived = 1 ORDER BY archived_at DESC"
+            );
+        } elseif ($includeArchived === 1) {
+            // All employees (active and archived)
+            $employees = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'employee' ORDER BY created_at DESC"
+            );
+        } else {
+            // Only active employees (default)
+            $employees = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role = 'employee' AND (is_archived = 0 OR is_archived IS NULL) ORDER BY created_at DESC"
+            );
+        }
         
         sendSuccess(['employees' => $employees]);
     }
@@ -412,7 +476,7 @@ try {
         sendSuccess([], 'Employee updated successfully');
     }
     
-    // Delete employee
+    // Delete employee (actually archives them - soft delete)
     elseif ($action === 'deleteEmployee') {
         if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized', 403);
@@ -427,9 +491,37 @@ try {
             sendError('Employee ID required');
         }
         
-        $db->query("DELETE FROM users WHERE id = ? AND role = 'employee'", [$employee_id]);
-        logAuditEvent('DELETE', 'employee', $employee_id, $user_id, ['action' => 'delete_employee']);
-        sendSuccess([], 'Employee deleted successfully');
+        // Archive the employee instead of deleting (soft delete)
+        $db->query(
+            "UPDATE users SET is_archived = 1, archived_at = NOW() WHERE id = ? AND role = 'employee'",
+            [$employee_id]
+        );
+        logAuditEvent('ARCHIVE', 'employee', $employee_id, $user_id, ['action' => 'archive_employee']);
+        sendSuccess([], 'Employee archived successfully');
+    }
+    
+    // Reactivate employee (un-archive)
+    elseif ($action === 'reactivateEmployee') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $employee_id = $_POST['employee_id'] ?? null;
+        if (!$employee_id) {
+            sendError('Employee ID required');
+        }
+        
+        // Reactivate the employee (set is_archived = 0)
+        $db->query(
+            "UPDATE users SET is_archived = 0, archived_at = NULL WHERE id = ? AND role = 'employee'",
+            [$employee_id]
+        );
+        logAuditEvent('REACTIVATE', 'employee', $employee_id, $user_id, ['action' => 'reactivate_employee']);
+        sendSuccess([], 'Employee reactivated successfully');
     }
     
     // ========================================

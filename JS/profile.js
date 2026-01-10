@@ -207,16 +207,21 @@ function displayOrderModal(order) {
     // Build HTML content
     let itemsHTML = '';
     if (order.items && order.items.length > 0) {
-        itemsHTML = order.items.map(item => `
+        itemsHTML = order.items.map(item => {
+            const imageUrl = item.image_url || item.product_image || 'assets/placeholder.png';
+            return `
             <div class="order-item">
-                <div class="order-item-name">${item.product_name}</div>
-                <div class="order-item-variant">${item.variant_title || 'Standard'}</div>
-                <div class="order-item-details">
-                    <span>${item.quantity}x ${formatPHP(item.unit_price)}</span>
-                    <span><strong>${formatPHP(item.line_total)}</strong></span>
+                <img src="${imageUrl}" alt="${item.product_name}" class="order-item-image" onerror="this.src='assets/placeholder.png'">
+                <div class="order-item-info">
+                    <div class="order-item-name">${item.product_name}</div>
+                    <div class="order-item-variant">${item.variant_title || 'Standard'}</div>
+                    <div class="order-item-details">
+                        <span>${item.quantity}x ${formatPHP(item.unit_price)}</span>
+                        <span><strong>${formatPHP(item.line_total)}</strong></span>
+                    </div>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     } else {
         itemsHTML = '<p>No items in this order</p>';
     }
@@ -595,13 +600,13 @@ function initAddressManagement() {
         const isDefault = document.getElementById('address-default').checked;
 
         try {
-            // Check if setting as default and another default exists (only for new addresses)
-            if (isDefault && !window.editingAddressId) {
+            // Check if setting as default and another default exists
+            if (isDefault) {
                 const data = await AddressesAPI.getAddresses();
-                const hasDefault = data.addresses && data.addresses.some(addr => addr.is_default);
+                const currentDefault = data.addresses && data.addresses.find(addr => addr.is_default && addr.id != window.editingAddressId);
                 
-                if (hasDefault) {
-                    const confirmChange = confirm('An address is already set as default. Would you like to change it to this new address?');
+                if (currentDefault) {
+                    const confirmChange = confirm('An address is already set as default. Would you like to change it to this address?');
                     if (!confirmChange) {
                         return;
                     }
@@ -771,6 +776,34 @@ function initOrderDetailsModal() {
     }
 }
 
+// Delete (archive) own account
+async function deleteMyAccount() {
+    // First confirmation
+    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        return;
+    }
+    
+    // Prompt for password
+    const password = prompt('Please enter your password to confirm account deletion:');
+    if (!password) {
+        alert('Password is required to delete your account.');
+        return;
+    }
+    
+    // Second confirmation
+    if (!confirm('This will permanently deactivate your account. Are you absolutely sure?')) {
+        return;
+    }
+    
+    try {
+        const result = await AuthAPI.deleteAccount(password);
+        alert('Your account has been deactivated. You will be logged out now.');
+        window.location.href = '/';
+    } catch (error) {
+        alert('Failed to delete account: ' + (error.message || 'Unknown error'));
+    }
+}
+
 // Make functions globally available
 window.initProfilePage = initProfilePage;
 window.switchSection = switchSection;
@@ -780,5 +813,6 @@ window.editAddress = editAddress;
 window.deleteAddress = deleteAddress;
 window.loadAddresses = loadAddresses;
 window.closeOrderModal = closeOrderModal;
+window.deleteMyAccount = deleteMyAccount;
 
 // Auto-init removed to prevent double initialization by router

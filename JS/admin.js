@@ -205,6 +205,38 @@ function initAdminTabs() {
 // ========================================
 
 function initAdminSearch() {
+  // User search
+  const userSearch = document.getElementById('user-search');
+  if (userSearch) {
+    userSearch.addEventListener('input', () => {
+      filterTable('users-tbody');
+    });
+  }
+
+  // User status filter
+  const userStatusFilter = document.getElementById('user-status-filter');
+  if (userStatusFilter) {
+    userStatusFilter.addEventListener('change', () => {
+      loadUsers();
+    });
+  }
+
+  // Employee search
+  const employeeSearch = document.getElementById('employee-search');
+  if (employeeSearch) {
+    employeeSearch.addEventListener('input', () => {
+      filterTable('employees-tbody');
+    });
+  }
+
+  // Employee status filter
+  const employeeStatusFilter = document.getElementById('employee-status-filter');
+  if (employeeStatusFilter) {
+    employeeStatusFilter.addEventListener('change', () => {
+      loadEmployees();
+    });
+  }
+
   // Product search
   const productSearch = document.getElementById('product-search');
   if (productSearch) {
@@ -270,6 +302,38 @@ function filterOrdersTable() {
   });
 }
 
+function filterTable(tableBodyId) {
+  const tbody = document.getElementById(tableBodyId);
+  if (!tbody) return;
+
+  // Determine which search input to use based on table
+  let searchInput = null;
+  if (tableBodyId === 'users-tbody') {
+    searchInput = document.getElementById('user-search');
+  } else if (tableBodyId === 'employees-tbody') {
+    searchInput = document.getElementById('employee-search');
+  } else if (tableBodyId === 'products-tbody') {
+    searchInput = document.getElementById('product-search');
+  } else if (tableBodyId === 'orders-tbody') {
+    searchInput = document.getElementById('order-search');
+  }
+
+  if (!searchInput) return;
+
+  const query = searchInput.value.toLowerCase();
+  const rows = tbody.querySelectorAll('tr');
+
+  rows.forEach((row) => {
+    // Get all text content from all cells
+    const rowText = Array.from(row.cells)
+      .map((cell) => cell.textContent.toLowerCase())
+      .join(' ');
+
+    const matches = rowText.includes(query);
+    row.style.display = matches ? '' : 'none';
+  });
+}
+
 // ========================================
 // DATA LOADING
 // ========================================
@@ -294,12 +358,18 @@ async function loadTabData(tabName) {
   }
 }
 
-async function loadUsers() {
+async function loadUsers(includeArchived = null) {
   const tbody = document.getElementById('users-tbody');
   if (!tbody) return;
 
+  // Get filter value from dropdown if not provided
+  if (includeArchived === null) {
+    const filterSelect = document.getElementById('user-status-filter');
+    includeArchived = filterSelect ? parseInt(filterSelect.value) : 0;
+  }
+
   try {
-    const data = await ManagementAPI.getUsers();
+    const data = await ManagementAPI.getUsers(includeArchived);
 
     if (!data.users || data.users.length === 0) {
       tbody.innerHTML =
@@ -311,22 +381,32 @@ async function loadUsers() {
     data.users.forEach((user) => {
       const row = document.createElement('tr');
       const createdDate = new Date(user.created_at).toLocaleDateString();
+      const isArchived = user.is_archived == 1;
+      
+      // Add visual indicator for archived users
+      if (isArchived) {
+        row.style.opacity = '0.7';
+        row.style.backgroundColor = '#fff3f3';
+      }
+      
+      // Status badge - show deactivated if archived, otherwise show role
+      const statusBadge = isArchived 
+        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+        : `<span class="badge" style="background:#22c55e">Active</span>`;
+      
+      // Actions - different buttons for archived vs active users
+      const actionButtons = isArchived
+        ? `<button class="btn btn-sm btn-success" onclick="reactivateUser(${user.id})">Reactivate</button>`
+        : `<button class="btn btn-sm" onclick="editUser(${user.id})">Edit</button>
+           <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
+      
       row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.email}</td>
                 <td>${user.first_name} ${user.last_name}</td>
-                <td><span class="badge" style="background:#3b82f6">${
-                  user.role || 'user'
-                }</span></td>
+                <td>${statusBadge}</td>
                 <td>${createdDate}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="editUser(${
-                      user.id
-                    })">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${
-                      user.id
-                    })">Delete</button>
-                </td>
+                <td>${actionButtons}</td>
             `;
       tbody.appendChild(row);
     });
@@ -337,12 +417,18 @@ async function loadUsers() {
   }
 }
 
-async function loadEmployees() {
+async function loadEmployees(includeArchived = null) {
   const tbody = document.getElementById('employees-tbody');
   if (!tbody) return;
 
+  // Get filter value from dropdown if not provided
+  if (includeArchived === null) {
+    const filterSelect = document.getElementById('employee-status-filter');
+    includeArchived = filterSelect ? parseInt(filterSelect.value) : 0;
+  }
+
   try {
-    const data = await ManagementAPI.getEmployees();
+    const data = await ManagementAPI.getEmployees(includeArchived);
 
     if (!data.employees || data.employees.length === 0) {
       tbody.innerHTML =
@@ -354,22 +440,32 @@ async function loadEmployees() {
     data.employees.forEach((emp) => {
       const row = document.createElement('tr');
       const createdDate = new Date(emp.created_at).toLocaleDateString();
+      const isArchived = emp.is_archived == 1;
+      
+      // Add visual indicator for archived employees
+      if (isArchived) {
+        row.style.opacity = '0.7';
+        row.style.backgroundColor = '#fff3f3';
+      }
+      
+      // Status badge - show deactivated if archived, otherwise show active
+      const statusBadge = isArchived 
+        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+        : `<span class="badge" style="background:#22c55e">Active</span>`;
+      
+      // Actions - different buttons for archived vs active employees
+      const actionButtons = isArchived
+        ? `<button class="btn btn-sm btn-success" onclick="reactivateEmployee(${emp.id})">Reactivate</button>`
+        : `<button class="btn btn-sm" onclick="editEmployee(${emp.id})">Edit</button>
+           <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
+      
       row.innerHTML = `
                 <td>${emp.id}</td>
                 <td>${emp.email}</td>
                 <td>${emp.first_name} ${emp.last_name}</td>
-                <td><span class="badge" style="background:#f59e0b">${
-                  emp.role || 'employee'
-                }</span></td>
+                <td>${statusBadge}</td>
                 <td>${createdDate}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="editEmployee(${
-                      emp.id
-                    })">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${
-                      emp.id
-                    })">Delete</button>
-                </td>
+                <td>${actionButtons}</td>
             `;
       tbody.appendChild(row);
     });
@@ -918,14 +1014,32 @@ async function deleteUser(userId) {
   if (!verified) return;
 
   showConfirmDialog(
-    'Are you sure you want to delete this user? This action cannot be undone.',
+    'Are you sure you want to deactivate this user? They will no longer be able to log in.',
     async () => {
       try {
         await ManagementAPI.deleteUser(userId);
-        alert('User deleted successfully');
+        alert('User deactivated successfully');
         loadUsers();
       } catch (error) {
-        alert('Error deleting user: ' + error.message);
+        alert('Error deactivating user: ' + error.message);
+      }
+    }
+  );
+}
+
+async function reactivateUser(userId) {
+  const verified = await verifyPassword();
+  if (!verified) return;
+
+  showConfirmDialog(
+    'Are you sure you want to reactivate this user? They will be able to log in again.',
+    async () => {
+      try {
+        await ManagementAPI.reactivateUser(userId);
+        alert('User reactivated successfully');
+        loadUsers();
+      } catch (error) {
+        alert('Error reactivating user: ' + error.message);
       }
     }
   );
@@ -1008,14 +1122,32 @@ async function deleteEmployee(employeeId) {
   if (!verified) return;
 
   showConfirmDialog(
-    'Are you sure you want to delete this employee? This action cannot be undone.',
+    'Are you sure you want to deactivate this employee? They will no longer be able to log in.',
     async () => {
       try {
         await ManagementAPI.deleteEmployee(employeeId);
-        alert('Employee deleted successfully');
+        alert('Employee deactivated successfully');
         loadEmployees();
       } catch (error) {
-        alert('Error deleting employee: ' + error.message);
+        alert('Error deactivating employee: ' + error.message);
+      }
+    }
+  );
+}
+
+async function reactivateEmployee(employeeId) {
+  const verified = await verifyPassword();
+  if (!verified) return;
+
+  showConfirmDialog(
+    'Are you sure you want to reactivate this employee? They will be able to log in again.',
+    async () => {
+      try {
+        await ManagementAPI.reactivateEmployee(employeeId);
+        alert('Employee reactivated successfully');
+        loadEmployees();
+      } catch (error) {
+        alert('Error reactivating employee: ' + error.message);
       }
     }
   );

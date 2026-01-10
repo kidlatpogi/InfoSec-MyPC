@@ -111,6 +111,19 @@ const AuthAPI = {
     // Get current user
     async getCurrentUser() {
         return await apiCall('auth.php?action=current');
+    },
+
+    // Delete (archive) own account
+    async deleteAccount(password) {
+        const body = toFormData({
+            action: 'deleteAccount',
+            password
+        });
+
+        return await apiCall('auth.php', {
+            method: 'POST',
+            body
+        });
     }
 };
 
@@ -404,8 +417,9 @@ const ManagementAPI = {
     },
 
     // ===== USERS =====
-    async getUsers() {
-        return await apiCall('management.php?action=getUsers');
+    // includeArchived: 0 = active only (default), 1 = all users, 2 = archived only
+    async getUsers(includeArchived = 0) {
+        return await apiCall(`management.php?action=getUsers&include_archived=${includeArchived}`);
     },
 
     async createUser(email, password, firstName, lastName, phone = '') {
@@ -446,9 +460,21 @@ const ManagementAPI = {
         });
     },
 
+    async reactivateUser(userId) {
+        const body = toFormData({
+            action: 'reactivateUser',
+            user_id: userId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+
     // ===== EMPLOYEES =====
-    async getEmployees() {
-        return await apiCall('management.php?action=getEmployees');
+    // includeArchived: 0 = active only (default), 1 = all employees, 2 = archived only
+    async getEmployees(includeArchived = 0) {
+        return await apiCall(`management.php?action=getEmployees&include_archived=${includeArchived}`);
     },
 
     async createEmployee(email, password, firstName, lastName, phone = '') {
@@ -487,6 +513,17 @@ const ManagementAPI = {
             method: 'POST',
             body
         });
+    },
+
+    async reactivateEmployee(employeeId) {
+        const body = toFormData({
+            action: 'reactivateEmployee',
+            employee_id: employeeId
+        });
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
     }
 };
 
@@ -519,10 +556,16 @@ const AddressesAPI = {
     },
 
     async updateAddress(addressId, updates) {
+        // Convert is_default boolean to 1/0 if present
+        const processedUpdates = { ...updates };
+        if ('is_default' in processedUpdates) {
+            processedUpdates.is_default = processedUpdates.is_default ? 1 : 0;
+        }
+        
         const body = toFormData({
             action: 'updateAddress',
             address_id: addressId,
-            ...updates
+            ...processedUpdates
         });
         return await apiCall('management.php', {
             method: 'POST',

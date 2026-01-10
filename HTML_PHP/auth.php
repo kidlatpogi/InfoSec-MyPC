@@ -132,9 +132,9 @@ try {
             sendError('Invalid email format');
         }
         
-        // Get user from database
+        // Get user from database (exclude archived users)
         $user = $db->fetchOne(
-            "SELECT id, email, password_hash, first_name, last_name, role, is_admin 
+            "SELECT id, email, password_hash, first_name, last_name, role, is_admin, is_archived 
              FROM users WHERE email = ?",
             [$email]
         );
@@ -143,6 +143,11 @@ try {
             // Rate limit failed login attempts
             checkRateLimit('login', $email, 5, 300);
             sendError('Invalid email or password', 401);
+        }
+        
+        // Check if account is archived/deactivated
+        if ($user['is_archived']) {
+            sendError('This account has been deactivated. Please contact support if you believe this is an error.', 403);
         }
         
         // Verify password
@@ -327,6 +332,51 @@ try {
         } else {
             sendError('Invalid password');
         }
+    }
+    
+    // Delete (archive) own account
+    elseif ($method === 'POST' && (isset($_GET['action']) && $_GET['action'] === 'deleteAccount' || 
+            isset($_POST['action']) && $_POST['action'] === 'deleteAccount')) {
+        // Check if user is logged in
+        if (!isset($_SESSION['user_id'])) {
+            sendError('Not logged in', 401);
+        }
+        
+        // Check if password is provided
+        if (empty($_POST['password'])) {
+            sendError('Password is required to delete account');
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        $password = $_POST['password'];
+        
+        // Get user's data from database
+        $user = $db->fetchOne("SELECT password_hash, role FROM users WHERE id = ?", [$user_id]);
+        
+        if (!$user) {
+            sendError('User not found', 404);
+        }
+        
+        // Verify password
+        if (!password_verify($password, $user['password_hash'])) {
+            sendError('Invalid password');
+        }
+        
+        // Don't allow admins/superadmins to delete their account this way
+        if (in_array($user['role'], ['admin', 'superadmin'])) {
+            sendError('Admin accounts cannot be deleted through this interface. Contact support.');
+        }
+        
+        // Archive the user instead of deleting (soft delete)
+        $db->query(
+            "UPDATE users SET is_archived = 1, archived_at = NOW() WHERE id = ?",
+            [$user_id]
+        );
+        
+        // Destroy the session
+        session_destroy();
+        
+        sendSuccess(['message' => 'Account has been deactivated successfully']);
     }
     
     // Invalid action
