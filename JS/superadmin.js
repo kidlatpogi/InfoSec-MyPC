@@ -2261,8 +2261,8 @@ function renderMonthlyChart(monthlyData, year) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(45, 45, 45, 0.8)',
-          borderColor: 'rgba(45, 45, 45, 1)',
+          backgroundColor: 'rgba(59, 130, 246, 0.85)',
+          borderColor: 'rgba(59, 130, 246, 1)',
           borderWidth: 1,
           borderRadius: 6,
           yAxisID: 'y'
@@ -2271,13 +2271,13 @@ function renderMonthlyChart(monthlyData, year) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(120, 120, 120, 1)',
-          backgroundColor: 'rgba(120, 120, 120, 0.1)',
+          borderColor: 'rgba(34, 197, 94, 1)',
+          backgroundColor: 'rgba(34, 197, 94, 0.15)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 4,
-          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
+          pointBackgroundColor: 'rgba(34, 197, 94, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2436,8 +2436,8 @@ function renderWeeklyChart(weeklyData, year) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(64, 64, 64, 0.8)',
-          borderColor: 'rgba(64, 64, 64, 1)',
+          backgroundColor: 'rgba(168, 85, 247, 0.85)',
+          borderColor: 'rgba(168, 85, 247, 1)',
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y'
@@ -2446,13 +2446,13 @@ function renderWeeklyChart(weeklyData, year) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(140, 140, 140, 1)',
-          backgroundColor: 'rgba(140, 140, 140, 0.1)',
+          borderColor: 'rgba(249, 115, 22, 1)',
+          backgroundColor: 'rgba(249, 115, 22, 0.15)',
           borderWidth: 2,
           fill: true,
           tension: 0.4,
           pointRadius: 2,
-          pointBackgroundColor: 'rgba(140, 140, 140, 1)',
+          pointBackgroundColor: 'rgba(249, 115, 22, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2499,8 +2499,8 @@ function renderYearlySalesChart(yearlyData) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: ['rgba(26, 26, 26, 0.8)', 'rgba(45, 45, 45, 0.8)', 'rgba(64, 64, 64, 0.8)', 'rgba(82, 82, 82, 0.8)', 'rgba(102, 102, 102, 0.8)'],
-          borderColor: ['rgba(26, 26, 26, 1)', 'rgba(45, 45, 45, 1)', 'rgba(64, 64, 64, 1)', 'rgba(82, 82, 82, 1)', 'rgba(102, 102, 102, 1)'],
+          backgroundColor: ['rgba(59, 130, 246, 0.85)', 'rgba(34, 197, 94, 0.85)', 'rgba(168, 85, 247, 0.85)', 'rgba(249, 115, 22, 0.85)', 'rgba(236, 72, 153, 0.85)'],
+          borderColor: ['rgba(59, 130, 246, 1)', 'rgba(34, 197, 94, 1)', 'rgba(168, 85, 247, 1)', 'rgba(249, 115, 22, 1)', 'rgba(236, 72, 153, 1)'],
           borderWidth: 1,
           borderRadius: 6,
           yAxisID: 'y'
@@ -2509,13 +2509,13 @@ function renderYearlySalesChart(yearlyData) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(120, 120, 120, 1)',
-          backgroundColor: 'rgba(120, 120, 120, 0.1)',
+          borderColor: 'rgba(236, 72, 153, 1)',
+          backgroundColor: 'rgba(236, 72, 153, 0.15)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 5,
-          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
+          pointBackgroundColor: 'rgba(236, 72, 153, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2566,18 +2566,18 @@ function renderYearlyChart(yearlyData) {
           label: 'Total Sales (₱)',
           data: salesData,
           backgroundColor: [
-            'rgba(26, 26, 26, 0.8)',
-            'rgba(45, 45, 45, 0.8)',
-            'rgba(64, 64, 64, 0.8)',
-            'rgba(82, 82, 82, 0.8)',
-            'rgba(102, 102, 102, 0.8)'
+            'rgba(59, 130, 246, 0.85)',
+            'rgba(34, 197, 94, 0.85)',
+            'rgba(168, 85, 247, 0.85)',
+            'rgba(249, 115, 22, 0.85)',
+            'rgba(236, 72, 153, 0.85)'
           ],
           borderColor: [
-            'rgba(26, 26, 26, 1)',
-            'rgba(45, 45, 45, 1)',
-            'rgba(64, 64, 64, 1)',
-            'rgba(82, 82, 82, 1)',
-            'rgba(102, 102, 102, 1)'
+            'rgba(59, 130, 246, 1)',
+            'rgba(34, 197, 94, 1)',
+            'rgba(168, 85, 247, 1)',
+            'rgba(249, 115, 22, 1)',
+            'rgba(236, 72, 153, 1)'
           ],
           borderWidth: 1,
           borderRadius: 8
