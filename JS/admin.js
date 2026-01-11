@@ -626,6 +626,9 @@ async function loadOrders() {
       return;
     }
 
+    // Store all orders for filtering
+    window.allOrders = data.orders;
+    
     tbody.innerHTML = '';
     data.orders.forEach((order) => {
       const row = document.createElement('tr');
@@ -648,11 +651,61 @@ async function loadOrders() {
             `;
       tbody.appendChild(row);
     });
+    
+    // Add event listener to status filter
+    const statusFilter = document.getElementById('order-status-filter');
+    if (statusFilter) {
+      statusFilter.addEventListener('change', filterOrders);
+    }
   } catch (error) {
     console.error('Failed to load orders:', error);
     tbody.innerHTML =
       '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
   }
+}
+
+function filterOrders() {
+  const statusFilter = document.getElementById('order-status-filter');
+  const selectedStatus = statusFilter ? statusFilter.value : '';
+  const tbody = document.getElementById('orders-tbody');
+  
+  if (!window.allOrders || !tbody) return;
+  
+  let filteredOrders = window.allOrders;
+  
+  // Filter by status if selected
+  if (selectedStatus) {
+    filteredOrders = filteredOrders.filter(order => order.status === selectedStatus);
+  }
+  
+  if (filteredOrders.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = '';
+  filteredOrders.forEach((order) => {
+    const row = document.createElement('tr');
+    const statusColor = getStatusColor(order.status);
+    const statusLabel = getStatusLabel(order.status);
+    row.innerHTML = `
+              <td>${order.order_number}</td>
+              <td>${order.customer_name}</td>
+              <td>${order.customer_email}</td>
+              <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
+              <td>${formatPHP(order.total)}</td>
+              <td>
+                  <button class="btn btn-sm" onclick="viewOrder(${
+                    order.id
+                  })">View</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteOrder(${
+                    order.id
+                  })" style="margin-left: 0.5rem;">Delete</button>
+              </td>
+          `;
+    tbody.appendChild(row);
+  });
 }
 
 // ========================================
