@@ -305,7 +305,7 @@ function getStatusColor(status) {
     'shipped': '#8b5cf6',
     'completed': '#10b981',
     'cancelled': '#ef4444',
-    'refunded': '#f59e0b'
+    'refunded': '#6b7280'
   };
   return colors[status] || '#6b7280';
 }
