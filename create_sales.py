@@ -16,46 +16,49 @@ users = [
     ('gregorio.reyes11@mypc.com', 'Gregorio', 'Reyes'),
 ]
 
-# Product variant data (from inserts.sql) - ID, title, price
+# Product variant data (from mypc_complete.sql + inserts.sql) - (variant_id, title, price, product_name)
+# Sample products from mypc_complete.sql (IDs 1-2):
+# Product 1 has variants: 1-2 (AMD Ryzen 5 7600)
+# Product 2 has variants: 3-4 (AMD Ryzen 7 7800X3D)
+# 
+# Additional products from inserts.sql start at product ID 3+
+# Each product has 2-3 variants
 products = [
-    # AMD CPUs (IDs 1-20)
+    # Sample CPUs from mypc_complete.sql
     (1, 'Boxed with Cooler', 14995.00, 'AMD Ryzen 5 7600'),
     (2, 'OEM (Tray)', 13795.00, 'AMD Ryzen 5 7600'),
-    (5, 'Boxed with Cooler', 18995.00, 'AMD Ryzen 5 9600X'),
-    (9, 'Boxed', 27995.00, 'AMD Ryzen 7 7800X3D'),
+    (3, 'Boxed', 27995.00, 'AMD Ryzen 7 7800X3D'),
+    (4, 'OEM (Tray)', 26795.00, 'AMD Ryzen 7 7800X3D'),
+    # CPUs from inserts.sql (product IDs 3-10, variants 5-24)
+    (5, 'Boxed with Cooler', 16495.00, 'AMD Ryzen 5 7600X'),
+    (6, 'OEM (Tray)', 15295.00, 'AMD Ryzen 5 7600X'),
+    (7, 'Boxed with Cooler', 18995.00, 'AMD Ryzen 5 9600X'),
+    (8, 'OEM (Tray)', 17795.00, 'AMD Ryzen 5 9600X'),
+    (9, 'Boxed with Cooler', 19495.00, 'AMD Ryzen 7 7700'),
+    (10, 'OEM (Tray)', 18295.00, 'AMD Ryzen 7 7700'),
     (11, 'Boxed', 32995.00, 'AMD Ryzen 7 9800X3D'),
+    (12, 'OEM (Tray)', 31795.00, 'AMD Ryzen 7 9800X3D'),
+    (13, 'Boxed', 37995.00, 'AMD Ryzen 9 7900X3D'),
+    (14, 'OEM (Tray)', 36795.00, 'AMD Ryzen 9 7900X3D'),
     (15, 'Boxed', 42995.00, 'AMD Ryzen 9 7950X3D'),
-    # AMD GPUs (IDs 21-50)
+    (16, 'OEM (Tray)', 41795.00, 'AMD Ryzen 9 7950X3D'),
+    (17, 'Boxed', 49995.00, 'AMD Ryzen 9 9950X3D'),
+    (18, 'OEM (Tray)', 48795.00, 'AMD Ryzen 9 9950X3D'),
+    (19, 'Boxed', 45995.00, 'AMD Ryzen 9 9950X'),
+    (20, 'OEM (Tray)', 44795.00, 'AMD Ryzen 9 9950X'),
+    # GPUs from inserts.sql (product IDs 11-20, variants 21-50+)
     (21, 'Reference', 16995.00, 'AMD Radeon RX 6600 XT'),
-    (24, 'Dual-Fan', 18995.00, 'AMD Radeon RX 6650 XT'),
-    (31, 'Reference', 14495.00, 'AMD Radeon RX 7600'),
-    (34, 'Dual-Fan', 23995.00, 'AMD Radeon RX 7700 XT'),
-    (37, 'Reference', 26995.00, 'AMD Radeon RX 7800 XT'),
-    # Motherboards (IDs 61-90)
-    (61, 'Standard', 8495.00, 'ASUS TUF Gaming B550-PLUS'),
-    (64, 'Standard', 12995.00, 'MSI MAG B650 TOMAHAWK'),
-    (67, 'Standard', 18495.00, 'ASUS ROG STRIX X670E-E'),
-    # Cases (IDs 91-135)
-    (91, 'Black', 4995.00, 'NZXT H510 Elite'),
-    (94, 'White', 5495.00, 'Corsair 4000D Airflow'),
-    (97, 'Black', 6995.00, 'Lian Li O11 Dynamic'),
-    # Coolers (IDs 136-165)
-    (136, 'Standard', 2995.00, 'Cooler Master Hyper 212'),
-    (139, 'Standard', 4495.00, 'Noctua NH-D15'),
-    (142, 'Black', 5995.00, 'NZXT Kraken X63'),
-    # DDR4/DDR5 (IDs 166-225)
-    (166, '16GB (2x8GB)', 3495.00, 'Corsair Vengeance LPX DDR4-3200'),
-    (169, '32GB (2x16GB)', 5995.00, 'G.Skill Trident Z DDR4-3600'),
-    (196, '32GB (2x16GB)', 8995.00, 'Corsair Vengeance DDR5-5600'),
-    # Storage (IDs 226-285)
-    (226, '512GB', 3495.00, 'Samsung 970 EVO Plus'),
-    (229, '1TB', 5495.00, 'Samsung 980 PRO'),
-    (232, '2TB', 9995.00, 'WD Black SN850X'),
-    (256, '512GB', 2495.00, 'Crucial MX500'),
-    (259, '1TB', 3995.00, 'Samsung 870 EVO'),
-    # PSU (IDs 256-285)
-    (256, '750W', 5495.00, 'Corsair RM850x'),
-    (259, '850W', 6995.00, 'EVGA SuperNOVA 1000 P5'),
+    (22, 'Dual-Fan', 17495.00, 'AMD Radeon RX 6600 XT'),
+    (23, 'Triple-Fan', 18195.00, 'AMD Radeon RX 6600 XT'),
+    (24, 'Reference', 18495.00, 'AMD Radeon RX 6650 XT'),
+    (25, 'Dual-Fan', 18995.00, 'AMD Radeon RX 6650 XT'),
+    (26, 'Triple-Fan', 19695.00, 'AMD Radeon RX 6650 XT'),
+    (27, 'Reference', 22995.00, 'AMD Radeon RX 6700 XT'),
+    (28, 'Dual-Fan', 23495.00, 'AMD Radeon RX 6700 XT'),
+    (29, 'Triple-Fan', 24195.00, 'AMD Radeon RX 6700 XT'),
+    (30, 'Reference', 14495.00, 'AMD Radeon RX 7600'),
+    (31, 'Dual-Fan', 14995.00, 'AMD Radeon RX 7600'),
+    (32, 'Triple-Fan', 15495.00, 'AMD Radeon RX 7600'),
 ]
 
 # Address templates for Filipino locations
