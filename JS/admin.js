@@ -4,6 +4,265 @@
  */
 
 // ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+// Format currency (PHP Peso)
+function formatPHP(n) {
+  return (
+    '₱' +
+    parseFloat(n || 0).toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
+
+// Get user data from localStorage
+function getUserData() {
+  try {
+    return JSON.parse(localStorage.getItem('user')) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ========================================
+// PAGINATION LOGIC
+// ========================================
+
+// Pagination state for all tables
+const paginationState = {
+  users: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  employees: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] },
+  orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] }
+};
+
+function prevPage(tableType) {
+  const state = paginationState[tableType];
+  if (state && state.currentPage > 1) {
+    state.currentPage--;
+    updatePaginationDisplay(tableType);
+  }
+}
+
+function nextPage(tableType) {
+  const state = paginationState[tableType];
+  if (state) {
+    const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+    if (state.currentPage < maxPages) {
+      state.currentPage++;
+      updatePaginationDisplay(tableType);
+    }
+  }
+}
+
+function updatePaginationDisplay(tableType) {
+  const state = paginationState[tableType];
+  if (!state) return;
+
+  const tbody = document.getElementById(`${tableType}-tbody`);
+  const pageInfoEl = document.getElementById(`${tableType}-page-info`);
+  const prevBtn = document.getElementById(`${tableType}-prev-btn`);
+  const nextBtn = document.getElementById(`${tableType}-next-btn`);
+
+  if (!tbody || !pageInfoEl) return;
+
+  // Calculate pagination
+  const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+  const endIndex = startIndex + state.itemsPerPage;
+  const pageData = state.allData.slice(startIndex, endIndex);
+  const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+
+  // Render table rows
+  tbody.innerHTML = '';
+  if (pageData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No data found</td></tr>`;
+  } else {
+    renderTableRows(tableType, pageData, tbody);
+  }
+
+  // Update page info
+  pageInfoEl.textContent = `Page ${state.currentPage} of ${maxPages}`;
+
+  // Update button states
+  if (prevBtn) {
+    prevBtn.disabled = state.currentPage === 1;
+    prevBtn.style.opacity = state.currentPage === 1 ? '0.5' : '1';
+    prevBtn.style.cursor = state.currentPage === 1 ? 'not-allowed' : 'pointer';
+  }
+
+  if (nextBtn) {
+    nextBtn.disabled = state.currentPage >= maxPages;
+    nextBtn.style.opacity = state.currentPage >= maxPages ? '0.5' : '1';
+    nextBtn.style.cursor = state.currentPage >= maxPages ? 'not-allowed' : 'pointer';
+  }
+}
+
+function renderTableRows(tableType, pageData, tbody) {
+  // Delegate to specific rendering functions based on table type
+  switch (tableType) {
+    case 'users':
+      renderUserRows(pageData, tbody);
+      break;
+    case 'employees':
+      renderEmployeeRows(pageData, tbody);
+      break;
+    case 'products':
+      renderProductRows(pageData, tbody);
+      break;
+    case 'orders':
+      renderOrderRows(pageData, tbody);
+      break;
+  }
+}
+
+function renderUserRows(users, tbody) {
+  users.forEach((user) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(user.created_at).toLocaleDateString();
+    const isArchived = user.is_archived == 1;
+    
+    // Add visual indicator for archived users
+    if (isArchived) {
+      row.style.opacity = '0.7';
+      row.style.backgroundColor = '#fff3f3';
+    }
+    
+    // Status badge - show deactivated if archived, otherwise show active
+    const statusBadge = isArchived 
+      ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+      : `<span class="badge" style="background:#22c55e">Active</span>`;
+    
+    // Actions - different buttons for archived vs active users
+    const actionButtons = isArchived
+      ? `<button class="btn btn-sm btn-success" onclick="reactivateUser(${user.id})">Reactivate</button>`
+      : `<button class="btn btn-sm" onclick="editUser(${user.id}, '${user.email}')">Edit</button>
+         <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
+    
+    row.innerHTML = `
+      <td>${user.email}</td>
+      <td>${user.first_name} ${user.last_name}</td>
+      <td>${statusBadge}</td>
+      <td>${createdDate}</td>
+      <td>${actionButtons}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderEmployeeRows(employees, tbody) {
+  employees.forEach((emp) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(emp.created_at).toLocaleDateString();
+    const isArchived = emp.is_archived == 1;
+    
+    // Add visual indicator for archived employees
+    if (isArchived) {
+      row.style.opacity = '0.7';
+      row.style.backgroundColor = '#fff3f3';
+    }
+    
+    // Status badge - show deactivated if archived, otherwise show active
+    const statusBadge = isArchived 
+      ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+      : `<span class="badge" style="background:#22c55e">Active</span>`;
+    
+    // Actions - different buttons for archived vs active employees
+    const actionButtons = isArchived
+      ? `<button class="btn btn-sm btn-success" onclick="reactivateEmployee(${emp.id})">Reactivate</button>`
+      : `<button class="btn btn-sm" onclick="editEmployee(${emp.id}, '${emp.email}')">Edit</button>
+         <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
+    
+    row.innerHTML = `
+      <td>${emp.email}</td>
+      <td>${emp.first_name} ${emp.last_name}</td>
+      <td>${statusBadge}</td>
+      <td>${createdDate}</td>
+      <td>${actionButtons}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderProductRows(products, tbody) {
+  products.forEach((product) => {
+    const row = document.createElement('tr');
+    // Calculate price and stock from variants
+    const variants = product.variants || [];
+    const minPrice =
+      variants.length > 0
+        ? Math.min(...variants.map((v) => parseFloat(v.price)))
+        : 0;
+    const totalStock = variants.reduce(
+      (sum, v) => sum + parseInt(v.stock || 0),
+      0
+    );
+
+    row.innerHTML = `
+      <td>${product.name}</td>
+      <td>${product.category_name || 'N/A'}</td>
+      <td>${formatPHP(minPrice)}</td>
+      <td>${variants.length}</td>
+      <td>${totalStock}</td>
+      <td>
+        <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
+        <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderOrderRows(orders, tbody) {
+  orders.forEach((order) => {
+    const row = document.createElement('tr');
+    const statusColor = getStatusColor(order.status);
+    const statusLabel = getStatusLabel(order.status);
+    row.innerHTML = `
+      <td>${order.order_number}</td>
+      <td>${order.customer_name}</td>
+      <td>${order.customer_email}</td>
+      <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
+      <td>${formatPHP(order.total)}</td>
+      <td>
+        <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function getStatusColor(status) {
+  const colors = {
+    'pending': '#f59e0b',
+    'processing': '#3b82f6',
+    'paid': '#10b981',
+    'shipped': '#8b5cf6',
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#f59e0b'
+  };
+  return colors[status] || '#6b7280';
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    'pending': 'Pending',
+    'processing': 'Processing',
+    'paid': 'Paid',
+    'shipped': 'Shipped',
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    'refunded': 'Refunded'
+  };
+  return labels[status] || status;
+}
+
+// ========================================
 // CONFIRMATION DIALOG HELPER
 // ========================================
 
@@ -209,7 +468,7 @@ function initAdminSearch() {
   const userSearch = document.getElementById('user-search');
   if (userSearch) {
     userSearch.addEventListener('input', () => {
-      filterTable('users-tbody');
+      filterUsersTable();
     });
   }
 
@@ -302,36 +561,81 @@ function filterOrdersTable() {
   });
 }
 
+
+function filterUsersTable() {
+  const searchInput = document.getElementById('user-search');
+  if (!searchInput) return;
+
+  const query = searchInput.value.toLowerCase();
+  
+  // Filter all data based on search query
+  if (query === '') {
+    // Reset to all data if search is cleared
+    paginationState.users.allData = paginationState.users.originalData;
+  } else {
+    // Filter original data
+    paginationState.users.allData = paginationState.users.originalData.filter(user => {
+      const email = user.email.toLowerCase();
+      const name = `${user.first_name} ${user.last_name}`.toLowerCase();
+      const status = (user.is_archived == 1 ? 'deactivated' : 'active').toLowerCase();
+      
+      return email.includes(query) || name.includes(query) || status.includes(query);
+    });
+  }
+  
+  // Reset to page 1 when filtering
+  paginationState.users.currentPage = 1;
+  paginationState.users.totalItems = paginationState.users.allData.length;
+  
+  // Update display
+  updatePaginationDisplay('users');
+}
+
 function filterTable(tableBodyId) {
   const tbody = document.getElementById(tableBodyId);
   if (!tbody) return;
 
-  // Determine which search input to use based on table
+  // Determine which search input and pagination state to use based on table
   let searchInput = null;
-  if (tableBodyId === 'users-tbody') {
-    searchInput = document.getElementById('user-search');
-  } else if (tableBodyId === 'employees-tbody') {
+  let tableType = null;
+  
+  if (tableBodyId === 'employees-tbody') {
     searchInput = document.getElementById('employee-search');
+    tableType = 'employees';
   } else if (tableBodyId === 'products-tbody') {
     searchInput = document.getElementById('product-search');
+    tableType = 'products';
   } else if (tableBodyId === 'orders-tbody') {
     searchInput = document.getElementById('order-search');
+    tableType = 'orders';
   }
 
-  if (!searchInput) return;
+  if (!searchInput || !tableType) return;
 
   const query = searchInput.value.toLowerCase();
-  const rows = tbody.querySelectorAll('tr');
-
-  rows.forEach((row) => {
-    // Get all text content from all cells
-    const rowText = Array.from(row.cells)
-      .map((cell) => cell.textContent.toLowerCase())
-      .join(' ');
-
-    const matches = rowText.includes(query);
-    row.style.display = matches ? '' : 'none';
-  });
+  
+  // Filter based on table type
+  if (query === '') {
+    // Reset to all data if search is cleared
+    paginationState[tableType].allData = paginationState[tableType].originalData;
+  } else {
+    // Filter original data
+    paginationState[tableType].allData = paginationState[tableType].originalData.filter(item => {
+      // Get all values from the item and convert to lowercase string
+      const itemText = Object.values(item)
+        .map(val => (val ? String(val).toLowerCase() : ''))
+        .join(' ');
+      
+      return itemText.includes(query);
+    });
+  }
+  
+  // Reset to page 1 when filtering
+  paginationState[tableType].currentPage = 1;
+  paginationState[tableType].totalItems = paginationState[tableType].allData.length;
+  
+  // Update display
+  updatePaginationDisplay(tableType);
 }
 
 // ========================================
@@ -359,9 +663,6 @@ async function loadTabData(tabName) {
 }
 
 async function loadUsers(includeArchived = null) {
-  const tbody = document.getElementById('users-tbody');
-  if (!tbody) return;
-
   // Get filter value from dropdown if not provided
   if (includeArchived === null) {
     const filterSelect = document.getElementById('user-status-filter');
@@ -371,56 +672,26 @@ async function loadUsers(includeArchived = null) {
   try {
     const data = await ManagementAPI.getUsers(includeArchived);
 
-    if (!data.users || data.users.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No users found</td></tr>';
-      return;
-    }
+    // Store all data in pagination state
+    paginationState.users.allData = data.users || [];
+    // Store original data for search filtering
+    paginationState.users.originalData = JSON.parse(JSON.stringify(data.users || []));
+    paginationState.users.totalItems = paginationState.users.allData.length;
+    paginationState.users.currentPage = 1;
 
-    tbody.innerHTML = '';
-    data.users.forEach((user) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(user.created_at).toLocaleDateString();
-      const isArchived = user.is_archived == 1;
-      
-      // Add visual indicator for archived users
-      if (isArchived) {
-        row.style.opacity = '0.7';
-        row.style.backgroundColor = '#fff3f3';
-      }
-      
-      // Status badge - show deactivated if archived, otherwise show role
-      const statusBadge = isArchived 
-        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
-        : `<span class="badge" style="background:#22c55e">Active</span>`;
-      
-      // Actions - different buttons for archived vs active users
-      const actionButtons = isArchived
-        ? `<button class="btn btn-sm btn-success" onclick="reactivateUser(${user.id})">Reactivate</button>`
-        : `<button class="btn btn-sm" onclick="editUser(${user.id})">Edit</button>
-           <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
-      
-      row.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.email}</td>
-                <td>${user.first_name} ${user.last_name}</td>
-                <td>${statusBadge}</td>
-                <td>${createdDate}</td>
-                <td>${actionButtons}</td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Update pagination display
+    updatePaginationDisplay('users');
   } catch (error) {
     console.error('Failed to load users:', error);
-    tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load users</td></tr>';
+    const tbody = document.getElementById('users-tbody');
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load users</td></tr>';
+    }
   }
 }
 
 async function loadEmployees(includeArchived = null) {
-  const tbody = document.getElementById('employees-tbody');
-  if (!tbody) return;
-
   // Get filter value from dropdown if not provided
   if (includeArchived === null) {
     const filterSelect = document.getElementById('employee-status-filter');
@@ -430,49 +701,22 @@ async function loadEmployees(includeArchived = null) {
   try {
     const data = await ManagementAPI.getEmployees(includeArchived);
 
-    if (!data.employees || data.employees.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No employees found</td></tr>';
-      return;
-    }
+    // Store all data in pagination state
+    paginationState.employees.allData = data.employees || [];
+    // Store original data for search filtering
+    paginationState.employees.originalData = JSON.parse(JSON.stringify(data.employees || []));
+    paginationState.employees.totalItems = paginationState.employees.allData.length;
+    paginationState.employees.currentPage = 1;
 
-    tbody.innerHTML = '';
-    data.employees.forEach((emp) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(emp.created_at).toLocaleDateString();
-      const isArchived = emp.is_archived == 1;
-      
-      // Add visual indicator for archived employees
-      if (isArchived) {
-        row.style.opacity = '0.7';
-        row.style.backgroundColor = '#fff3f3';
-      }
-      
-      // Status badge - show deactivated if archived, otherwise show active
-      const statusBadge = isArchived 
-        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
-        : `<span class="badge" style="background:#22c55e">Active</span>`;
-      
-      // Actions - different buttons for archived vs active employees
-      const actionButtons = isArchived
-        ? `<button class="btn btn-sm btn-success" onclick="reactivateEmployee(${emp.id})">Reactivate</button>`
-        : `<button class="btn btn-sm" onclick="editEmployee(${emp.id})">Edit</button>
-           <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
-      
-      row.innerHTML = `
-                <td>${emp.id}</td>
-                <td>${emp.email}</td>
-                <td>${emp.first_name} ${emp.last_name}</td>
-                <td>${statusBadge}</td>
-                <td>${createdDate}</td>
-                <td>${actionButtons}</td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Update pagination display
+    updatePaginationDisplay('employees');
   } catch (error) {
     console.error('Failed to load employees:', error);
-    tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load employees</td></tr>';
+    const tbody = document.getElementById('employees-tbody');
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load employees</td></tr>';
+    }
   }
 }
 
@@ -511,72 +755,100 @@ async function loadProducts() {
   }
 
   tbody.innerHTML =
-    '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
   try {
     console.log('Fetching products...');
     const data = await ProductsAPI.getAllProducts();
     console.log('Products loaded:', data);
 
-    if (!data.products || data.products.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
-      return;
+    // Store all data in pagination state and sort alphabetically by product name
+    const productsSorted = (data.products || []).sort((a, b) => 
+      (a.name || '').localeCompare((b.name || ''), undefined, { sensitivity: 'base' })
+    );
+    paginationState.products.allData = productsSorted;
+    paginationState.products.originalData = productsSorted;
+    paginationState.products.totalItems = paginationState.products.allData.length;
+    paginationState.products.currentPage = 1;
+
+    // Load categories
+    await loadProductCategories();
+
+    // Add event listener to category filter
+    const categoryFilter = document.getElementById('product-category-filter');
+    if (categoryFilter) {
+      categoryFilter.removeEventListener('change', filterProductsByCategory);
+      categoryFilter.addEventListener('change', filterProductsByCategory);
     }
 
-    tbody.innerHTML = '';
-    data.products.forEach((product) => {
-      const row = document.createElement('tr');
-      // Calculate price and stock from variants
-      const variants = product.variants || [];
-      const minPrice =
-        variants.length > 0
-          ? Math.min(...variants.map((v) => parseFloat(v.price)))
-          : 0;
-      const totalStock = variants.reduce(
-        (sum, v) => sum + parseInt(v.stock || 0),
-        0
-      );
-
-      row.innerHTML = `
-                <td>${product.id}</td>
-                <td>${product.name}</td>
-                <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(minPrice)}</td>
-                <td>${variants.length}</td>
-                <td>${totalStock}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewProduct(${
-                      product.id
-                    })">View</button>
-                    <button class="btn btn-sm" onclick="editProduct(${
-                      product.id
-                    })">Edit</button>
-                    <button class="btn btn-sm" onclick="editStock(${
-                      product.id
-                    }, ${totalStock})">Stock</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${
-                      product.id
-                    })">Delete</button>
-                </td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Update pagination display
+    updatePaginationDisplay('products');
   } catch (error) {
     console.error('Failed to load products:', error);
     const errorMsg = error.message || 'Unknown error';
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
   }
+}
+
+async function loadProductCategories() {
+  try {
+    const data = await ProductsAPI.getCategories();
+    const categoryFilter = document.getElementById('product-category-filter');
+    
+    if (!categoryFilter) return;
+    
+    // Keep the "All Categories" option and add category options
+    const currentValue = categoryFilter.value;
+    categoryFilter.innerHTML = '<option value="">All Categories</option>';
+    
+    if (data.categories && Array.isArray(data.categories)) {
+      data.categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.name;
+        option.textContent = category.name;
+        categoryFilter.appendChild(option);
+      });
+    }
+    
+    // Restore previous selection if it still exists
+    categoryFilter.value = currentValue;
+  } catch (error) {
+    console.error('Failed to load product categories:', error);
+  }
+}
+
+function filterProductsByCategory() {
+  const categoryFilter = document.getElementById('product-category-filter');
+  const selectedCategory = categoryFilter ? categoryFilter.value : '';
+  
+  if (!paginationState.products.originalData) return;
+  
+  // Filter the data based on category from original unfiltered data
+  let filteredProducts = paginationState.products.originalData;
+  if (selectedCategory) {
+    filteredProducts = filteredProducts.filter(product => 
+      product.category_name === selectedCategory
+    );
+  }
+  
+  // Update pagination state with filtered data
+  paginationState.products.allData = filteredProducts;
+  paginationState.products.totalItems = filteredProducts.length;
+  paginationState.products.currentPage = 1;
+  
+  // Display first page of filtered results
+  updatePaginationDisplay('products');
 }
 
 function getStatusColor(status) {
   const statusColors = {
     'pending': '#f59e0b',
     'processing': '#3b82f6',
+    'paid': '#06b6d4',
     'shipped': '#8b5cf6',
-    'out_for_delivery': '#06b6d4',
-    'delivered': '#10b981',
-    'cancelled': '#ef4444'
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#6b7280'
   };
   return statusColors[status] || '#6b7280';
 }
@@ -585,54 +857,125 @@ function getStatusLabel(status) {
   const labels = {
     'pending': 'Pending',
     'processing': 'Processing',
+    'paid': 'Paid',
     'shipped': 'Shipped',
-    'out_for_delivery': 'Out for Delivery personnel',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled'
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    'refunded': 'Refunded'
   };
   return labels[status] || status;
 }
 
 async function loadOrders() {
-  const tbody = document.getElementById('orders-tbody');
-  if (!tbody) return;
-
   try {
     const data = await OrdersAPI.getOrders();
 
-    if (!data.orders || data.orders.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
-      return;
+    // Store all data in pagination state
+    paginationState.orders.allData = data.orders || [];
+    paginationState.orders.originalData = data.orders || [];
+    paginationState.orders.totalItems = paginationState.orders.allData.length;
+    paginationState.orders.currentPage = 1;
+
+    // Add event listener to status filter
+    const statusFilter = document.getElementById('order-status-filter');
+    if (statusFilter) {
+      statusFilter.removeEventListener('change', filterOrders);
+      statusFilter.addEventListener('change', filterOrders);
     }
 
-    tbody.innerHTML = '';
-    data.orders.forEach((order) => {
-      const row = document.createElement('tr');
-      const statusColor = getStatusColor(order.status);
-      const statusLabel = getStatusLabel(order.status);
-      row.innerHTML = `
-                <td>${order.order_number}</td>
-                <td>${order.customer_name}</td>
-                <td>${order.customer_email}</td>
-                <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
-                <td>${formatPHP(order.total)}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewOrder(${
-                      order.id
-                    })">View</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${
-                      order.id
-                    })" style="margin-left: 0.5rem;">Delete</button>
-                </td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Update pagination display
+    updatePaginationDisplay('orders');
+    
+    // Load and display order status summary
+    loadOrderStatusSummary();
   } catch (error) {
     console.error('Failed to load orders:', error);
-    tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
+    const tbody = document.getElementById('orders-tbody');
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
+    }
   }
+}
+
+async function loadOrderStatusSummary() {
+  try {
+    const data = await OrdersAPI.getOrderStatusSummary();
+    const summary = data.status_summary || {};
+    
+    // Update each status count
+    const statuses = ['pending', 'processing', 'paid', 'shipped', 'completed', 'cancelled', 'refunded'];
+    statuses.forEach(status => {
+      const countEl = document.getElementById(`status-${status}-count`);
+      if (countEl) {
+        countEl.textContent = summary[status] || 0;
+      }
+    });
+    
+    // Populate year selector from orders data
+    populateOrderStatusYearSelector();
+  } catch (error) {
+    console.error('Failed to load order status summary:', error);
+  }
+}
+
+let orderStatusYear = null; // Store selected year for order status
+
+function populateOrderStatusYearSelector() {
+  const yearSelect = document.getElementById('order-status-year-selector');
+  if (!yearSelect) return;
+  
+  // Extract years from orders data
+  const years = new Set();
+  if (paginationState.orders.allData && paginationState.orders.allData.length > 0) {
+    paginationState.orders.allData.forEach(order => {
+      if (order.created_at) {
+        const year = new Date(order.created_at).getFullYear();
+        years.add(year);
+      }
+    });
+  }
+  
+  const currentYear = new Date().getFullYear();
+  years.add(currentYear);
+  
+  // Sort descending
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  
+  // Keep the "All Years" option and add year options
+  const existingValue = yearSelect.value;
+  yearSelect.innerHTML = '<option value="">All Years</option>' + sortedYears.map(y => 
+    `<option value="${y}">${y}</option>`
+  ).join('');
+  
+  // Set value if it was previously set
+  if (existingValue) yearSelect.value = existingValue;
+  
+  // Add change listener
+  yearSelect.onchange = () => {
+    orderStatusYear = yearSelect.value ? parseInt(yearSelect.value) : null;
+    loadOrderStatusSummary();
+  };
+}
+
+function filterOrders() {
+  const statusFilter = document.getElementById('order-status-filter');
+  const selectedStatus = statusFilter ? statusFilter.value : '';
+  
+  // Filter the data based on status from original unfiltered data
+  if (!paginationState.orders.originalData) return;
+  let filteredOrders = paginationState.orders.originalData;
+  if (selectedStatus) {
+    filteredOrders = filteredOrders.filter(order => order.status === selectedStatus);
+  }
+
+  // Update pagination state with filtered data
+  paginationState.orders.allData = filteredOrders;
+  paginationState.orders.totalItems = filteredOrders.length;
+  paginationState.orders.currentPage = 1;
+
+  // Update pagination display
+  updatePaginationDisplay('orders');
 }
 
 // ========================================
@@ -646,7 +989,8 @@ function viewProduct(productId) {
 
   // Fetch product data
   ProductsAPI.getProduct(productId)
-    .then((product) => {
+    .then((data) => {
+      const product = data.product;
       if (!product || !product.id) {
         alert('Product not found');
         return;
@@ -696,7 +1040,7 @@ function viewProduct(productId) {
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <strong>Category:</strong> ${
-                              product.category || 'N/A'
+                              product.category_name || product.category || 'N/A'
                             }
                         </div>
                         <div style="margin-bottom: 1rem;">
@@ -745,7 +1089,8 @@ function editProduct(productId) {
 
     // Fetch product data
     ProductsAPI.getProduct(productId)
-      .then((product) => {
+      .then((data) => {
+        const product = data.product;
         if (!product || !product.id) {
           alert('Product not found');
           return;
@@ -755,7 +1100,7 @@ function editProduct(productId) {
         document.getElementById('product-title').value =
           product.name || product.title || '';
         document.getElementById('product-category').value =
-          product.category || '';
+          product.category_name || product.category || '';
         // Price field removed from UI - use 0 as default
         const priceField = document.getElementById('product-price');
         if (priceField) {
@@ -1174,14 +1519,15 @@ async function viewOrder(orderId) {
     // Format date
     const orderDate = new Date(order.placed_at || order.created_at).toLocaleString();
     
-    // Status options with display names
+    // Status options with display names (matches database enum)
     const statusOptions = [
       { value: 'pending', label: 'Pending', color: '#f59e0b' },
       { value: 'processing', label: 'Processing', color: '#3b82f6' },
+      { value: 'paid', label: 'Paid', color: '#06b6d4' },
       { value: 'shipped', label: 'Shipped', color: '#8b5cf6' },
-      { value: 'out_for_delivery', label: 'Out for Delivery personnel', color: '#06b6d4' },
-      { value: 'delivered', label: 'Delivered', color: '#10b981' },
-      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' }
+      { value: 'completed', label: 'Completed', color: '#10b981' },
+      { value: 'cancelled', label: 'Cancelled', color: '#ef4444' },
+      { value: 'refunded', label: 'Refunded', color: '#6b7280' }
     ];
     
     const currentStatus = statusOptions.find(s => s.value === order.status) || statusOptions[0];
@@ -1683,6 +2029,7 @@ function handleProfileSubmit(e) {
   e.preventDefault();
 
   const fullName = document.getElementById('profile-full-name').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
   const currentPassword = document.getElementById(
     'profile-current-password'
   ).value;
@@ -1693,6 +2040,12 @@ function handleProfileSubmit(e) {
 
   if (!fullName) {
     alert('Full name is required');
+    return;
+  }
+
+  // Validate phone number (must be exactly 11 digits if provided)
+  if (phone && !/^\d{11}$/.test(phone)) {
+    alert('Phone number must be exactly 11 digits');
     return;
   }
 
@@ -1841,8 +2194,10 @@ window.updateVariant = updateVariant;
 window.saveVariants = saveVariants;
 window.editUser = editUser;
 window.deleteUser = deleteUser;
+window.reactivateUser = reactivateUser;
 window.editEmployee = editEmployee;
 window.deleteEmployee = deleteEmployee;
+window.reactivateEmployee = reactivateEmployee;
 window.viewOrder = viewOrder;
 window.resetProfileForm = resetProfileForm;
 

@@ -202,7 +202,10 @@ function syncAuthButton() {
 
 // Ensure image URL is properly wrapped through serve-image.php
 function ensureImageUrl(url) {
-  if (!url) return '/assets/placeholder.jpg';
+  if (!url) {
+    // Return a data URI placeholder image
+    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%23ddd" width="400" height="400"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999" font-family="Arial" font-size="20"%3ENo Image%3C/text%3E%3C/svg%3E';
+  }
 
   // If already wrapped with serve-image.php, return as-is
   if (url.includes('serve-image.php')) {
@@ -1185,19 +1188,28 @@ async function initializePageScript() {
   updateCartVisibility();
 
   // Check if this is admin/employee/superadmin page
+  // Note: router.js handles loading and initializing these scripts with proper onload callbacks
   if (document.getElementById('superadmin-welcome')) {
     console.log('[initializePageScript] Detected superadmin page');
-    initializeSuperAdmin?.();
+    // The superadmin script is loaded by router.js with onload callback
+    // Only call if already loaded (e.g., on page refresh)
+    if (typeof window.initializeSuperAdmin === 'function') {
+      window.initializeSuperAdmin();
+    }
     return;
   }
   if (document.getElementById('admin-welcome')) {
     console.log('[initializePageScript] Detected admin page');
-    initializeAdmin?.();
+    if (typeof window.initializeAdmin === 'function') {
+      window.initializeAdmin();
+    }
     return;
   }
   if (document.getElementById('employee-welcome')) {
     console.log('[initializePageScript] Detected employee page');
-    initializeEmployee?.();
+    if (typeof window.initializeEmployee === 'function') {
+      window.initializeEmployee();
+    };
     return;
   }
 
@@ -1230,8 +1242,6 @@ async function initializePageScript() {
       '[initializePageScript] Found cart-toggle, attaching click listener'
     );
     cartToggle.addEventListener('click', openCart);
-  } else {
-    console.warn('[initializePageScript] cart-toggle not found');
   }
 
   const closeBtn = document.querySelectorAll('#close-cart');
@@ -1266,8 +1276,6 @@ async function initializePageScript() {
   if (productModalClose) {
     console.log('[initializePageScript] Found product-modal-close button');
     productModalClose.addEventListener('click', closeProductDetail);
-  } else {
-    console.warn('[initializePageScript] product-modal-close button not found');
   }
 
   const productModalBackdrop = document.getElementById(
@@ -1276,8 +1284,6 @@ async function initializePageScript() {
   if (productModalBackdrop) {
     console.log('[initializePageScript] Found product-modal-backdrop');
     productModalBackdrop.addEventListener('click', closeProductDetail);
-  } else {
-    console.warn('[initializePageScript] product-modal-backdrop not found');
   }
 
   console.log('[initializePageScript] Page initialization complete');

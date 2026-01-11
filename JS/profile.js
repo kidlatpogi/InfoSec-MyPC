@@ -374,6 +374,12 @@ function initProfileEditForm() {
             return;
         }
 
+        // Validate phone number (must be exactly 11 digits)
+        if (phone && !/^\d{11}$/.test(phone)) {
+            alert('Phone number must be exactly 11 digits');
+            return;
+        }
+
         // Split full name into first and last name
         const nameParts = fullName.split(' ');
         const firstName = nameParts[0] || '';
@@ -599,6 +605,12 @@ function initAddressManagement() {
         const postalCode = document.getElementById('address-postal').value.trim();
         const isDefault = document.getElementById('address-default').checked;
 
+        // Validate phone number (must be exactly 11 digits)
+        if (!/^\d{11}$/.test(phone)) {
+            alert('Phone number must be exactly 11 digits');
+            return;
+        }
+
         try {
             // Check if setting as default and another default exists
             if (isDefault) {
@@ -688,7 +700,22 @@ async function deleteAddress(addressId) {
     if (!confirm('Delete this address?')) return;
 
     try {
+        // Get all addresses before deletion
+        const data = await AddressesAPI.getAddresses();
+        const addressToDelete = data.addresses.find(addr => addr.id == addressId);
+        
+        // Delete the address
         await AddressesAPI.deleteAddress(addressId);
+        
+        // If the deleted address was default and there are other addresses, make the first remaining one default
+        if (addressToDelete && addressToDelete.is_default && data.addresses.length > 1) {
+            const remainingAddresses = data.addresses.filter(addr => addr.id != addressId);
+            if (remainingAddresses.length > 0) {
+                const newDefaultAddress = remainingAddresses[0];
+                await AddressesAPI.updateAddress(newDefaultAddress.id, { is_default: true });
+            }
+        }
+        
         alert('Address deleted successfully');
         loadAddresses();
     } catch (error) {
@@ -776,32 +803,145 @@ function initOrderDetailsModal() {
     }
 }
 
-// Delete (archive) own account
-async function deleteMyAccount() {
-    // First confirmation
-    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+// Delete (archive) own account - Step 1: Confirmation Modal
+function deleteMyAccount() {
+    const confirmModal = document.getElementById('delete-account-confirm-modal');
+    const confirmBackdrop = document.getElementById('delete-account-confirm-backdrop');
+    const confirmNoBtn = document.getElementById('delete-account-confirm-no');
+    const confirmYesBtn = document.getElementById('delete-account-confirm-yes');
+    const confirmCloseBtn = document.getElementById('delete-account-confirm-close');
+    
+    if (!confirmModal || !confirmBackdrop) {
+        alert('Error: Confirmation modal not found');
         return;
     }
     
-    // Prompt for password
-    const password = prompt('Please enter your password to confirm account deletion:');
-    if (!password) {
-        alert('Password is required to delete your account.');
+    // Show the initial confirmation modal
+    confirmModal.classList.add('active');
+    confirmBackdrop.classList.add('active');
+    
+    const handleNo = () => {
+        confirmModal.classList.remove('active');
+        confirmBackdrop.classList.remove('active');
+        // Remove event listeners
+        confirmNoBtn.removeEventListener('click', handleNo);
+        confirmYesBtn.removeEventListener('click', handleYes);
+        confirmCloseBtn.removeEventListener('click', handleNo);
+        confirmBackdrop.removeEventListener('click', handleBackdropClick);
+    };
+    
+    const handleYes = () => {
+        confirmModal.classList.remove('active');
+        confirmBackdrop.classList.remove('active');
+        // Remove event listeners
+        confirmNoBtn.removeEventListener('click', handleNo);
+        confirmYesBtn.removeEventListener('click', handleYes);
+        confirmCloseBtn.removeEventListener('click', handleNo);
+        confirmBackdrop.removeEventListener('click', handleBackdropClick);
+        // Show password confirmation modal
+        showPasswordConfirmationModal();
+    };
+    
+    const handleBackdropClick = (e) => {
+        if (e.target === confirmBackdrop) {
+            handleNo();
+        }
+    };
+    
+    // Event listeners for confirmation modal
+    confirmNoBtn.addEventListener('click', handleNo);
+    confirmYesBtn.addEventListener('click', handleYes);
+    confirmCloseBtn.addEventListener('click', handleNo);
+    confirmBackdrop.addEventListener('click', handleBackdropClick);
+}
+
+// Delete Account - Step 2: Password Confirmation Modal
+function showPasswordConfirmationModal() {
+    const modal = document.getElementById('delete-account-modal');
+    const backdrop = document.getElementById('delete-account-backdrop');
+    const passwordInput = document.getElementById('delete-account-password');
+    const confirmCheckbox = document.getElementById('delete-account-confirm');
+    const confirmBtn = document.getElementById('delete-account-confirm-btn');
+    const cancelBtn = document.getElementById('delete-account-cancel');
+    const closeBtn = document.getElementById('delete-account-close');
+    
+    if (!backdrop || !modal) {
+        alert('Error: Modal not found');
         return;
     }
     
-    // Second confirmation
-    if (!confirm('This will permanently deactivate your account. Are you absolutely sure?')) {
-        return;
-    }
+    // Reset form
+    passwordInput.value = '';
+    confirmCheckbox.checked = false;
+    confirmBtn.disabled = true;
     
-    try {
-        const result = await AuthAPI.deleteAccount(password);
-        alert('Your account has been deactivated. You will be logged out now.');
-        window.location.href = '/';
-    } catch (error) {
-        alert('Failed to delete account: ' + (error.message || 'Unknown error'));
-    }
+    // Show modal
+    backdrop.classList.add('active');
+    modal.classList.add('active');
+    
+    // Update confirm button state based on inputs
+    const updateConfirmBtn = () => {
+        confirmBtn.disabled = !passwordInput.value || !confirmCheckbox.checked;
+    };
+    
+    const handleConfirm = async () => {
+        const password = passwordInput.value;
+        
+        if (!password) {
+            alert('Please enter your password.');
+            return;
+        }
+        
+        if (!confirmCheckbox.checked) {
+            alert('Please confirm that you understand this action cannot be undone.');
+            return;
+        }
+        
+        try {
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Deleting...';
+            
+            const result = await AuthAPI.deleteAccount(password);
+            alert('Your account has been deactivated. You will be logged out now.');
+            window.location.href = '/';
+        } catch (error) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Delete Account';
+            alert('Failed to delete account: ' + (error.message || 'Unknown error'));
+        }
+    };
+    
+    const handleCancel = () => {
+        backdrop.classList.remove('active');
+        modal.classList.remove('active');
+        passwordInput.value = '';
+        confirmCheckbox.checked = false;
+        // Remove event listeners
+        passwordInput.removeEventListener('input', updateConfirmBtn);
+        confirmCheckbox.removeEventListener('change', updateConfirmBtn);
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        closeBtn.removeEventListener('click', handleCancel);
+        backdrop.removeEventListener('click', handleBackdropClick);
+    };
+    
+    const handleBackdropClick = (e) => {
+        if (e.target === backdrop) {
+            handleCancel();
+        }
+    };
+    
+    // Event listeners
+    passwordInput.addEventListener('input', updateConfirmBtn);
+    confirmCheckbox.addEventListener('change', updateConfirmBtn);
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    closeBtn.addEventListener('click', handleCancel);
+    backdrop.addEventListener('click', handleBackdropClick);
+    
+    // Initialize button state and focus
+    updateConfirmBtn();
+    passwordInput.focus();
 }
 
 // Make functions globally available

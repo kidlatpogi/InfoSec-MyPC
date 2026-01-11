@@ -145,7 +145,7 @@
 
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="tel" id="edit-phone" value="+63 912 345 6789" required>
+                                <input type="tel" id="edit-phone" value="" required pattern="[0-9]{11}" maxlength="11" minlength="11" placeholder="09123456789" title="Phone number must be exactly 11 digits">
                             </div>
 
                             <div class="form-group">
@@ -380,7 +380,7 @@
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="address-phone" required />
+                    <input type="tel" id="address-phone" required pattern="[0-9]{11}" maxlength="11" minlength="11" placeholder="09123456789" title="Phone number must be exactly 11 digits" />
                 </div>
                 <div class="form-group">
                     <label>Address Line 1</label>
@@ -421,6 +421,53 @@
         </div>
         <div class="order-modal-body" id="order-modal-content">
             <!-- Order details populated by JS -->
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal (Step 1) -->
+    <div class="delete-account-modal-backdrop" id="delete-account-confirm-backdrop"></div>
+    <div class="delete-account-modal" id="delete-account-confirm-modal">
+        <div class="delete-account-modal-header">
+            <h2>Delete Account</h2>
+            <button class="delete-account-modal-close" id="delete-account-confirm-close">✕</button>
+        </div>
+        <div class="delete-account-modal-body">
+            <div class="delete-account-warning">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button type="button" class="secondary" id="delete-account-confirm-no">No, Keep Account</button>
+                <button type="button" class="danger" id="delete-account-confirm-yes">Yes, Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Password Modal (Step 2) -->
+    <div class="delete-account-modal-backdrop" id="delete-account-backdrop"></div>
+    <div class="delete-account-modal" id="delete-account-modal">
+        <div class="delete-account-modal-header">
+            <h2>Delete Account</h2>
+            <button class="delete-account-modal-close" id="delete-account-close">✕</button>
+        </div>
+        <div class="delete-account-modal-body">
+            <div class="delete-account-warning">
+                <p style="color: #d32f2f; font-weight: 600; margin-bottom: 1rem;">⚠️ This action cannot be undone</p>
+                <p>This will permanently deactivate your account. All your data will be archived.</p>
+            </div>
+            <div class="form-group">
+                <label for="delete-account-password">Enter your password to confirm:</label>
+                <input type="password" id="delete-account-password" placeholder="Password" />
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="delete-account-confirm" />
+                    <span>I understand that this will permanently deactivate my account</span>
+                </label>
+            </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button type="button" class="secondary" id="delete-account-cancel">Cancel</button>
+                <button type="button" class="danger" id="delete-account-confirm-btn">Delete Account</button>
+            </div>
         </div>
     </div>
 

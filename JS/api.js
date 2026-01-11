@@ -23,6 +23,7 @@ async function apiCall(endpoint, options = {}) {
     try {
         const response = await fetch(url, {
             ...options,
+            credentials: 'include', // Include cookies for session authentication
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 ...options.headers
@@ -42,13 +43,23 @@ async function apiCall(endpoint, options = {}) {
             throw new Error(`Server returned invalid JSON. Response: ${text.substring(0, 200)}`);
         }
 
+        // Handle 401 Unauthorized (not logged in) - this is expected behavior
+        if (response.status === 401) {
+            const error = new Error(data.error || 'Not logged in');
+            error.status = 401;
+            throw error;
+        }
+
         if (!data.success) {
             throw new Error(data.error || 'API request failed');
         }
 
         return data;
     } catch (error) {
-        console.error(`API Error (${endpoint}):`, error);
+        // Only log as error if it's not a 401 (which is expected for non-logged-in users)
+        if (error.status !== 401) {
+            console.error(`API Error (${endpoint}):`, error);
+        }
         throw error;
     }
 }
@@ -365,6 +376,29 @@ const OrdersAPI = {
             method: 'POST',
             body
         });
+    },
+    
+    // Get sales analytics (admin/superadmin only)
+    async getSalesAnalytics(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+        return await apiCall(`sales_analytics.php?year=${year}&month=${month}`);
+    },
+    
+    // Get orders by status for a specific year (or all years if year is null/undefined)
+    async getOrdersByStatus(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`sales_analytics.php?action=ordersByStatus${yearParam}`);
+    },
+    
+    // Get top selling products for a specific year (or all years if year is null/undefined)
+    async getTopProducts(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`sales_analytics.php?action=topProducts${yearParam}`);
+    },
+    
+    // Get order status summary counts (optional year filter)
+    async getOrderStatusSummary(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`orders.php?action=statusSummary${yearParam}`);
     }
 };
 

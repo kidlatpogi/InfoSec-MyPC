@@ -74,7 +74,7 @@ try {
 
         // Convert image URLs to use image serving script
         foreach ($images as &$img) {
-            $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+            $img['url'] = '/HTML_PHP/serve-image.php?path=' . urlencode($img['url']);
         }
         unset($img);
         
@@ -82,7 +82,7 @@ try {
 
         // Get product reviews
         $reviews = $db->fetchAll(
-            "SELECT r.*, u.full_name 
+            "SELECT r.*, CONCAT(u.first_name, ' ', u.last_name) as full_name 
              FROM reviews r 
              LEFT JOIN users u ON r.user_id = u.id 
              WHERE r.product_id = ? 
@@ -220,7 +220,7 @@ try {
             
             // Convert image URLs to use image serving script
             foreach ($images as &$img) {
-                $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+                $img['url'] = '/HTML_PHP/serve-image.php?path=' . urlencode($img['url']);
             }
             unset($img);
             

@@ -36,7 +36,7 @@
                 </div>
                 <div class="form-field" style="grid-column:1/-1;">
                     <label for="phone">Phone (optional)</label>
-                    <input type="tel" id="phone" placeholder="09123456789" autocomplete="tel">
+                    <input type="tel" id="phone" placeholder="09123456789" autocomplete="tel" pattern="[0-9]{11}" maxlength="11" minlength="11" title="Phone number must be exactly 11 digits">
                     <span class="error" id="phone-error"></span>
                 </div>
                 <div class="form-field">
