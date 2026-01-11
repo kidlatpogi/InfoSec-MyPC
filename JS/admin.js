@@ -735,9 +735,12 @@ async function loadProducts() {
     const data = await ProductsAPI.getAllProducts();
     console.log('Products loaded:', data);
 
-    // Store all data in pagination state
-    paginationState.products.allData = data.products || [];
-    paginationState.products.originalData = data.products || [];
+    // Store all data in pagination state and sort alphabetically by product name
+    const productsSorted = (data.products || []).sort((a, b) => 
+      (a.name || '').localeCompare((b.name || ''), undefined, { sensitivity: 'base' })
+    );
+    paginationState.products.allData = productsSorted;
+    paginationState.products.originalData = productsSorted;
     paginationState.products.totalItems = paginationState.products.allData.length;
     paginationState.products.currentPage = 1;
 

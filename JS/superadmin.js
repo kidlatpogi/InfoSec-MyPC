@@ -810,10 +810,13 @@ async function loadProducts() {
       return;
     }
 
-    // Store all data and update pagination state
-    paginationState.products.allData = data.products;
-    paginationState.products.originalData = data.products;
-    paginationState.products.totalItems = data.products.length;
+    // Store all data and update pagination state, sorted alphabetically by product name
+    const productsSorted = data.products.sort((a, b) => 
+      (a.name || '').localeCompare((b.name || ''), undefined, { sensitivity: 'base' })
+    );
+    paginationState.products.allData = productsSorted;
+    paginationState.products.originalData = productsSorted;
+    paginationState.products.totalItems = productsSorted.length;
     paginationState.products.currentPage = 1;
 
     // Load categories
