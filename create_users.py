@@ -1,15 +1,7 @@
-import mysql.connector
 import random
 import string
+import subprocess
 from datetime import datetime
-
-# Database connection details
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',
-    'database': 'mypc_db'
-}
 
 # Filipino first names
 first_names = [
@@ -53,81 +45,96 @@ def generate_email(first_name, last_name, index):
     email = f"{first_name.lower()}.{last_name.lower().replace(' ', '')}{index}@mypc.com"
     return email.replace(' ', '')
 
+def hash_password_php(password):
+    """Hash password using PHP's password_hash function"""
+    try:
+        result = subprocess.run(
+            ['php', '-r', f'echo password_hash("{password}", PASSWORD_BCRYPT);'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except Exception as e:
+        print(f"Error hashing password: {e}")
+        return None
+
 def main():
     try:
-        # Connect to database
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
-        
-        # Lists to store credentials
+        # Lists to store credentials and SQL statements
         credentials = []
+        sql_statements = []
         
         print("Generating 150 users...")
         
-        # Generate and insert users
+        # Generate users
         for i in range(1, 151):
             first_name = random.choice(first_names)
             last_name = random.choice(last_names)
             email = generate_email(first_name, last_name, i)
             password = generate_password()
             
-            # Hash the password using PHP's password_hash equivalent (bcrypt)
-            # For now, we'll use a simple hash. In production, use proper bcrypt
-            import hashlib
-            password_hash = hashlib.sha256(password.encode()).hexdigest()
+            # Hash password using PHP
+            password_hash = hash_password_php(password)
             
-            # For proper bcrypt compatibility with PHP, we'll store plaintext temporarily
-            # and PHP will hash it, or use the proper bcrypt library
-            try:
-                from bcrypt import hashpw, gensalt
-                password_hash = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
-            except ImportError:
-                # Fallback if bcrypt not available - use argon2 or just sha256
-                # PHP's password_hash uses bcrypt by default
-                # For now, we'll use a simple approach - store plaintext and hash on PHP side
-                password_hash = password  # Will be hashed by a PHP script
+            if not password_hash:
+                print(f"  Failed to hash password for user {i}, skipping...")
+                continue
             
-            # Insert user into database
-            sql = """
-            INSERT INTO users (email, password_hash, first_name, last_name, role, is_admin, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """
+            # Create SQL INSERT statement
+            sql = f"INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES\n('{email}', '{password_hash}', '{first_name}', '{last_name}', 'user', 0);"
+            sql_statements.append(sql)
             
-            values = (email, password_hash, first_name, last_name, 'user', 0, datetime.now(), datetime.now())
-            cursor.execute(sql, values)
-            
-            # Store credentials for output file
+            # Store credentials
             credentials.append((email, password))
             
             if i % 30 == 0:
-                print(f"  Created {i} users...")
+                print(f"  Generated {i} users...")
         
-        conn.commit()
-        cursor.close()
-        conn.close()
+        # Save SQL file
+        with open('users_insert.sql', 'w', encoding='utf-8') as f:
+            f.write("-- =====================================================\n")
+            f.write("-- MyPC Database - 150 Test Users\n")
+            f.write("-- =====================================================\n")
+            f.write(f"-- Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write("-- Run this after mypc_complete.sql to add test users\n")
+            f.write("-- =====================================================\n\n")
+            f.write("USE mypc_db;\n\n")
+            f.write("-- Insert 150 test user accounts\n")
+            f.write("\n".join(sql_statements))
+            f.write("\n\n-- =====================================================\n")
+            f.write("-- COMPLETION MESSAGE\n")
+            f.write("-- =====================================================\n\n")
+            f.write("SELECT '150 test users added successfully!' as message,\n")
+            f.write("       'Check user_credentials.txt for login details' as note;\n")
         
-        # Save credentials to file
-        with open('user_credentials.txt', 'w') as f:
-            f.write("=" * 60 + "\n")
+        # Save credentials to text file
+        with open('user_credentials.txt', 'w', encoding='utf-8') as f:
+            f.write("=" * 80 + "\n")
             f.write("MyPC User Credentials - 150 Test Users\n")
-            f.write("=" * 60 + "\n\n")
+            f.write("=" * 80 + "\n\n")
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            f.write("All accounts have role: 'user' (customer accounts)\n")
+            f.write("=" * 80 + "\n\n")
             
-            for email, password in credentials:
-                f.write(f"Email: {email}\n")
-                f.write(f"Password: {password}\n")
-                f.write("-" * 60 + "\n")
+            for idx, (email, password) in enumerate(credentials, 1):
+                f.write(f"User #{idx:03d}\n")
+                f.write(f"  Email:    {email}\n")
+                f.write(f"  Password: {password}\n")
+                f.write("-" * 80 + "\n")
         
-        print(f"\n✓ Successfully created 150 users!")
+        print(f"\n✓ Successfully generated 150 users!")
+        print(f"✓ SQL file saved to: users_insert.sql")
         print(f"✓ Credentials saved to: user_credentials.txt")
         print(f"\nFirst 5 users:")
         for i, (email, password) in enumerate(credentials[:5], 1):
-            print(f"  {i}. {email} / {password}")
+            print(f"  {i}. {email}")
+            print(f"     Password: {password}")
         
-    except mysql.connector.Error as err:
-        print(f"Database Error: {err}")
     except Exception as e:
         print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
