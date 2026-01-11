@@ -900,6 +900,13 @@ async function loadOrders() {
     paginationState.orders.totalItems = data.orders.length;
     paginationState.orders.currentPage = 1;
 
+    // Add event listener to status filter
+    const statusFilter = document.getElementById('order-status-filter');
+    if (statusFilter) {
+      statusFilter.removeEventListener('change', filterOrders);
+      statusFilter.addEventListener('change', filterOrders);
+    }
+
     // Display first page
     updatePaginationDisplay('orders');
   } catch (error) {
