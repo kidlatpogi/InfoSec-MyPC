@@ -468,7 +468,7 @@ function initAdminSearch() {
   const userSearch = document.getElementById('user-search');
   if (userSearch) {
     userSearch.addEventListener('input', () => {
-      filterTable('users-tbody');
+      filterUsersTable();
     });
   }
 
@@ -561,15 +561,37 @@ function filterOrdersTable() {
   });
 }
 
+
+function filterUsersTable() {
+  const searchInput = document.getElementById('user-search');
+  if (!searchInput) return;
+
+  const query = searchInput.value.toLowerCase();
+  const rows = document.querySelectorAll('#users-tbody tr');
+
+  rows.forEach((row) => {
+    const email = row.cells[0]?.textContent.toLowerCase() || '';
+    const name = row.cells[1]?.textContent.toLowerCase() || '';
+    const status = row.cells[2]?.textContent.toLowerCase() || '';
+    const createdDate = row.cells[3]?.textContent.toLowerCase() || '';
+
+    const matches =
+      email.includes(query) ||
+      name.includes(query) ||
+      status.includes(query) ||
+      createdDate.includes(query);
+
+    row.style.display = matches ? '' : 'none';
+  });
+}
+
 function filterTable(tableBodyId) {
   const tbody = document.getElementById(tableBodyId);
   if (!tbody) return;
 
   // Determine which search input to use based on table
   let searchInput = null;
-  if (tableBodyId === 'users-tbody') {
-    searchInput = document.getElementById('user-search');
-  } else if (tableBodyId === 'employees-tbody') {
+  if (tableBodyId === 'employees-tbody') {
     searchInput = document.getElementById('employee-search');
   } else if (tableBodyId === 'products-tbody') {
     searchInput = document.getElementById('product-search');
