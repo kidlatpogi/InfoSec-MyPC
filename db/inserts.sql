@@ -1,27 +1,29 @@
-    USE mypc_db;
+-- =====================================================
+-- MyPC Database - Extended Product Catalog
+-- =====================================================
+-- This file contains the full product catalog with all categories
+-- Run this AFTER mypc_complete.sql to populate the database with products
+-- 
+-- IMPORTANT: mypc_complete.sql already includes:
+-- - All table structures with proper columns
+-- - Categories
+-- - Default admin accounts (admin, superadmin, employee, customer)
+-- - 2 sample AMD CPU products
+--
+-- This file adds the complete product inventory across all categories
+-- =====================================================
 
-    -- =====================================================
-    -- ADD MISSING COLUMNS IF NOT EXISTS
-    -- =====================================================
-    ALTER TABLE addresses ADD COLUMN IF NOT EXISTS is_default TINYINT(1) NOT NULL DEFAULT 0;
+USE mypc_db;
 
-    -- =====================================================
-    -- CATEGORIES INSERT
-    -- =====================================================
+-- =====================================================
+-- EXTENDED PRODUCT CATALOG
+-- =====================================================
+-- Categories are already created by mypc_complete.sql
+-- Products use INSERT IGNORE to avoid duplicates with sample data
 
-    INSERT IGNORE INTO `categories` (`name`, `slug`, `description`) VALUES
-    ('Processors', 'processors', 'CPUs and processors for desktop computers'),
-    ('Graphics Cards', 'graphics-cards', 'GPUs and graphics cards'),
-    ('Memory', 'memory', 'RAM and memory modules'),
-    ('Storage', 'storage', 'SSDs, HDDs, and storage devices'),
-    ('Motherboards', 'motherboards', 'Computer motherboards'),
-    ('Power Supplies', 'power-supplies', 'PSUs and power supplies'),
-    ('Cases', 'cases', 'Computer cases and chassis'),
-    ('Cooling', 'cooling', 'CPU coolers and case fans');
-
-    -- =====================================================
-    -- AMD CPU PRODUCTS (10 items, IDs 1-10)
-    -- =====================================================
+-- =====================================================
+-- AMD CPU PRODUCTS (10 items, IDs 1-10)
+-- =====================================================
 
     INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
     (1, 'CPU-AMD-R5-7600', 'AMD Ryzen 5 7600', 'amd-ryzen-5-7600', '6-core / 12-thread Zen 4 desktop processor', '6-core / 12-thread Zen 4 desktop processor, 3.8 GHz base, 5.1 GHz boost, 6 MB L2 + 32 MB L3, 65 W TDP, AM5 socket. Native DDR5-5200 support and integrated Radeon Graphics deliver smooth 1080p gaming and snappy everyday performance without a discrete card. Ships as boxed (with Wraith Stealth cooler) or OEM/tray.', 1),
@@ -511,9 +513,10 @@ INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) V
     (94, '/assets/PSU/Super Flower Leadex III Gold.jpg', 'Super Flower Leadex III Gold', 0),
     (95, '/assets/PSU/ROG THOR 1000W.webp', 'ASUS ROG THOR 1000W', 0);
 
-    -- =====================================================
-    -- USERS TABLE - Add Superadmin Account
-    -- =====================================================
+-- =====================================================
+-- COMPLETION MESSAGE
+-- =====================================================
 
-    INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
-    ('superadmin@mypc.com', '$2y$10$tFnX.sMLCSnfYNeNyX0rseDx3MGiZPHOp1zxltMFsGnny/RvL5lVS', 'Super', 'Administrator', 'superadmin', 1);
+SELECT 'Extended product catalog loaded successfully!' as message,
+       '115 products with variants and images' as status,
+       'Database ready for use' as note;
