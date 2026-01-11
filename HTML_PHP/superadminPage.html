@@ -44,27 +44,27 @@
 
     <!-- Sales Summary Cards -->
     <div class="sales-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-      <div class="summary-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+      <div class="summary-card" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
         <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; opacity: 0.9;">Today's Sales</h4>
         <p id="today-sales" style="margin: 0; font-size: 1.5rem; font-weight: 700;">₱0.00</p>
         <p id="today-orders" style="margin: 0.5rem 0 0 0; font-size: 0.8rem; opacity: 0.8;">0 orders</p>
       </div>
-      <div class="summary-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);">
+      <div class="summary-card" style="background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
         <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; opacity: 0.9;">This Week</h4>
         <p id="week-sales" style="margin: 0; font-size: 1.5rem; font-weight: 700;">₱0.00</p>
         <p id="week-orders" style="margin: 0.5rem 0 0 0; font-size: 0.8rem; opacity: 0.8;">0 orders</p>
       </div>
-      <div class="summary-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);">
+      <div class="summary-card" style="background: linear-gradient(135deg, #404040 0%, #525252 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
         <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; opacity: 0.9;">This Month</h4>
         <p id="month-sales" style="margin: 0; font-size: 1.5rem; font-weight: 700;">₱0.00</p>
         <p id="month-orders" style="margin: 0.5rem 0 0 0; font-size: 0.8rem; opacity: 0.8;">0 orders</p>
       </div>
-      <div class="summary-card" style="background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(252, 74, 26, 0.3);">
+      <div class="summary-card" style="background: linear-gradient(135deg, #525252 0%, #666666 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
         <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; opacity: 0.9;">This Year</h4>
         <p id="year-sales" style="margin: 0; font-size: 1.5rem; font-weight: 700;">₱0.00</p>
         <p id="year-orders" style="margin: 0.5rem 0 0 0; font-size: 0.8rem; opacity: 0.8;">0 orders</p>
       </div>
-      <div class="summary-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+      <div class="summary-card" style="background: linear-gradient(135deg, #666666 0%, #7a7a7a 100%); color: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
         <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; opacity: 0.9;">Completed</h4>
         <p id="completed-sales" style="margin: 0; font-size: 1.5rem; font-weight: 700;">₱0.00</p>
         <p id="completed-orders" style="margin: 0.5rem 0 0 0; font-size: 0.8rem; opacity: 0.8;">0 orders</p>
@@ -79,8 +79,8 @@
           <h3 style="margin: 0;">Sales Overview</h3>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <!-- Period Selector Tabs -->
-            <div id="period-tabs" style="display: flex; background: #f3f4f6; border-radius: 8px; padding: 4px;">
-              <button class="period-btn active" data-period="daily" style="padding: 0.4rem 0.8rem; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">Daily</button>
+            <div id="period-tabs" style="display: flex; background: #e5e5e5; border-radius: 8px; padding: 4px;">
+              <button class="period-btn active" data-period="daily" style="padding: 0.4rem 0.8rem; border: none; background: #2d2d2d; color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">Daily</button>
               <button class="period-btn" data-period="weekly" style="padding: 0.4rem 0.8rem; border: none; background: transparent; color: #666; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">Weekly</button>
               <button class="period-btn" data-period="monthly" style="padding: 0.4rem 0.8rem; border: none; background: transparent; color: #666; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">Monthly</button>
               <button class="period-btn" data-period="yearly" style="padding: 0.4rem 0.8rem; border: none; background: transparent; color: #666; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">Yearly</button>

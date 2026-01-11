@@ -2129,7 +2129,7 @@ function initPeriodTabs() {
         b.style.background = 'transparent';
         b.style.color = '#666';
       });
-      btn.style.background = '#667eea';
+      btn.style.background = '#2d2d2d';
       btn.style.color = 'white';
       
       // Update current period and re-render chart
@@ -2261,8 +2261,8 @@ function renderMonthlyChart(monthlyData, year) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(102, 126, 234, 0.8)',
-          borderColor: 'rgba(102, 126, 234, 1)',
+          backgroundColor: 'rgba(45, 45, 45, 0.8)',
+          borderColor: 'rgba(45, 45, 45, 1)',
           borderWidth: 1,
           borderRadius: 6,
           yAxisID: 'y'
@@ -2271,13 +2271,13 @@ function renderMonthlyChart(monthlyData, year) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(17, 153, 142, 1)',
-          backgroundColor: 'rgba(17, 153, 142, 0.1)',
+          borderColor: 'rgba(120, 120, 120, 1)',
+          backgroundColor: 'rgba(120, 120, 120, 0.1)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 4,
-          pointBackgroundColor: 'rgba(17, 153, 142, 1)',
+          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2364,8 +2364,8 @@ function renderDailyChart(dailyData, year, month) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(102, 126, 234, 0.8)',
-          borderColor: 'rgba(102, 126, 234, 1)',
+          backgroundColor: 'rgba(45, 45, 45, 0.8)',
+          borderColor: 'rgba(45, 45, 45, 1)',
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y'
@@ -2374,13 +2374,13 @@ function renderDailyChart(dailyData, year, month) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(17, 153, 142, 1)',
-          backgroundColor: 'rgba(17, 153, 142, 0.1)',
+          borderColor: 'rgba(120, 120, 120, 1)',
+          backgroundColor: 'rgba(120, 120, 120, 0.1)',
           borderWidth: 2,
           fill: true,
           tension: 0.4,
           pointRadius: 2,
-          pointBackgroundColor: 'rgba(17, 153, 142, 1)',
+          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2436,8 +2436,8 @@ function renderWeeklyChart(weeklyData, year) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(252, 74, 26, 0.8)',
-          borderColor: 'rgba(252, 74, 26, 1)',
+          backgroundColor: 'rgba(64, 64, 64, 0.8)',
+          borderColor: 'rgba(64, 64, 64, 1)',
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y'
@@ -2446,13 +2446,13 @@ function renderWeeklyChart(weeklyData, year) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(247, 183, 51, 1)',
-          backgroundColor: 'rgba(247, 183, 51, 0.1)',
+          borderColor: 'rgba(140, 140, 140, 1)',
+          backgroundColor: 'rgba(140, 140, 140, 0.1)',
           borderWidth: 2,
           fill: true,
           tension: 0.4,
           pointRadius: 2,
-          pointBackgroundColor: 'rgba(247, 183, 51, 1)',
+          pointBackgroundColor: 'rgba(140, 140, 140, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2499,8 +2499,8 @@ function renderYearlySalesChart(yearlyData) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: ['rgba(102, 126, 234, 0.8)', 'rgba(17, 153, 142, 0.8)', 'rgba(252, 74, 26, 0.8)', 'rgba(247, 183, 51, 0.8)', 'rgba(118, 75, 162, 0.8)'],
-          borderColor: ['rgba(102, 126, 234, 1)', 'rgba(17, 153, 142, 1)', 'rgba(252, 74, 26, 1)', 'rgba(247, 183, 51, 1)', 'rgba(118, 75, 162, 1)'],
+          backgroundColor: ['rgba(26, 26, 26, 0.8)', 'rgba(45, 45, 45, 0.8)', 'rgba(64, 64, 64, 0.8)', 'rgba(82, 82, 82, 0.8)', 'rgba(102, 102, 102, 0.8)'],
+          borderColor: ['rgba(26, 26, 26, 1)', 'rgba(45, 45, 45, 1)', 'rgba(64, 64, 64, 1)', 'rgba(82, 82, 82, 1)', 'rgba(102, 102, 102, 1)'],
           borderWidth: 1,
           borderRadius: 6,
           yAxisID: 'y'
@@ -2509,13 +2509,13 @@ function renderYearlySalesChart(yearlyData) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(16, 185, 129, 1)',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderColor: 'rgba(120, 120, 120, 1)',
+          backgroundColor: 'rgba(120, 120, 120, 0.1)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 5,
-          pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
           yAxisID: 'y1'
         }
       ]
@@ -2566,18 +2566,18 @@ function renderYearlyChart(yearlyData) {
           label: 'Total Sales (₱)',
           data: salesData,
           backgroundColor: [
-            'rgba(252, 74, 26, 0.8)',
-            'rgba(247, 183, 51, 0.8)',
-            'rgba(17, 153, 142, 0.8)',
-            'rgba(102, 126, 234, 0.8)',
-            'rgba(118, 75, 162, 0.8)'
+            'rgba(26, 26, 26, 0.8)',
+            'rgba(45, 45, 45, 0.8)',
+            'rgba(64, 64, 64, 0.8)',
+            'rgba(82, 82, 82, 0.8)',
+            'rgba(102, 102, 102, 0.8)'
           ],
           borderColor: [
-            'rgba(252, 74, 26, 1)',
-            'rgba(247, 183, 51, 1)',
-            'rgba(17, 153, 142, 1)',
-            'rgba(102, 126, 234, 1)',
-            'rgba(118, 75, 162, 1)'
+            'rgba(26, 26, 26, 1)',
+            'rgba(45, 45, 45, 1)',
+            'rgba(64, 64, 64, 1)',
+            'rgba(82, 82, 82, 1)',
+            'rgba(102, 102, 102, 1)'
           ],
           borderWidth: 1,
           borderRadius: 8
@@ -2704,8 +2704,8 @@ function renderTopProducts(topProducts) {
   }
   
   const html = topProducts.map((product, index) => `
-    <div style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #eee; ${index === 0 ? 'background: #f0fdf4;' : ''}">
-      <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index < 3 ? ['#fbbf24', '#9ca3af', '#cd7f32'][index] : '#e5e7eb'}; color: ${index < 3 ? '#fff' : '#666'}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-right: 1rem;">
+    <div style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #eee; ${index === 0 ? 'background: #f5f5f5;' : ''}">
+      <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index < 3 ? ['#1a1a1a', '#525252', '#7a7a7a'][index] : '#e5e7eb'}; color: ${index < 3 ? '#fff' : '#666'}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-right: 1rem;">
         ${index + 1}
       </div>
       <div style="flex: 1; min-width: 0;">
@@ -2717,7 +2717,7 @@ function renderTopProducts(topProducts) {
         </div>
       </div>
       <div style="text-align: right; margin-left: 1rem;">
-        <div style="font-weight: 700; color: #10b981;">${formatPHP(product.total_revenue)}</div>
+        <div style="font-weight: 700; color: #2d2d2d;">${formatPHP(product.total_revenue)}</div>
       </div>
     </div>
   `).join('');
