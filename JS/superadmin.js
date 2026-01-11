@@ -28,6 +28,287 @@ function getUserData() {
 }
 
 // ========================================
+// PAGINATION LOGIC
+// ========================================
+
+// Pagination state for all tables
+const paginationState = {
+  admins: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  users: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  employees: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  audit: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] }
+};
+
+function prevPage(tableType) {
+  const state = paginationState[tableType];
+  if (state && state.currentPage > 1) {
+    state.currentPage--;
+    updatePaginationDisplay(tableType);
+  }
+}
+
+function nextPage(tableType) {
+  const state = paginationState[tableType];
+  if (state) {
+    const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+    if (state.currentPage < maxPages) {
+      state.currentPage++;
+      updatePaginationDisplay(tableType);
+    }
+  }
+}
+
+function updatePaginationDisplay(tableType) {
+  const state = paginationState[tableType];
+  if (!state) return;
+
+  const tbody = document.getElementById(`${tableType}-tbody`);
+  const pageInfoEl = document.getElementById(`${tableType}-page-info`);
+  const prevBtn = document.getElementById(`${tableType}-prev-btn`);
+  const nextBtn = document.getElementById(`${tableType}-next-btn`);
+
+  if (!tbody || !pageInfoEl) return;
+
+  // Calculate pagination
+  const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+  const endIndex = startIndex + state.itemsPerPage;
+  const pageData = state.allData.slice(startIndex, endIndex);
+  const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+
+  // Render table rows
+  tbody.innerHTML = '';
+  if (pageData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No data found</td></tr>`;
+  } else {
+    renderTableRows(tableType, pageData, tbody);
+  }
+
+  // Update page info
+  pageInfoEl.textContent = `Page ${state.currentPage} of ${maxPages}`;
+
+  // Update button states
+  if (prevBtn) {
+    prevBtn.disabled = state.currentPage === 1;
+    prevBtn.style.opacity = state.currentPage === 1 ? '0.5' : '1';
+    prevBtn.style.cursor = state.currentPage === 1 ? 'not-allowed' : 'pointer';
+  }
+
+  if (nextBtn) {
+    nextBtn.disabled = state.currentPage >= maxPages;
+    nextBtn.style.opacity = state.currentPage >= maxPages ? '0.5' : '1';
+    nextBtn.style.cursor = state.currentPage >= maxPages ? 'not-allowed' : 'pointer';
+  }
+}
+
+function renderTableRows(tableType, pageData, tbody) {
+  // Delegate to specific rendering functions based on table type
+  switch (tableType) {
+    case 'admins':
+      renderAdminRows(pageData, tbody);
+      break;
+    case 'users':
+      renderUserRows(pageData, tbody);
+      break;
+    case 'employees':
+      renderEmployeeRows(pageData, tbody);
+      break;
+    case 'products':
+      renderProductRows(pageData, tbody);
+      break;
+    case 'orders':
+      renderOrderRows(pageData, tbody);
+      break;
+    case 'audit':
+      renderAuditRows(pageData, tbody);
+      break;
+  }
+}
+
+function renderAdminRows(admins, tbody) {
+  admins.forEach((admin) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(admin.created_at).toLocaleDateString();
+    const roleColor = admin.role === 'superadmin' ? '#8b5cf6' : '#3b82f6';
+    row.innerHTML = `
+      <td>${admin.email}</td>
+      <td>${admin.first_name} ${admin.last_name}</td>
+      <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
+      <td>${createdDate}</td>
+      <td>
+        <button class="btn btn-sm" onclick="editAdmin(${admin.id}, '${admin.email}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${admin.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderUserRows(users, tbody) {
+  users.forEach((user) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(user.created_at).toLocaleDateString();
+    const isArchived = user.is_archived == 1;
+    
+    // Add visual indicator for archived users
+    if (isArchived) {
+      row.style.opacity = '0.7';
+      row.style.backgroundColor = '#fff3f3';
+    }
+    
+    // Status badge - show deactivated if archived, otherwise show active
+    const statusBadge = isArchived 
+      ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+      : `<span class="badge" style="background:#22c55e">Active</span>`;
+    
+    // Actions - different buttons for archived vs active users
+    const actionButtons = isArchived
+      ? `<button class="btn btn-sm btn-success" onclick="reactivateUser(${user.id})">Reactivate</button>`
+      : `<button class="btn btn-sm" onclick="editUser(${user.id}, '${user.email}')">Edit</button>
+         <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
+    
+    row.innerHTML = `
+      <td>${user.email}</td>
+      <td>${user.first_name} ${user.last_name}</td>
+      <td>${statusBadge}</td>
+      <td>${createdDate}</td>
+      <td>${actionButtons}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderEmployeeRows(employees, tbody) {
+  employees.forEach((emp) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(emp.created_at).toLocaleDateString();
+    const isArchived = emp.is_archived == 1;
+    
+    // Add visual indicator for archived employees
+    if (isArchived) {
+      row.style.opacity = '0.7';
+      row.style.backgroundColor = '#fff3f3';
+    }
+    
+    // Status badge - show deactivated if archived, otherwise show active
+    const statusBadge = isArchived 
+      ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+      : `<span class="badge" style="background:#22c55e">Active</span>`;
+    
+    // Actions - different buttons for archived vs active employees
+    const actionButtons = isArchived
+      ? `<button class="btn btn-sm btn-success" onclick="reactivateEmployee(${emp.id})">Reactivate</button>`
+      : `<button class="btn btn-sm" onclick="editEmployee(${emp.id}, '${emp.email}')">Edit</button>
+         <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
+    
+    row.innerHTML = `
+      <td>${emp.email}</td>
+      <td>${emp.first_name} ${emp.last_name}</td>
+      <td>${statusBadge}</td>
+      <td>${createdDate}</td>
+      <td>${actionButtons}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderProductRows(products, tbody) {
+  products.forEach((product) => {
+    const row = document.createElement('tr');
+    // Calculate price and stock from variants
+    const variants = product.variants || [];
+    const minPrice =
+      variants.length > 0
+        ? Math.min(...variants.map((v) => parseFloat(v.price)))
+        : 0;
+    const totalStock = variants.reduce(
+      (sum, v) => sum + parseInt(v.stock || 0),
+      0
+    );
+
+    row.innerHTML = `
+      <td>${product.name}</td>
+      <td>${product.category_name || 'N/A'}</td>
+      <td>${formatPHP(minPrice)}</td>
+      <td>${totalStock}</td>
+      <td>
+        <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
+        <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderOrderRows(orders, tbody) {
+  orders.forEach((order) => {
+    const row = document.createElement('tr');
+    const statusColor = getStatusColor(order.status);
+    const statusLabel = getStatusLabel(order.status);
+    row.innerHTML = `
+      <td>${order.order_number}</td>
+      <td>${order.customer_name}</td>
+      <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
+      <td>${formatPHP(order.total)}</td>
+      <td>
+        <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderAuditRows(auditLogs, tbody) {
+  auditLogs.forEach((log) => {
+    const row = document.createElement('tr');
+    const timestamp = new Date(log.created_at).toLocaleString();
+    const actionBadgeColor =
+      log.action === 'CREATE'
+        ? '#10b981'
+        : log.action === 'UPDATE'
+        ? '#3b82f6'
+        : log.action === 'DELETE'
+        ? '#ef4444'
+        : '#6b7280';
+
+    const userDisplay = log.email
+      ? `${log.first_name} ${log.last_name} (${log.email})`
+      : 'System';
+    const details = log.details
+      ? typeof log.details === 'string'
+        ? JSON.parse(log.details)
+        : log.details
+      : {};
+    const detailsDisplay = JSON.stringify(details).substring(0, 100);
+
+    row.innerHTML = `
+      <td><span class="badge" style="background:${actionBadgeColor}">${log.action}</span></td>
+      <td>${log.entity_type}</td>
+      <td>${userDisplay}</td>
+      <td>${timestamp}</td>
+      <td><code style="font-size:0.85rem; color:#666;">${detailsDisplay}</code></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function getStatusColor(status) {
+  const colors = {
+    'pending': '#f59e0b',
+    'processing': '#3b82f6',
+    'paid': '#10b981',
+    'shipped': '#8b5cf6',
+    'completed': '#10b981',
+    'cancelled': '#ef4444',
+    'refunded': '#f59e0b'
+  };
+  return colors[status] || '#6b7280';
+}
+
+// ========================================
 // CONFIRMATION DIALOG HELPER
 // ========================================
 
@@ -361,28 +642,21 @@ async function loadAdmins() {
     const data = await ManagementAPI.getAdmins();
 
     if (!data.admins || data.admins.length === 0) {
+      paginationState.admins.allData = [];
+      paginationState.admins.totalItems = 0;
+      paginationState.admins.currentPage = 1;
       tbody.innerHTML =
         '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No admins found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = '';
-    data.admins.forEach((admin) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(admin.created_at).toLocaleDateString();
-      const roleColor = admin.role === 'superadmin' ? '#8b5cf6' : '#3b82f6';
-      row.innerHTML = `
-                <td>${admin.email}</td>
-                <td>${admin.first_name} ${admin.last_name}</td>
-                <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
-                <td>${createdDate}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="editAdmin(${admin.id}, '${admin.email}')">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${admin.id})">Delete</button>
-                </td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Store all data and update pagination state
+    paginationState.admins.allData = data.admins;
+    paginationState.admins.totalItems = data.admins.length;
+    paginationState.admins.currentPage = 1;
+
+    // Display first page
+    updatePaginationDisplay('admins');
   } catch (error) {
     console.error('Failed to load admins:', error);
     tbody.innerHTML =
@@ -404,47 +678,25 @@ async function loadUsers(includeArchived = null) {
     const data = await ManagementAPI.getUsers(includeArchived);
 
     if (!data.users || data.users.length === 0) {
+      paginationState.users.allData = [];
+      paginationState.users.totalItems = 0;
+      paginationState.users.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No users found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No users found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = '';
-    data.users.forEach((user) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(user.created_at).toLocaleDateString();
-      const isArchived = user.is_archived == 1;
-      
-      // Add visual indicator for archived users
-      if (isArchived) {
-        row.style.opacity = '0.7';
-        row.style.backgroundColor = '#fff3f3';
-      }
-      
-      // Status badge - show deactivated if archived, otherwise show active
-      const statusBadge = isArchived 
-        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
-        : `<span class="badge" style="background:#22c55e">Active</span>`;
-      
-      // Actions - different buttons for archived vs active users
-      const actionButtons = isArchived
-        ? `<button class="btn btn-sm btn-success" onclick="reactivateUser(${user.id})">Reactivate</button>`
-        : `<button class="btn btn-sm" onclick="editUser(${user.id}, '${user.email}')">Edit</button>
-           <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
-      
-      row.innerHTML = `
-                <td>${user.email}</td>
-                <td>${user.first_name} ${user.last_name}</td>
-                <td>${statusBadge}</td>
-                <td>${createdDate}</td>
-                <td>${actionButtons}</td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Store all data and update pagination state
+    paginationState.users.allData = data.users;
+    paginationState.users.totalItems = data.users.length;
+    paginationState.users.currentPage = 1;
+
+    // Display first page
+    updatePaginationDisplay('users');
   } catch (error) {
     console.error('Failed to load users:', error);
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load users</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load users</td></tr>';
   }
 }
 
@@ -462,47 +714,25 @@ async function loadEmployees(includeArchived = null) {
     const data = await ManagementAPI.getEmployees(includeArchived);
 
     if (!data.employees || data.employees.length === 0) {
+      paginationState.employees.allData = [];
+      paginationState.employees.totalItems = 0;
+      paginationState.employees.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No employees found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No employees found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = '';
-    data.employees.forEach((emp) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(emp.created_at).toLocaleDateString();
-      const isArchived = emp.is_archived == 1;
-      
-      // Add visual indicator for archived employees
-      if (isArchived) {
-        row.style.opacity = '0.7';
-        row.style.backgroundColor = '#fff3f3';
-      }
-      
-      // Status badge - show deactivated if archived, otherwise show active
-      const statusBadge = isArchived 
-        ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
-        : `<span class="badge" style="background:#22c55e">Active</span>`;
-      
-      // Actions - different buttons for archived vs active employees
-      const actionButtons = isArchived
-        ? `<button class="btn btn-sm btn-success" onclick="reactivateEmployee(${emp.id})">Reactivate</button>`
-        : `<button class="btn btn-sm" onclick="editEmployee(${emp.id}, '${emp.email}')">Edit</button>
-           <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
-      
-      row.innerHTML = `
-                <td>${emp.email}</td>
-                <td>${emp.first_name} ${emp.last_name}</td>
-                <td>${statusBadge}</td>
-                <td>${createdDate}</td>
-                <td>${actionButtons}</td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Store all data and update pagination state
+    paginationState.employees.allData = data.employees;
+    paginationState.employees.totalItems = data.employees.length;
+    paginationState.employees.currentPage = 1;
+
+    // Display first page
+    updatePaginationDisplay('employees');
   } catch (error) {
     console.error('Failed to load employees:', error);
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load employees</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load employees</td></tr>';
   }
 }
 
@@ -541,7 +771,7 @@ async function loadProducts() {
   }
 
   tbody.innerHTML =
-    '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    '<tr><td colspan="5" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
   try {
     console.log('Fetching products...');
@@ -549,64 +779,27 @@ async function loadProducts() {
     console.log('Products loaded:', data);
 
     if (!data.products || data.products.length === 0) {
+      paginationState.products.allData = [];
+      paginationState.products.totalItems = 0;
+      paginationState.products.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = '';
-    data.products.forEach((product, index) => {
-      const row = document.createElement('tr');
-      // Calculate price and stock from variants
-      const variants = product.variants || [];
-      const minPrice =
-        variants.length > 0
-          ? Math.min(...variants.map((v) => parseFloat(v.price)))
-          : 0;
-      const totalStock = variants.reduce(
-        (sum, v) => sum + parseInt(v.stock || 0),
-        0
-      );
+    // Store all data and update pagination state
+    paginationState.products.allData = data.products;
+    paginationState.products.totalItems = data.products.length;
+    paginationState.products.currentPage = 1;
 
-      row.innerHTML = `
-                <td>${product.name}</td>
-                <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(minPrice)}</td>
-                <td>${variants.length}</td>
-                <td id="stock-${product.id}">${totalStock}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewProduct(${
-                      product.id
-                    })">View</button>
-                    <button class="btn btn-sm" onclick="editProduct(${
-                      product.id
-                    })">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${
-                      product.id
-                    })">Delete</button>
-                </td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Display first page
+    updatePaginationDisplay('products');
   } catch (error) {
     console.error('Failed to load products:', error);
     const errorMsg = error.message || 'Unknown error';
     tbody.innerHTML =
-      `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+      `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
   }
-}
-
-function getStatusColor(status) {
-  const statusColors = {
-    'pending': '#f59e0b',
-    'processing': '#3b82f6',
-    'paid': '#06b6d4',
-    'shipped': '#8b5cf6',
-    'completed': '#10b981',
-    'cancelled': '#ef4444',
-    'refunded': '#6b7280'
-  };
-  return statusColors[status] || '#6b7280';
 }
 
 function getStatusLabel(status) {
@@ -630,87 +823,48 @@ async function loadOrders() {
     const data = await OrdersAPI.getOrders();
 
     if (!data.orders || data.orders.length === 0) {
+      paginationState.orders.allData = [];
+      paginationState.orders.totalItems = 0;
+      paginationState.orders.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
       return;
     }
 
-    // Store all orders for filtering
-    window.allOrders = data.orders;
-    
-    tbody.innerHTML = '';
-    data.orders.forEach((order) => {
-      const row = document.createElement('tr');
-      const statusColor = getStatusColor(order.status);
-      const statusLabel = getStatusLabel(order.status);
-      row.innerHTML = `
-                <td>${order.order_number}</td>
-                <td>${order.customer_name}</td>
-                <td>${order.customer_email}</td>
-                <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
-                <td>${formatPHP(order.total)}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewOrder(${
-                      order.id
-                    })">View</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
-                </td>
-            `;
-      tbody.appendChild(row);
-    });
-    
-    // Add event listener to status filter
-    const statusFilter = document.getElementById('order-status-filter');
-    if (statusFilter) {
-      statusFilter.addEventListener('change', filterOrders);
-    }
+    // Store all data and update pagination state
+    paginationState.orders.allData = data.orders;
+    paginationState.orders.totalItems = data.orders.length;
+    paginationState.orders.currentPage = 1;
+
+    // Display first page
+    updatePaginationDisplay('orders');
   } catch (error) {
     console.error('Failed to load orders:', error);
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
   }
 }
 
 function filterOrders() {
   const statusFilter = document.getElementById('order-status-filter');
   const selectedStatus = statusFilter ? statusFilter.value : '';
-  const tbody = document.getElementById('orders-tbody');
   
-  if (!window.allOrders || !tbody) return;
+  if (!paginationState.orders.allData) return;
   
-  let filteredOrders = window.allOrders;
+  let filteredOrders = paginationState.orders.allData;
   
   // Filter by status if selected
   if (selectedStatus) {
     filteredOrders = filteredOrders.filter(order => order.status === selectedStatus);
   }
   
-  if (filteredOrders.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
-    return;
-  }
+  // Update pagination state with filtered data
+  paginationState.orders.allData = filteredOrders;
+  paginationState.orders.totalItems = filteredOrders.length;
+  paginationState.orders.currentPage = 1;
   
-  tbody.innerHTML = '';
-  filteredOrders.forEach((order) => {
-    const row = document.createElement('tr');
-    const statusColor = getStatusColor(order.status);
-    const statusLabel = getStatusLabel(order.status);
-    row.innerHTML = `
-              <td>${order.order_number}</td>
-              <td>${order.customer_name}</td>
-              <td>${order.customer_email}</td>
-              <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
-              <td>${formatPHP(order.total)}</td>
-              <td>
-                  <button class="btn btn-sm" onclick="viewOrder(${
-                    order.id
-                  })">View</button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
-              </td>
-          `;
-    tbody.appendChild(row);
-  });
+  // Display first page of filtered results
+  updatePaginationDisplay('orders');
 }
 
 // ========================================
@@ -1888,48 +2042,25 @@ async function loadAuditLogs() {
     const data = await AuditAPI.getAuditLogs(1000);
 
     if (!data.audit_logs || data.audit_logs.length === 0) {
+      paginationState.audit.allData = [];
+      paginationState.audit.totalItems = 0;
+      paginationState.audit.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = '';
-    data.audit_logs.forEach((log) => {
-      const row = document.createElement('tr');
-      const timestamp = new Date(log.created_at).toLocaleString();
-      const actionBadgeColor =
-        log.action === 'CREATE'
-          ? '#10b981'
-          : log.action === 'UPDATE'
-          ? '#3b82f6'
-          : log.action === 'DELETE'
-          ? '#ef4444'
-          : '#6b7280';
+    // Store all data and update pagination state
+    paginationState.audit.allData = data.audit_logs;
+    paginationState.audit.totalItems = data.audit_logs.length;
+    paginationState.audit.currentPage = 1;
 
-      const userDisplay = log.email
-        ? `${log.first_name} ${log.last_name} (${log.email})`
-        : 'System';
-      const details = log.details
-        ? typeof log.details === 'string'
-          ? JSON.parse(log.details)
-          : log.details
-        : {};
-      const detailsDisplay = JSON.stringify(details).substring(0, 100);
-
-      row.innerHTML = `
-                <td>${timestamp}</td>
-                <td><span class="badge" style="background:${actionBadgeColor}">${log.action}</span></td>
-                <td>${log.entity_type}</td>
-                <td>${log.entity_id}</td>
-                <td>${userDisplay}</td>
-                <td><code style="font-size:0.85rem; color:#666;">${detailsDisplay}</code></td>
-            `;
-      tbody.appendChild(row);
-    });
+    // Display first page
+    updatePaginationDisplay('audit');
   } catch (error) {
     console.error('Error loading audit logs:', error);
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444;">Error loading audit logs</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error loading audit logs</td></tr>';
   }
 }
 

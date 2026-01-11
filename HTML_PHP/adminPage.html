@@ -39,7 +39,7 @@
       <button id="add-user-btn" class="primary">+ Add New User</button>
     </div>
 
-    <div class="search-filter">
+    <div class="search-filter" style="margin-left: 1rem;">
       <input
         type="text"
         id="user-search"
@@ -72,6 +72,17 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Pagination Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding: 0 1rem;">
+      <div style="font-size: 0.9rem; color: #666;">
+        <span id="users-page-info">Page 1</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="users-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevPage('users')">Previous</button>
+        <button id="users-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextPage('users')">Next</button>
+      </div>
+    </div>
   </div>
 
   <!-- Employees Management Tab -->
@@ -81,7 +92,7 @@
       <button id="add-employee-btn" class="primary">+ Add New Employee</button>
     </div>
 
-    <div class="search-filter">
+    <div class="search-filter" style="margin-left: 1rem;">
       <input
         type="text"
         id="employee-search"
@@ -114,6 +125,17 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Pagination Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding: 0 1rem;">
+      <div style="font-size: 0.9rem; color: #666;">
+        <span id="employees-page-info">Page 1</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="employees-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevPage('employees')">Previous</button>
+        <button id="employees-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextPage('employees')">Next</button>
+      </div>
+    </div>
   </div>
 
   <!-- Products Management Tab -->
@@ -123,7 +145,7 @@
       <button id="add-product-btn" class="primary">+ Add New Product</button>
     </div>
 
-    <div class="search-filter">
+    <div class="search-filter" style="margin-left: 1rem;">
       <input
         type="text"
         id="product-search"
@@ -152,6 +174,17 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Pagination Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding: 0 1rem;">
+      <div style="font-size: 0.9rem; color: #666;">
+        <span id="products-page-info">Page 1</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="products-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevPage('products')">Previous</button>
+        <button id="products-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextPage('products')">Next</button>
+      </div>
+    </div>
   </div>
 
   <!-- Orders Management Tab -->
@@ -160,7 +193,7 @@
       <h2>Orders Management</h2>
     </div>
 
-    <div class="search-filter">
+    <div class="search-filter" style="margin-left: 1rem;">
       <input
         type="text"
         id="order-search"
@@ -198,6 +231,17 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding: 0 1rem;">
+      <div style="font-size: 0.9rem; color: #666;">
+        <span id="orders-page-info">Page 1</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="orders-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevPage('orders')">Previous</button>
+        <button id="orders-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextPage('orders')">Next</button>
+      </div>
     </div>
   </div>
 

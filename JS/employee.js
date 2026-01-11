@@ -28,6 +28,157 @@ function getUserData() {
 }
 
 // ========================================
+// PAGINATION LOGIC
+// ========================================
+
+// Pagination state for all tables
+const paginationState = {
+    products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+    orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] }
+};
+
+function prevPage(tableType) {
+    const state = paginationState[tableType];
+    if (state && state.currentPage > 1) {
+        state.currentPage--;
+        updatePaginationDisplay(tableType);
+    }
+}
+
+function nextPage(tableType) {
+    const state = paginationState[tableType];
+    if (state) {
+        const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+        if (state.currentPage < maxPages) {
+            state.currentPage++;
+            updatePaginationDisplay(tableType);
+        }
+    }
+}
+
+function updatePaginationDisplay(tableType) {
+    const state = paginationState[tableType];
+    if (!state) return;
+
+    const tbody = document.getElementById(`${tableType}-tbody`);
+    const pageInfoEl = document.getElementById(`${tableType}-page-info`);
+    const prevBtn = document.getElementById(`${tableType}-prev-btn`);
+    const nextBtn = document.getElementById(`${tableType}-next-btn`);
+
+    if (!tbody || !pageInfoEl) return;
+
+    // Calculate pagination
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const endIndex = startIndex + state.itemsPerPage;
+    const pageData = state.allData.slice(startIndex, endIndex);
+    const maxPages = Math.ceil(state.totalItems / state.itemsPerPage);
+
+    // Render table rows
+    tbody.innerHTML = '';
+    if (pageData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No data found</td></tr>`;
+    } else {
+        renderTableRows(tableType, pageData, tbody);
+    }
+
+    // Update page info
+    pageInfoEl.textContent = `Page ${state.currentPage} of ${maxPages}`;
+
+    // Update button states
+    if (prevBtn) {
+        prevBtn.disabled = state.currentPage === 1;
+        prevBtn.style.opacity = state.currentPage === 1 ? '0.5' : '1';
+        prevBtn.style.cursor = state.currentPage === 1 ? 'not-allowed' : 'pointer';
+    }
+
+    if (nextBtn) {
+        nextBtn.disabled = state.currentPage >= maxPages;
+        nextBtn.style.opacity = state.currentPage >= maxPages ? '0.5' : '1';
+        nextBtn.style.cursor = state.currentPage >= maxPages ? 'not-allowed' : 'pointer';
+    }
+}
+
+function renderTableRows(tableType, pageData, tbody) {
+    // Delegate to specific rendering functions based on table type
+    switch (tableType) {
+        case 'products':
+            renderProductRows(pageData, tbody);
+            break;
+        case 'orders':
+            renderOrderRows(pageData, tbody);
+            break;
+    }
+}
+
+function renderProductRows(products, tbody) {
+    products.forEach((product) => {
+        const row = document.createElement('tr');
+        // Calculate price and stock from variants
+        const variants = product.variants || [];
+        const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
+        const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+
+        row.innerHTML = `
+            <td>${product.name}</td>
+            <td>${product.category_name || 'N/A'}</td>
+            <td>${formatPHP(minPrice)}</td>
+            <td>${totalStock}</td>
+            <td>
+                <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
+                <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderOrderRows(orders, tbody) {
+    orders.forEach((order) => {
+        const row = document.createElement('tr');
+        const statusColor = getStatusColor(order.status);
+        const statusLabel = getStatusLabel(order.status);
+        row.innerHTML = `
+            <td>${order.order_number}</td>
+            <td>${order.customer_name}</td>
+            <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
+            <td>${formatPHP(order.total)}</td>
+            <td>
+                <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getStatusColor(status) {
+    const statusColors = {
+        'pending': '#f59e0b',
+        'processing': '#3b82f6',
+        'paid': '#06b6d4',
+        'shipped': '#8b5cf6',
+        'completed': '#10b981',
+        'cancelled': '#ef4444',
+        'refunded': '#6b7280'
+    };
+    return statusColors[status] || '#6b7280';
+}
+
+function getStatusLabel(status) {
+    const labels = {
+        'pending': 'Pending',
+        'processing': 'Processing',
+        'paid': 'Paid',
+        'shipped': 'Shipped',
+        'completed': 'Completed',
+        'cancelled': 'Cancelled',
+        'refunded': 'Refunded'
+    };
+    return labels[status] || status;
+}
+
+// ========================================
 // CONFIRMATION DIALOG HELPER
 // ========================================
 
@@ -342,155 +493,71 @@ async function loadProducts() {
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
         console.log('Fetching products...');
         const data = await ProductsAPI.getAllProducts();
         console.log('Products loaded:', data);
 
-        if (!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
-            return;
-        }
+        // Store all data in pagination state
+        paginationState.products.allData = data.products || [];
+        paginationState.products.totalItems = paginationState.products.allData.length;
+        paginationState.products.currentPage = 1;
 
-        tbody.innerHTML = '';
-        data.products.forEach(product => {
-            const row = document.createElement('tr');
-            // Calculate price and stock from variants
-            const variants = product.variants || [];
-            const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
-            const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
-            
-            row.innerHTML = `
-                <td>${product.name}</td>
-                <td>${product.category_name || 'N/A'}</td>
-                <td>${formatPHP(minPrice)}</td>
-                <td>${variants.length}</td>
-                <td>${totalStock}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
-                    <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        // Update pagination display
+        updatePaginationDisplay('products');
     } catch (error) {
         console.error('Failed to load products:', error);
         const errorMsg = error.message || 'Unknown error';
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
 }
 
-function getStatusColor(status) {
-    const statusColors = {
-        'pending': '#f59e0b',
-        'processing': '#3b82f6',
-        'paid': '#06b6d4',
-        'shipped': '#8b5cf6',
-        'completed': '#10b981',
-        'cancelled': '#ef4444',
-        'refunded': '#6b7280'
-    };
-    return statusColors[status] || '#6b7280';
-}
-
-function getStatusLabel(status) {
-    const labels = {
-        'pending': 'Pending',
-        'processing': 'Processing',
-        'paid': 'Paid',
-        'shipped': 'Shipped',
-        'completed': 'Completed',
-        'cancelled': 'Cancelled',
-        'refunded': 'Refunded'
-    };
-    return labels[status] || status;
-}
-
 async function loadOrders() {
-    const tbody = document.getElementById('orders-tbody');
-    if (!tbody) return;
-
     try {
         const data = await OrdersAPI.getOrders();
 
-        if (!data.orders || data.orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
-            return;
-        }
+        // Store all data in pagination state
+        paginationState.orders.allData = data.orders || [];
+        paginationState.orders.totalItems = paginationState.orders.allData.length;
+        paginationState.orders.currentPage = 1;
 
-        // Store all orders for filtering
-        window.allOrders = data.orders;
-        
-        tbody.innerHTML = '';
-        data.orders.forEach(order => {
-            const row = document.createElement('tr');
-            const statusColor = getStatusColor(order.status);
-            const statusLabel = getStatusLabel(order.status);
-            row.innerHTML = `
-                <td>${order.order_number}</td>
-                <td>${order.customer_name}</td>
-                <td>${order.customer_email}</td>
-                <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
-                <td>${formatPHP(order.total)}</td>
-                <td>
-                    <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-        
         // Add event listener to status filter
         const statusFilter = document.getElementById('order-status-filter');
         if (statusFilter) {
+            statusFilter.removeEventListener('change', filterOrders);
             statusFilter.addEventListener('change', filterOrders);
         }
+
+        // Update pagination display
+        updatePaginationDisplay('orders');
     } catch (error) {
         console.error('Failed to load orders:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
+        const tbody = document.getElementById('orders-tbody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
+        }
     }
 }
 
 function filterOrders() {
     const statusFilter = document.getElementById('order-status-filter');
     const selectedStatus = statusFilter ? statusFilter.value : '';
-    const tbody = document.getElementById('orders-tbody');
     
-    if (!window.allOrders || !tbody) return;
-    
-    let filteredOrders = window.allOrders;
-    
-    // Filter by status if selected
+    // Filter the data based on status
+    let filteredOrders = paginationState.orders.allData;
     if (selectedStatus) {
         filteredOrders = filteredOrders.filter(order => order.status === selectedStatus);
     }
-    
-    if (filteredOrders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No orders found</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = '';
-    filteredOrders.forEach(order => {
-        const row = document.createElement('tr');
-        const statusColor = getStatusColor(order.status);
-        const statusLabel = getStatusLabel(order.status);
-        row.innerHTML = `
-            <td>${order.order_number}</td>
-            <td>${order.customer_name}</td>
-            <td>${order.customer_email}</td>
-            <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
-            <td>${formatPHP(order.total)}</td>
-            <td>
-                <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
+
+    // Update pagination state with filtered data
+    paginationState.orders.allData = filteredOrders;
+    paginationState.orders.totalItems = filteredOrders.length;
+    paginationState.orders.currentPage = 1;
+
+    // Update pagination display
+    updatePaginationDisplay('orders');
 }
 
 // ========================================
