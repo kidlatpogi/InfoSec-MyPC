@@ -231,6 +231,7 @@ function renderProductRows(products, tbody) {
       <td>${product.name}</td>
       <td>${product.category_name || 'N/A'}</td>
       <td>${formatPHP(minPrice)}</td>
+      <td>${variants.length}</td>
       <td>${totalStock}</td>
       <td>
         <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
@@ -250,6 +251,7 @@ function renderOrderRows(orders, tbody) {
     row.innerHTML = `
       <td>${order.order_number}</td>
       <td>${order.customer_name}</td>
+      <td>${order.customer_email}</td>
       <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
       <td>${formatPHP(order.total)}</td>
       <td>
