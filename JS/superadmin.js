@@ -2382,6 +2382,9 @@ async function loadSalesDashboard(year = new Date().getFullYear(), month = new D
     renderStatusChart(data.sales_by_status);
     renderTopProducts(data.top_products);
     
+    // Populate status chart year selector
+    populateStatusChartYearSelector(data.yearly, data.selected_year);
+    
   } catch (error) {
     console.error('Error loading sales dashboard:', error);
     console.error('Error message:', error?.message);
@@ -2892,6 +2895,53 @@ function renderYearlyChart(yearlyData) {
 }
 
 let statusChart = null;
+let statusChartYear = null; // Store selected year for status chart
+
+function populateStatusChartYearSelector(yearlyData, selectedYear) {
+  const yearSelect = document.getElementById('status-chart-year-select');
+  if (!yearSelect) return;
+  
+  const currentYear = new Date().getFullYear();
+  const years = new Set();
+  
+  // Add years from data
+  if (yearlyData && yearlyData.length > 0) {
+    yearlyData.forEach(y => years.add(parseInt(y.year)));
+  }
+  
+  // Add current and recent years
+  for (let i = 0; i < 5; i++) {
+    years.add(currentYear - i);
+  }
+  
+  // Sort descending
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  
+  // Keep the "All Years" option and add year options
+  const existingValue = yearSelect.value;
+  yearSelect.innerHTML = '<option value="">All Years</option>' + sortedYears.map(y => 
+    `<option value="${y}">${y}</option>`
+  ).join('');
+  
+  // Set value if it was previously set
+  if (existingValue) yearSelect.value = existingValue;
+  
+  // Add change listener
+  yearSelect.onchange = () => {
+    statusChartYear = yearSelect.value ? parseInt(yearSelect.value) : null;
+    loadStatusChartData();
+  };
+}
+
+async function loadStatusChartData() {
+  try {
+    const year = statusChartYear || new Date().getFullYear();
+    const response = await OrdersAPI.getOrdersByStatus(year);
+    renderStatusChart(response.sales_by_status);
+  } catch (error) {
+    console.error('Error loading status chart data:', error);
+  }
+}
 
 function renderStatusChart(salesByStatus) {
   const ctx = document.getElementById('status-chart');

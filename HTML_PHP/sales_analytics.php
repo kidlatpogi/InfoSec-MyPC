@@ -45,6 +45,24 @@ try {
     
     $year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
     $month = isset($_GET['month']) ? intval($_GET['month']) : date('n');
+    $action = isset($_GET['action']) ? $_GET['action'] : '';
+    
+    // Handle specific action: get orders by status for a year
+    if ($action === 'ordersByStatus') {
+        $salesByStatus = $db->fetchAll(
+            "SELECT 
+                status,
+                COUNT(*) as order_count,
+                COALESCE(SUM(total), 0) as total_sales
+             FROM orders 
+             WHERE YEAR(placed_at) = ?
+             GROUP BY status
+             ORDER BY order_count DESC",
+            [$year]
+        );
+        
+        sendSuccess(['sales_by_status' => $salesByStatus]);
+    }
     
     // Get daily sales for the specified month/year (last 30 days if current month)
     $dailySales = $db->fetchAll(

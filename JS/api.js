@@ -381,6 +381,11 @@ const OrdersAPI = {
     // Get sales analytics (admin/superadmin only)
     async getSalesAnalytics(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
         return await apiCall(`sales_analytics.php?year=${year}&month=${month}`);
+    },
+    
+    // Get orders by status for a specific year
+    async getOrdersByStatus(year = new Date().getFullYear()) {
+        return await apiCall(`sales_analytics.php?action=ordersByStatus&year=${year}`);
     }
 };
 
