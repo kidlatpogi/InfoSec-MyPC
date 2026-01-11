@@ -120,8 +120,8 @@ try {
             // Create order
             $order_id = $db->insert(
                 "INSERT INTO orders (
-                    user_id, address_id, status, subtotal, shipping, tax, total, notes
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?)",
+                    user_id, address_id, status, subtotal, shipping, tax, total, notes, customer_name, customer_email, customer_phone, shipping_address
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     $user_id,
                     $address_id > 0 ? $address_id : null,
@@ -129,7 +129,11 @@ try {
                     $shipping_fee,
                     $tax,
                     $total,
-                    $notes
+                    $notes,
+                    $user['name'],
+                    $user['email'],
+                    $user['phone'],
+                    $shipping_address_text
                 ]
             );
 
