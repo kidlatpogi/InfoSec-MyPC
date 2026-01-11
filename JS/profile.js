@@ -18,6 +18,12 @@ async function loadProfileData() {
             return;
         }
 
+        // Show the profile content now that we've verified the user is logged in
+        const profileWrapper = document.querySelector('.profile-wrapper');
+        if (profileWrapper) {
+            profileWrapper.style.display = '';
+        }
+
         // Populate profile overview
         const welcomeHeading = document.querySelector('#overview h1');
         if (welcomeHeading) {
