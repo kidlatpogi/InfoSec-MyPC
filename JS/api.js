@@ -387,6 +387,12 @@ const OrdersAPI = {
     async getOrdersByStatus(year) {
         const yearParam = year ? `&year=${year}` : '';
         return await apiCall(`sales_analytics.php?action=ordersByStatus${yearParam}`);
+    },
+    
+    // Get top selling products for a specific year (or all years if year is null/undefined)
+    async getTopProducts(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`sales_analytics.php?action=topProducts${yearParam}`);
     }
 };
 

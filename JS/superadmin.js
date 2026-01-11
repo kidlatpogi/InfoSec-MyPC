@@ -2385,6 +2385,9 @@ async function loadSalesDashboard(year = new Date().getFullYear(), month = new D
     // Populate status chart year selector
     populateStatusChartYearSelector(data.yearly, data.selected_year);
     
+    // Populate top products year selector
+    populateTopProductsYearSelector(data.yearly, data.selected_year);
+    
   } catch (error) {
     console.error('Error loading sales dashboard:', error);
     console.error('Error message:', error?.message);
@@ -3013,6 +3016,54 @@ function renderStatusChart(salesByStatus) {
       }
     }
   });
+}
+
+let topProductsYear = null; // Store selected year for top products chart
+
+function populateTopProductsYearSelector(yearlyData, selectedYear) {
+  const yearSelect = document.getElementById('top-products-year-selector');
+  if (!yearSelect) return;
+  
+  const currentYear = new Date().getFullYear();
+  const years = new Set();
+  
+  // Add years from data
+  if (yearlyData && yearlyData.length > 0) {
+    yearlyData.forEach(y => years.add(parseInt(y.year)));
+  }
+  
+  // Add current and recent years
+  for (let i = 0; i < 5; i++) {
+    years.add(currentYear - i);
+  }
+  
+  // Sort descending
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  
+  // Keep the "All Years" option and add year options
+  const existingValue = yearSelect.value;
+  yearSelect.innerHTML = '<option value="">All Years</option>' + sortedYears.map(y => 
+    `<option value="${y}">${y}</option>`
+  ).join('');
+  
+  // Set value if it was previously set
+  if (existingValue) yearSelect.value = existingValue;
+  
+  // Add change listener
+  yearSelect.onchange = () => {
+    topProductsYear = yearSelect.value ? parseInt(yearSelect.value) : null;
+    loadTopProductsData();
+  };
+}
+
+async function loadTopProductsData() {
+  try {
+    const year = topProductsYear; // Pass null/undefined for all years, or specific year number
+    const response = await OrdersAPI.getTopProducts(year);
+    renderTopProducts(response.top_products);
+  } catch (error) {
+    console.error('Error loading top products data:', error);
+  }
 }
 
 function renderTopProducts(topProducts) {

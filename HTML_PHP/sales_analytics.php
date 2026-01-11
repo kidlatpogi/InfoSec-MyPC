@@ -78,6 +78,44 @@ try {
         sendSuccess(['sales_by_status' => $salesByStatus]);
     }
     
+    // Handle specific action: get top selling products for a year (or all years)
+    if ($action === 'topProducts') {
+        if (isset($_GET['year'])) {
+            // Specific year
+            $topProductsData = $db->fetchAll(
+                "SELECT 
+                    oi.product_name,
+                    SUM(oi.quantity) as total_quantity,
+                    SUM(oi.line_total) as total_revenue,
+                    COUNT(DISTINCT oi.order_id) as order_count
+                 FROM order_items oi
+                 JOIN orders o ON oi.order_id = o.id
+                 WHERE YEAR(o.placed_at) = ? AND o.status NOT IN ('cancelled', 'refunded')
+                 GROUP BY oi.product_name
+                 ORDER BY total_quantity DESC
+                 LIMIT 10",
+                [$year]
+            );
+        } else {
+            // All years
+            $topProductsData = $db->fetchAll(
+                "SELECT 
+                    oi.product_name,
+                    SUM(oi.quantity) as total_quantity,
+                    SUM(oi.line_total) as total_revenue,
+                    COUNT(DISTINCT oi.order_id) as order_count
+                 FROM order_items oi
+                 JOIN orders o ON oi.order_id = o.id
+                 WHERE o.status NOT IN ('cancelled', 'refunded')
+                 GROUP BY oi.product_name
+                 ORDER BY total_quantity DESC
+                 LIMIT 10"
+            );
+        }
+        
+        sendSuccess(['top_products' => $topProductsData]);
+    }
+    
     // Get daily sales for the specified month/year (last 30 days if current month)
     $dailySales = $db->fetchAll(
         "SELECT 
