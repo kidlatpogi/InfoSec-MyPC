@@ -34,6 +34,8 @@ function getUserData() {
 // Pagination state for all tables
 const paginationState = {
   products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] },
+  orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] }
+};
 
 function prevPage(tableType) {
     const state = paginationState[tableType];
