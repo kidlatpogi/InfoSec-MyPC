@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # Configuration
-TOTAL_ORDERS = 250
+TOTAL_ORDERS = 700
 
 # Ensure MINIMUM representation of each status, then distribute remaining by percentages
 STATUS_DISTRIBUTION = {
