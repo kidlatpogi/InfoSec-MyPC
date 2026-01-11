@@ -275,21 +275,21 @@ INSERT IGNORE INTO `categories` (`name`, `slug`, `description`) VALUES
 -- DEFAULT ADMIN ACCOUNTS
 -- =====================================================
 
--- Admin account - email: admin@mypc.com, password: admin123
+-- Admin account - email: admin@mypc.com, password: @dmin123
 INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
-('admin@mypc.com', '$2y$10$9ogJGajWf62VDgDyGm4i4e1r2lx0.UeI4wxff7u7ROnLlFTPbHgSS', 'Admin', 'User', 'admin', 1);
+('admin@mypc.com', '$2y$10$0ny0qBGAh8neKbyp1I/RPOR0aqazsv4/OIWE99u03Y4.dLRCRZoQK', 'Admin', 'User', 'admin', 1);
 
--- Superadmin account - email: superadmin@mypc.com, password: superadmin123
+-- Superadmin account - email: superadmin@mypc.com, password: @dmin123
 INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
-('superadmin@mypc.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Super', 'Admin', 'superadmin', 1);
+('superadmin@mypc.com', '$2y$10$0ny0qBGAh8neKbyp1I/RPOR0aqazsv4/OIWE99u03Y4.dLRCRZoQK', 'Super', 'Admin', 'superadmin', 1);
 
--- Employee account - email: employee@mypc.com, password: employee123
+-- Employee account - email: employee@mypc.com, password: @dmin123
 INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
-('employee@mypc.com', '$2y$10$E/qI0VKWgkD.UJMYPvXrT.dQJH5JpX0kJH5JpX0kJH5JpX0kJH5Jp', 'Employee', 'User', 'employee', 0);
+('employee@mypc.com', '$2y$10$0ny0qBGAh8neKbyp1I/RPOR0aqazsv4/OIWE99u03Y4.dLRCRZoQK', 'Employee', 'User', 'employee', 0);
 
--- Test customer account - email: customer@mypc.com, password: customer123
+-- Test customer account - email: customer@mypc.com, password: @dmin123
 INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`, `role`, `is_admin`) VALUES
-('customer@mypc.com', '$2y$10$xEvMEV4YwTrZ2Tm/XHaJU.rXl0XJ5VL8pPxK8bnMUwP8bnMUwP8bn', 'Test', 'Customer', 'user', 0);
+('customer@mypc.com', '$2y$10$0ny0qBGAh8neKbyp1I/RPOR0aqazsv4/OIWE99u03Y4.dLRCRZoQK', 'Test', 'Customer', 'user', 0);
 
 -- =====================================================
 -- SAMPLE PRODUCTS DATA
