@@ -189,49 +189,8 @@ try {
         }
     }
 
-    // Get user's orders (or all orders for admin/superadmin/employee)
-    elseif ($method === 'GET' && !isset($_GET['id'])) {
-        // Get current user role
-        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
-        $role = $user['role'] ?? 'user';
-        
-        // Admins, superadmins, and employees can see all orders
-        if (in_array($role, ['admin', 'superadmin', 'employee'])) {
-            $orders = $db->fetchAll(
-                "SELECT o.id, o.user_id, o.status, o.total, o.subtotal, o.shipping, o.tax, o.placed_at as created_at,
-                        u.email as customer_email, CONCAT(u.first_name, ' ', u.last_name) as customer_name
-                 FROM orders o
-                 LEFT JOIN users u ON o.user_id = u.id
-                 ORDER BY o.placed_at DESC"
-            );
-        } else {
-            // Regular users only see their own orders
-            $orders = $db->fetchAll(
-                "SELECT id, status, total, subtotal, shipping, tax, placed_at as created_at
-                 FROM orders
-                 WHERE user_id = ?
-                 ORDER BY placed_at DESC",
-                [$user_id]
-            );
-        }
-
-        // Get items for each order and add order_number
-        foreach ($orders as &$order) {
-            $order['order_number'] = 'ORD-' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
-            
-            $items = $db->fetchAll(
-                "SELECT product_name, variant_title, unit_price, quantity, line_total
-                 FROM order_items
-                 WHERE order_id = ?",
-                [$order['id']]
-            );
-            $order['items'] = $items;
-        }
-
-        sendSuccess(['orders' => $orders]);
-    }
-
     // Get order status summary (count of each status)
+    // NOTE: This must come BEFORE the general GET handler to avoid the statusSummary check being skipped
     elseif ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'statusSummary') {
         // Get current user role
         $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
@@ -296,6 +255,47 @@ try {
         sendSuccess(['status_summary' => $summary]);
     }
 
+    // Get user's orders (or all orders for admin/superadmin/employee)
+    elseif ($method === 'GET' && !isset($_GET['action']) && !isset($_GET['id'])) {
+        // Get current user role
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
+        
+        // Admins, superadmins, and employees can see all orders
+        if (in_array($role, ['admin', 'superadmin', 'employee'])) {
+            $orders = $db->fetchAll(
+                "SELECT id, status, total, subtotal, shipping, tax, placed_at as created_at,
+                        customer_email, customer_name
+                 FROM orders
+                 ORDER BY placed_at DESC"
+            );
+        } else {
+            // Regular users only see their own orders
+            $orders = $db->fetchAll(
+                "SELECT id, status, total, subtotal, shipping, tax, placed_at as created_at
+                 FROM orders
+                 WHERE user_id = ?
+                 ORDER BY placed_at DESC",
+                [$user_id]
+            );
+        }
+
+        // Get items for each order and add order_number
+        foreach ($orders as &$order) {
+            $order['order_number'] = 'ORD-' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
+            
+            $items = $db->fetchAll(
+                "SELECT product_name, variant_title, unit_price, quantity, line_total
+                 FROM order_items
+                 WHERE order_id = ?",
+                [$order['id']]
+            );
+            $order['items'] = $items;
+        }
+
+        sendSuccess(['orders' => $orders]);
+    }
+
     // Get single order details
     elseif ($method === 'GET' && isset($_GET['id'])) {
         $order_id = intval($_GET['id']);
@@ -307,10 +307,7 @@ try {
         // Get order (admins can view any order, users only their own)
         if (in_array($role, ['admin', 'superadmin', 'employee'])) {
             $order = $db->fetchOne(
-                "SELECT o.*, u.email as customer_email, CONCAT(u.first_name, ' ', u.last_name) as customer_name, 
-                        u.phone as customer_phone
-                 FROM orders o
-                 LEFT JOIN users u ON o.user_id = u.id
+                "SELECT o.* FROM orders o
                  WHERE o.id = ?",
                 [$order_id]
             );

@@ -2433,6 +2433,9 @@ async function loadSalesDashboard(year = new Date().getFullYear(), month = new D
     // Update summary cards
     updateSalesSummary(data);
     
+    // Load order status summary
+    await loadOrderStatusSummary();
+    
     // Populate year selector
     populateYearSelector(data.yearly, data.selected_year);
     
