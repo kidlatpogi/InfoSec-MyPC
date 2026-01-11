@@ -35,7 +35,7 @@ function getUserData() {
 const paginationState = {
   users: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
   employees: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
-  products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] },
   orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] }
 };
 
@@ -715,6 +715,7 @@ async function loadProducts() {
 
     // Store all data in pagination state
     paginationState.products.allData = data.products || [];
+    paginationState.products.originalData = data.products || [];
     paginationState.products.totalItems = paginationState.products.allData.length;
     paginationState.products.currentPage = 1;
 
@@ -768,10 +769,10 @@ function filterProductsByCategory() {
   const categoryFilter = document.getElementById('product-category-filter');
   const selectedCategory = categoryFilter ? categoryFilter.value : '';
   
-  if (!paginationState.products.allData) return;
+  if (!paginationState.products.originalData) return;
   
-  // Filter the data based on category
-  let filteredProducts = paginationState.products.allData;
+  // Filter the data based on category from original unfiltered data
+  let filteredProducts = paginationState.products.originalData;
   if (selectedCategory) {
     filteredProducts = filteredProducts.filter(product => 
       product.category_name === selectedCategory
