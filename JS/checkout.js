@@ -88,22 +88,28 @@ async function loadCheckoutData() {
         try {
             const addressesData = await AddressesAPI.getAddresses();
             if (addressesData.addresses && addressesData.addresses.length > 0) {
-                // Get the first address (or primary address)
-                const address = addressesData.addresses[0];
+                // Get the default address or first address
+                let defaultAddress = addressesData.addresses.find(addr => addr.is_default === 1) || addressesData.addresses[0];
                 
                 const addressEl = document.getElementById('address');
                 if (addressEl) {
-                    addressEl.value = `${address.line1}${address.line2 ? ', ' + address.line2 : ''}`;
+                    addressEl.value = `${defaultAddress.line1}${defaultAddress.line2 ? ', ' + defaultAddress.line2 : ''}`;
                 }
 
                 const cityEl = document.getElementById('city');
                 if (cityEl) {
-                    cityEl.value = address.city || '';
+                    cityEl.value = defaultAddress.city || '';
                 }
 
                 const postalEl = document.getElementById('postal');
                 if (postalEl) {
-                    postalEl.value = address.postal_code || '';
+                    postalEl.value = defaultAddress.postal_code || '';
+                }
+
+                // Auto-fill phone from address if available
+                const addressPhoneEl = document.getElementById('phone');
+                if (addressPhoneEl && defaultAddress.phone) {
+                    addressPhoneEl.value = defaultAddress.phone;
                 }
             }
         } catch (error) {
