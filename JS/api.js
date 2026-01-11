@@ -395,9 +395,10 @@ const OrdersAPI = {
         return await apiCall(`sales_analytics.php?action=topProducts${yearParam}`);
     },
     
-    // Get order status summary counts
-    async getOrderStatusSummary() {
-        return await apiCall('orders.php?action=statusSummary');
+    // Get order status summary counts (optional year filter)
+    async getOrderStatusSummary(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`orders.php?action=statusSummary${yearParam}`);
     }
 };
 

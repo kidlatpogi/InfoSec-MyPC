@@ -237,22 +237,45 @@ try {
         $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
         $role = $user['role'] ?? 'user';
         
+        // Get year parameter if provided
+        $year = isset($_GET['year']) ? intval($_GET['year']) : null;
+        
         // Admins, superadmins, and employees can see all order statuses
         if (in_array($role, ['admin', 'superadmin', 'employee'])) {
-            $statusCounts = $db->fetchAll(
-                "SELECT status, COUNT(*) as count
-                 FROM orders
-                 GROUP BY status"
-            );
+            if ($year) {
+                $statusCounts = $db->fetchAll(
+                    "SELECT status, COUNT(*) as count
+                     FROM orders
+                     WHERE YEAR(placed_at) = ?
+                     GROUP BY status",
+                    [$year]
+                );
+            } else {
+                $statusCounts = $db->fetchAll(
+                    "SELECT status, COUNT(*) as count
+                     FROM orders
+                     GROUP BY status"
+                );
+            }
         } else {
             // Regular users only see count of their own orders
-            $statusCounts = $db->fetchAll(
-                "SELECT status, COUNT(*) as count
-                 FROM orders
-                 WHERE user_id = ?
-                 GROUP BY status",
-                [$user_id]
-            );
+            if ($year) {
+                $statusCounts = $db->fetchAll(
+                    "SELECT status, COUNT(*) as count
+                     FROM orders
+                     WHERE user_id = ? AND YEAR(placed_at) = ?
+                     GROUP BY status",
+                    [$user_id, $year]
+                );
+            } else {
+                $statusCounts = $db->fetchAll(
+                    "SELECT status, COUNT(*) as count
+                     FROM orders
+                     WHERE user_id = ?
+                     GROUP BY status",
+                    [$user_id]
+                );
+            }
         }
         
         // Format response with all statuses

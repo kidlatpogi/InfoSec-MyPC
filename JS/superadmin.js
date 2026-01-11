@@ -945,7 +945,7 @@ async function loadOrders() {
 
 async function loadOrderStatusSummary() {
   try {
-    const data = await OrdersAPI.getOrderStatusSummary();
+    const data = await OrdersAPI.getOrderStatusSummary(orderStatusYear);
     const summary = data.status_summary || {};
     
     // Update each status count
@@ -956,9 +956,51 @@ async function loadOrderStatusSummary() {
         countEl.textContent = summary[status] || 0;
       }
     });
+    
+    // Populate year selector from orders data
+    populateOrderStatusYearSelector();
   } catch (error) {
     console.error('Failed to load order status summary:', error);
   }
+}
+
+let orderStatusYear = null; // Store selected year for order status
+
+function populateOrderStatusYearSelector() {
+  const yearSelect = document.getElementById('order-status-year-selector');
+  if (!yearSelect) return;
+  
+  // Extract years from orders data
+  const years = new Set();
+  if (paginationState.orders.allData && paginationState.orders.allData.length > 0) {
+    paginationState.orders.allData.forEach(order => {
+      if (order.created_at) {
+        const year = new Date(order.created_at).getFullYear();
+        years.add(year);
+      }
+    });
+  }
+  
+  const currentYear = new Date().getFullYear();
+  years.add(currentYear);
+  
+  // Sort descending
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  
+  // Keep the "All Years" option and add year options
+  const existingValue = yearSelect.value;
+  yearSelect.innerHTML = '<option value="">All Years</option>' + sortedYears.map(y => 
+    `<option value="${y}">${y}</option>`
+  ).join('');
+  
+  // Set value if it was previously set
+  if (existingValue) yearSelect.value = existingValue;
+  
+  // Add change listener
+  yearSelect.onchange = () => {
+    orderStatusYear = yearSelect.value ? parseInt(yearSelect.value) : null;
+    loadOrderStatusSummary();
+  };
 }
 
 function filterOrders() {
