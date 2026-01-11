@@ -2364,8 +2364,8 @@ function renderDailyChart(dailyData, year, month) {
         {
           label: 'Sales (₱)',
           data: salesData,
-          backgroundColor: 'rgba(45, 45, 45, 0.8)',
-          borderColor: 'rgba(45, 45, 45, 1)',
+          backgroundColor: 'rgba(59, 130, 246, 0.85)',
+          borderColor: 'rgba(59, 130, 246, 1)',
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y'
@@ -2374,13 +2374,13 @@ function renderDailyChart(dailyData, year, month) {
           label: 'Orders',
           data: ordersData,
           type: 'line',
-          borderColor: 'rgba(120, 120, 120, 1)',
-          backgroundColor: 'rgba(120, 120, 120, 0.1)',
+          borderColor: 'rgba(34, 197, 94, 1)',
+          backgroundColor: 'rgba(34, 197, 94, 0.15)',
           borderWidth: 2,
           fill: true,
           tension: 0.4,
           pointRadius: 2,
-          pointBackgroundColor: 'rgba(120, 120, 120, 1)',
+          pointBackgroundColor: 'rgba(34, 197, 94, 1)',
           yAxisID: 'y1'
         }
       ]
