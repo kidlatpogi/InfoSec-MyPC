@@ -2935,7 +2935,7 @@ function populateStatusChartYearSelector(yearlyData, selectedYear) {
 
 async function loadStatusChartData() {
   try {
-    const year = statusChartYear || new Date().getFullYear();
+    const year = statusChartYear; // Pass null/undefined for all years, or specific year number
     const response = await OrdersAPI.getOrdersByStatus(year);
     renderStatusChart(response.sales_by_status);
   } catch (error) {

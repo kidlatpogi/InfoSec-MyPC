@@ -47,19 +47,33 @@ try {
     $month = isset($_GET['month']) ? intval($_GET['month']) : date('n');
     $action = isset($_GET['action']) ? $_GET['action'] : '';
     
-    // Handle specific action: get orders by status for a year
+    // Handle specific action: get orders by status for a year (or all years)
     if ($action === 'ordersByStatus') {
-        $salesByStatus = $db->fetchAll(
-            "SELECT 
-                status,
-                COUNT(*) as order_count,
-                COALESCE(SUM(total), 0) as total_sales
-             FROM orders 
-             WHERE YEAR(placed_at) = ?
-             GROUP BY status
-             ORDER BY order_count DESC",
-            [$year]
-        );
+        if (isset($_GET['year'])) {
+            // Specific year
+            $salesByStatus = $db->fetchAll(
+                "SELECT 
+                    status,
+                    COUNT(*) as order_count,
+                    COALESCE(SUM(total), 0) as total_sales
+                 FROM orders 
+                 WHERE YEAR(placed_at) = ?
+                 GROUP BY status
+                 ORDER BY order_count DESC",
+                [$year]
+            );
+        } else {
+            // All years
+            $salesByStatus = $db->fetchAll(
+                "SELECT 
+                    status,
+                    COUNT(*) as order_count,
+                    COALESCE(SUM(total), 0) as total_sales
+                 FROM orders 
+                 GROUP BY status
+                 ORDER BY order_count DESC"
+            );
+        }
         
         sendSuccess(['sales_by_status' => $salesByStatus]);
     }

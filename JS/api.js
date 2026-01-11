@@ -383,9 +383,10 @@ const OrdersAPI = {
         return await apiCall(`sales_analytics.php?year=${year}&month=${month}`);
     },
     
-    // Get orders by status for a specific year
-    async getOrdersByStatus(year = new Date().getFullYear()) {
-        return await apiCall(`sales_analytics.php?action=ordersByStatus&year=${year}`);
+    // Get orders by status for a specific year (or all years if year is null/undefined)
+    async getOrdersByStatus(year) {
+        const yearParam = year ? `&year=${year}` : '';
+        return await apiCall(`sales_analytics.php?action=ordersByStatus${yearParam}`);
     }
 };
 
