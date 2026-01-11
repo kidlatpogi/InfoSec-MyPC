@@ -362,7 +362,7 @@ async function loadAdmins() {
 
     if (!data.admins || data.admins.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No admins found</td></tr>';
+        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No admins found</td></tr>';
       return;
     }
 
@@ -372,7 +372,6 @@ async function loadAdmins() {
       const createdDate = new Date(admin.created_at).toLocaleDateString();
       const roleColor = admin.role === 'superadmin' ? '#8b5cf6' : '#3b82f6';
       row.innerHTML = `
-                <td>${admin.id}</td>
                 <td>${admin.email}</td>
                 <td>${admin.first_name} ${admin.last_name}</td>
                 <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
@@ -387,7 +386,7 @@ async function loadAdmins() {
   } catch (error) {
     console.error('Failed to load admins:', error);
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load admins</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load admins</td></tr>';
   }
 }
 
@@ -434,7 +433,6 @@ async function loadUsers(includeArchived = null) {
            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Deactivate</button>`;
       
       row.innerHTML = `
-                <td>${user.id}</td>
                 <td>${user.email}</td>
                 <td>${user.first_name} ${user.last_name}</td>
                 <td>${statusBadge}</td>
@@ -493,7 +491,6 @@ async function loadEmployees(includeArchived = null) {
            <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Deactivate</button>`;
       
       row.innerHTML = `
-                <td>${emp.id}</td>
                 <td>${emp.email}</td>
                 <td>${emp.first_name} ${emp.last_name}</td>
                 <td>${statusBadge}</td>
@@ -544,7 +541,7 @@ async function loadProducts() {
   }
 
   tbody.innerHTML =
-    '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
   try {
     console.log('Fetching products...');
@@ -553,7 +550,7 @@ async function loadProducts() {
 
     if (!data.products || data.products.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
       return;
     }
 
@@ -572,7 +569,6 @@ async function loadProducts() {
       );
 
       row.innerHTML = `
-                <td>${index + 1}</td>
                 <td>${product.name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${formatPHP(minPrice)}</td>
@@ -596,7 +592,7 @@ async function loadProducts() {
     console.error('Failed to load products:', error);
     const errorMsg = error.message || 'Unknown error';
     tbody.innerHTML =
-      `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+      `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
   }
 }
 
