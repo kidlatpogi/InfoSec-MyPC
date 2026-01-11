@@ -231,6 +231,48 @@ try {
         sendSuccess(['orders' => $orders]);
     }
 
+    // Get order status summary (count of each status)
+    elseif ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'statusSummary') {
+        // Get current user role
+        $user = $db->fetchOne("SELECT role FROM users WHERE id = ?", [$user_id]);
+        $role = $user['role'] ?? 'user';
+        
+        // Admins, superadmins, and employees can see all order statuses
+        if (in_array($role, ['admin', 'superadmin', 'employee'])) {
+            $statusCounts = $db->fetchAll(
+                "SELECT status, COUNT(*) as count
+                 FROM orders
+                 GROUP BY status"
+            );
+        } else {
+            // Regular users only see count of their own orders
+            $statusCounts = $db->fetchAll(
+                "SELECT status, COUNT(*) as count
+                 FROM orders
+                 WHERE user_id = ?
+                 GROUP BY status",
+                [$user_id]
+            );
+        }
+        
+        // Format response with all statuses
+        $allStatuses = ['pending', 'processing', 'paid', 'shipped', 'completed', 'cancelled', 'refunded'];
+        $summary = [];
+        
+        foreach ($allStatuses as $status) {
+            $count = 0;
+            foreach ($statusCounts as $row) {
+                if ($row['status'] === $status) {
+                    $count = $row['count'];
+                    break;
+                }
+            }
+            $summary[$status] = $count;
+        }
+        
+        sendSuccess(['status_summary' => $summary]);
+    }
+
     // Get single order details
     elseif ($method === 'GET' && isset($_GET['id'])) {
         $order_id = intval($_GET['id']);

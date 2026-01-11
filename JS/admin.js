@@ -858,6 +858,9 @@ async function loadOrders() {
 
     // Update pagination display
     updatePaginationDisplay('orders');
+    
+    // Load and display order status summary
+    loadOrderStatusSummary();
   } catch (error) {
     console.error('Failed to load orders:', error);
     const tbody = document.getElementById('orders-tbody');
@@ -865,6 +868,24 @@ async function loadOrders() {
       tbody.innerHTML =
         '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load orders</td></tr>';
     }
+  }
+}
+
+async function loadOrderStatusSummary() {
+  try {
+    const data = await OrdersAPI.getOrderStatusSummary();
+    const summary = data.status_summary || {};
+    
+    // Update each status count
+    const statuses = ['pending', 'processing', 'paid', 'shipped', 'completed', 'cancelled', 'refunded'];
+    statuses.forEach(status => {
+      const countEl = document.getElementById(`status-${status}-count`);
+      if (countEl) {
+        countEl.textContent = summary[status] || 0;
+      }
+    });
+  } catch (error) {
+    console.error('Failed to load order status summary:', error);
   }
 }
 

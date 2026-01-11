@@ -393,6 +393,11 @@ const OrdersAPI = {
     async getTopProducts(year) {
         const yearParam = year ? `&year=${year}` : '';
         return await apiCall(`sales_analytics.php?action=topProducts${yearParam}`);
+    },
+    
+    // Get order status summary counts
+    async getOrderStatusSummary() {
+        return await apiCall('orders.php?action=statusSummary');
     }
 };
 
