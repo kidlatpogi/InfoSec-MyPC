@@ -495,7 +495,7 @@ async function loadProducts() {
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
         console.log('Fetching products...');
@@ -507,13 +507,73 @@ async function loadProducts() {
         paginationState.products.totalItems = paginationState.products.allData.length;
         paginationState.products.currentPage = 1;
 
+        // Load categories
+        await loadProductCategories();
+
+        // Add event listener to category filter
+        const categoryFilter = document.getElementById('product-category-filter');
+        if (categoryFilter) {
+            categoryFilter.removeEventListener('change', filterProductsByCategory);
+            categoryFilter.addEventListener('change', filterProductsByCategory);
+        }
+
         // Update pagination display
         updatePaginationDisplay('products');
     } catch (error) {
         console.error('Failed to load products:', error);
         const errorMsg = error.message || 'Unknown error';
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
+}
+
+async function loadProductCategories() {
+    try {
+        const data = await ProductsAPI.getCategories();
+        const categoryFilter = document.getElementById('product-category-filter');
+        
+        if (!categoryFilter) return;
+        
+        // Keep the "All Categories" option and add category options
+        const currentValue = categoryFilter.value;
+        categoryFilter.innerHTML = '<option value="">All Categories</option>';
+        
+        if (data.categories && Array.isArray(data.categories)) {
+            data.categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.name;
+                option.textContent = category.name;
+                categoryFilter.appendChild(option);
+            });
+        }
+        
+        // Restore previous selection if it still exists
+        categoryFilter.value = currentValue;
+    } catch (error) {
+        console.error('Failed to load product categories:', error);
+    }
+}
+
+function filterProductsByCategory() {
+    const categoryFilter = document.getElementById('product-category-filter');
+    const selectedCategory = categoryFilter ? categoryFilter.value : '';
+    
+    if (!paginationState.products.allData) return;
+    
+    // Filter the data based on category
+    let filteredProducts = paginationState.products.allData;
+    if (selectedCategory) {
+        filteredProducts = filteredProducts.filter(product => 
+            product.category_name === selectedCategory
+        );
+    }
+    
+    // Update pagination state with filtered data
+    paginationState.products.allData = filteredProducts;
+    paginationState.products.totalItems = filteredProducts.length;
+    paginationState.products.currentPage = 1;
+    
+    // Display first page of filtered results
+    updatePaginationDisplay('products');
 }
 
 async function loadOrders() {
