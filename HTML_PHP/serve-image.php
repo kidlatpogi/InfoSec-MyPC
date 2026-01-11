@@ -38,9 +38,16 @@ $realPath = realpath($filePath);
 $assetsDir = realpath(__DIR__ . '/../assets');
 
 if (!$realPath || strpos($realPath, $assetsDir) !== 0 || !file_exists($realPath)) {
-    // Return placeholder if file not found
+    // Log missing file
+    error_log("Image not found: " . $path . " | Real: " . $realPath . " | Assets: " . $assetsDir);
+    
+    // Try to find a placeholder or return 404
+    // For now, return placeholder color
     http_response_code(404);
+    
+    // Return a simple 1x1 transparent PNG
     header('Content-Type: image/png');
+    echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
     exit;
 }
 

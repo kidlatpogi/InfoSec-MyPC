@@ -74,7 +74,7 @@ try {
 
         // Convert image URLs to use image serving script
         foreach ($images as &$img) {
-            $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+            $img['url'] = '/HTML_PHP/serve-image.php?path=' . urlencode($img['url']);
         }
         unset($img);
         
@@ -220,7 +220,7 @@ try {
             
             // Convert image URLs to use image serving script
             foreach ($images as &$img) {
-                $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+                $img['url'] = '/HTML_PHP/serve-image.php?path=' . urlencode($img['url']);
             }
             unset($img);
             
