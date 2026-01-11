@@ -37,7 +37,7 @@ const paginationState = {
   users: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
   employees: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
   products: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] },
-  orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] },
+  orders: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [], originalData: [] },
   audit: { currentPage: 1, itemsPerPage: 10, totalItems: 0, allData: [] }
 };
 
@@ -896,6 +896,7 @@ async function loadOrders() {
 
     // Store all data and update pagination state
     paginationState.orders.allData = data.orders;
+    paginationState.orders.originalData = data.orders;
     paginationState.orders.totalItems = data.orders.length;
     paginationState.orders.currentPage = 1;
 
@@ -912,11 +913,11 @@ function filterOrders() {
   const statusFilter = document.getElementById('order-status-filter');
   const selectedStatus = statusFilter ? statusFilter.value : '';
   
-  if (!paginationState.orders.allData) return;
+  if (!paginationState.orders.originalData) return;
   
-  let filteredOrders = paginationState.orders.allData;
+  let filteredOrders = paginationState.orders.originalData;
   
-  // Filter by status if selected
+  // Filter by status if selected from original unfiltered data
   if (selectedStatus) {
     filteredOrders = filteredOrders.filter(order => order.status === selectedStatus);
   }
