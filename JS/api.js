@@ -43,13 +43,23 @@ async function apiCall(endpoint, options = {}) {
             throw new Error(`Server returned invalid JSON. Response: ${text.substring(0, 200)}`);
         }
 
+        // Handle 401 Unauthorized (not logged in) - this is expected behavior
+        if (response.status === 401) {
+            const error = new Error(data.error || 'Not logged in');
+            error.status = 401;
+            throw error;
+        }
+
         if (!data.success) {
             throw new Error(data.error || 'API request failed');
         }
 
         return data;
     } catch (error) {
-        console.error(`API Error (${endpoint}):`, error);
+        // Only log as error if it's not a 401 (which is expected for non-logged-in users)
+        if (error.status !== 401) {
+            console.error(`API Error (${endpoint}):`, error);
+        }
         throw error;
     }
 }

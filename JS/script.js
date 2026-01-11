@@ -1239,8 +1239,6 @@ async function initializePageScript() {
       '[initializePageScript] Found cart-toggle, attaching click listener'
     );
     cartToggle.addEventListener('click', openCart);
-  } else {
-    console.warn('[initializePageScript] cart-toggle not found');
   }
 
   const closeBtn = document.querySelectorAll('#close-cart');
@@ -1275,8 +1273,6 @@ async function initializePageScript() {
   if (productModalClose) {
     console.log('[initializePageScript] Found product-modal-close button');
     productModalClose.addEventListener('click', closeProductDetail);
-  } else {
-    console.warn('[initializePageScript] product-modal-close button not found');
   }
 
   const productModalBackdrop = document.getElementById(
@@ -1285,8 +1281,6 @@ async function initializePageScript() {
   if (productModalBackdrop) {
     console.log('[initializePageScript] Found product-modal-backdrop');
     productModalBackdrop.addEventListener('click', closeProductDetail);
-  } else {
-    console.warn('[initializePageScript] product-modal-backdrop not found');
   }
 
   console.log('[initializePageScript] Page initialization complete');
