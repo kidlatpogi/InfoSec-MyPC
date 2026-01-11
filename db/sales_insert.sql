@@ -1,4808 +1,718 @@
 -- =====================================================
--- MyPC Database - Sales Data (Orders & Order Items)
+-- MyPC Database - Sales Orders (2024-2026)
 -- =====================================================
--- Generated: 2026-01-11 10:08:20
--- Contains 450 orders (300 from 2025, 150 from 2026)
--- Run this after mypc_complete.sql and users_insert.sql
+-- Generated: 2026-01-11 12:07:46
+-- Total Orders: 700
+-- Status Distribution:
+--   Completed: 40%
+--   Processing: 15%
+--   Shipped: 15%
+--   Paid: 10%
+--   Pending: 10%
+--   Cancelled: 7%
+--   Refunded: 3%
 -- =====================================================
 
 USE mypc_db;
 
-SET FOREIGN_KEY_CHECKS = 0;
-
--- =====================================================
--- INSERT ORDERS
--- =====================================================
-
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000001', u.id, 'completed', 162370.00, 0.00, 19484.40, 181854.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-11-10 09:32:00', '2025-11-10 09:32:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000002', u.id, 'completed', 101470.00, 0.00, 12176.40, 113646.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '369 Session Road, Baguio City, Benguet, 2600', '2025-11-23 01:32:00', '2025-11-23 01:32:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000003', u.id, 'completed', 141775.00, 0.00, 17013.00, 158788.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 924 890 1234', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-01-17 15:28:00', '2025-01-17 15:28:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000004', u.id, 'completed', 121185.00, 0.00, 14542.20, 135727.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-11-12 09:38:00', '2025-11-12 09:38:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000005', u.id, 'completed', 60490.00, 0.00, 7258.80, 67748.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-25 10:19:00', '2025-12-25 10:19:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000006', u.id, 'completed', 112280.00, 0.00, 13473.60, 125753.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-22 14:25:00', '2025-12-22 14:25:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000007', u.id, 'completed', 176470.00, 0.00, 21176.40, 197646.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-03-31 19:52:00', '2025-03-31 19:52:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000008', u.id, 'completed', 85985.00, 0.00, 10318.20, 96303.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-03-27 12:18:00', '2025-03-27 12:18:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000009', u.id, 'cancelled', 16995.00, 0.00, 2039.40, 19034.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-01-29 02:21:00', '2025-01-29 02:21:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000010', u.id, 'cancelled', 190465.00, 0.00, 22855.80, 213320.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-06-09 01:49:00', '2025-06-09 01:49:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000011', u.id, 'cancelled', 159180.00, 0.00, 19101.60, 178281.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-04-14 17:51:00', '2025-04-14 17:51:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000012', u.id, 'completed', 105680.00, 0.00, 12681.60, 118361.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-05-11 11:50:00', '2025-05-11 11:50:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000013', u.id, 'completed', 177375.00, 0.00, 21285.00, 198660.00, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 925 901 2345', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-04-08 21:25:00', '2025-04-08 21:25:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000014', u.id, 'completed', 84980.00, 0.00, 10197.60, 95177.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-11-10 09:54:00', '2025-11-10 09:54:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000015', u.id, 'completed', 226365.00, 0.00, 27163.80, 253528.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-12-20 07:45:00', '2025-12-20 07:45:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000016', u.id, 'completed', 173380.00, 0.00, 20805.60, 194185.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-10-02 15:17:00', '2025-10-02 15:17:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000017', u.id, 'completed', 172170.00, 0.00, 20660.40, 192830.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-01-25 12:04:00', '2025-01-25 12:04:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000018', u.id, 'completed', 110980.00, 0.00, 13317.60, 124297.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-08-22 10:59:00', '2025-08-22 10:59:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000019', u.id, 'completed', 130075.00, 0.00, 15609.00, 145684.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '369 Session Road, Baguio City, Benguet, 2600', '2025-03-10 01:25:00', '2025-03-10 01:25:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000020', u.id, 'completed', 108075.00, 0.00, 12969.00, 121044.00, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-12-12 00:51:00', '2025-12-12 00:51:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000021', u.id, 'cancelled', 188870.00, 0.00, 22664.40, 211534.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-05-05 18:00:00', '2025-05-05 18:00:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000022', u.id, 'cancelled', 198175.00, 0.00, 23781.00, 221956.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 924 890 1234', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-15 14:01:00', '2025-06-15 14:01:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000023', u.id, 'completed', 53585.00, 0.00, 6430.20, 60015.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-02-02 15:16:00', '2025-02-02 15:16:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000024', u.id, 'cancelled', 95480.00, 0.00, 11457.60, 106937.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-01-18 12:15:00', '2025-01-18 12:15:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000025', u.id, 'cancelled', 75990.00, 0.00, 9118.80, 85108.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-12 04:34:00', '2025-04-12 04:34:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000026', u.id, 'completed', 63285.00, 0.00, 7594.20, 70879.20, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 922 678 9012', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-09-26 14:55:00', '2025-09-26 14:55:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000027', u.id, 'completed', 193975.00, 0.00, 23277.00, 217252.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-11-08 19:47:00', '2025-11-08 19:47:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000028', u.id, 'completed', 37990.00, 0.00, 4558.80, 42548.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-02-10 16:51:00', '2025-02-10 16:51:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000029', u.id, 'completed', 46495.00, 0.00, 5579.40, 52074.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 924 890 1234', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-09 00:13:00', '2025-06-09 00:13:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000030', u.id, 'completed', 129585.00, 0.00, 15550.20, 145135.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-11-26 01:30:00', '2025-11-26 01:30:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000031', u.id, 'completed', 217170.00, 0.00, 26060.40, 243230.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 917 123 4567', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-11-30 10:34:00', '2025-11-30 10:34:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000032', u.id, 'completed', 216575.00, 0.00, 25989.00, 242564.00, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-09-23 07:02:00', '2025-09-23 07:02:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000033', u.id, 'completed', 38990.00, 0.00, 4678.80, 43668.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-10-23 23:35:00', '2025-10-23 23:35:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000034', u.id, 'completed', 51195.00, 0.00, 6143.40, 57338.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-06-06 16:00:00', '2025-06-06 16:00:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000035', u.id, 'completed', 34990.00, 0.00, 4198.80, 39188.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-01-23 06:05:00', '2025-01-23 06:05:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000036', u.id, 'completed', 235365.00, 0.00, 28243.80, 263608.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 924 890 1234', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-08-16 22:33:00', '2025-08-16 22:33:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000037', u.id, 'completed', 111785.00, 0.00, 13414.20, 125199.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 923 789 0123', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-02-20 19:49:00', '2025-02-20 19:49:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000038', u.id, 'completed', 79085.00, 0.00, 9490.20, 88575.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-03-11 09:48:00', '2025-03-11 09:48:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000039', u.id, 'completed', 125680.00, 0.00, 15081.60, 140761.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-04-05 19:53:00', '2025-04-05 19:53:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000040', u.id, 'completed', 229370.00, 0.00, 27524.40, 256894.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-01-21 04:39:00', '2025-01-21 04:39:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000041', u.id, 'completed', 204375.00, 0.00, 24525.00, 228900.00, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-01-11 20:37:00', '2025-01-11 20:37:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000042', u.id, 'completed', 268765.00, 0.00, 32251.80, 301016.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 919 345 6789', '369 Session Road, Baguio City, Benguet, 2600', '2025-09-30 07:49:00', '2025-09-30 07:49:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000043', u.id, 'completed', 180975.00, 0.00, 21717.00, 202692.00, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-03 17:48:00', '2025-04-03 17:48:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000044', u.id, 'completed', 136465.00, 0.00, 16375.80, 152840.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-11-19 18:11:00', '2025-11-19 18:11:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000045', u.id, 'completed', 196170.00, 0.00, 23540.40, 219710.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-02-24 21:46:00', '2025-02-24 21:46:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000046', u.id, 'cancelled', 84985.00, 0.00, 10198.20, 95183.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-10-17 02:28:00', '2025-10-17 02:28:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000047', u.id, 'cancelled', 184275.00, 0.00, 22113.00, 206388.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '369 Session Road, Baguio City, Benguet, 2600', '2025-04-10 14:16:00', '2025-04-10 14:16:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000048', u.id, 'completed', 27995.00, 0.00, 3359.40, 31354.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-02-28 09:22:00', '2025-02-28 09:22:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000049', u.id, 'completed', 73485.00, 0.00, 8818.20, 82303.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-21 23:58:00', '2025-02-21 23:58:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000050', u.id, 'completed', 37990.00, 0.00, 4558.80, 42548.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '369 Session Road, Baguio City, Benguet, 2600', '2025-09-05 20:29:00', '2025-09-05 20:29:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000051', u.id, 'completed', 132175.00, 0.00, 15861.00, 148036.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-07-24 02:12:00', '2025-07-24 02:12:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000052', u.id, 'completed', 149180.00, 0.00, 17901.60, 167081.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-09-08 04:49:00', '2025-09-08 04:49:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000053', u.id, 'completed', 177875.00, 0.00, 21345.00, 199220.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-11-23 05:53:00', '2025-11-23 05:53:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000054', u.id, 'completed', 193870.00, 0.00, 23264.40, 217134.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-08-19 22:27:00', '2025-08-19 22:27:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000055', u.id, 'completed', 100990.00, 0.00, 12118.80, 113108.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-12-31 14:36:00', '2025-12-31 14:36:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000056', u.id, 'completed', 121185.00, 0.00, 14542.20, 135727.20, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-30 20:34:00', '2025-12-30 20:34:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000057', u.id, 'completed', 157680.00, 0.00, 18921.60, 176601.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-04-05 23:42:00', '2025-04-05 23:42:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000058', u.id, 'completed', 89085.00, 0.00, 10690.20, 99775.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-10-09 00:44:00', '2025-10-09 00:44:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000059', u.id, 'cancelled', 165875.00, 0.00, 19905.00, 185780.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-10-24 10:00:00', '2025-10-24 10:00:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000060', u.id, 'completed', 83590.00, 0.00, 10030.80, 93620.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-21 03:05:00', '2025-04-21 03:05:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000061', u.id, 'completed', 165770.00, 0.00, 19892.40, 185662.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-10-16 16:44:00', '2025-10-16 16:44:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000062', u.id, 'cancelled', 115285.00, 0.00, 13834.20, 129119.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 919 345 6789', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-25 05:55:00', '2025-06-25 05:55:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000063', u.id, 'completed', 141165.00, 0.00, 16939.80, 158104.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-03-06 22:33:00', '2025-03-06 22:33:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000064', u.id, 'cancelled', 137275.00, 0.00, 16473.00, 153748.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '369 Session Road, Baguio City, Benguet, 2600', '2025-03-28 02:31:00', '2025-03-28 02:31:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000065', u.id, 'completed', 165275.00, 0.00, 19833.00, 185108.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-09-27 06:50:00', '2025-09-27 06:50:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000066', u.id, 'completed', 16995.00, 0.00, 2039.40, 19034.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-09-06 18:05:00', '2025-09-06 18:05:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000067', u.id, 'completed', 204965.00, 0.00, 24595.80, 229560.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '369 Session Road, Baguio City, Benguet, 2600', '2025-08-17 20:52:00', '2025-08-17 20:52:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000068', u.id, 'cancelled', 39390.00, 0.00, 4726.80, 44116.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-03-03 12:00:00', '2025-03-03 12:00:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000069', u.id, 'cancelled', 16995.00, 0.00, 2039.40, 19034.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-05-23 06:45:00', '2025-05-23 06:45:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000070', u.id, 'completed', 132070.00, 0.00, 15848.40, 147918.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 922 678 9012', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-01-26 02:01:00', '2025-01-26 02:01:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000071', u.id, 'completed', 107380.00, 0.00, 12885.60, 120265.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-09-17 06:56:00', '2025-09-17 06:56:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000072', u.id, 'cancelled', 113085.00, 0.00, 13570.20, 126655.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '369 Session Road, Baguio City, Benguet, 2600', '2025-04-14 20:54:00', '2025-04-14 20:54:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000073', u.id, 'cancelled', 94380.00, 0.00, 11325.60, 105705.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 923 789 0123', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-02-27 11:12:00', '2025-02-27 11:12:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000074', u.id, 'completed', 194675.00, 0.00, 23361.00, 218036.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 918 234 5678', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-05-18 06:11:00', '2025-05-18 06:11:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000075', u.id, 'completed', 175370.00, 0.00, 21044.40, 196414.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 921 567 8901', '369 Session Road, Baguio City, Benguet, 2600', '2025-08-25 03:27:00', '2025-08-25 03:27:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000076', u.id, 'completed', 122380.00, 0.00, 14685.60, 137065.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-10-04 11:46:00', '2025-10-04 11:46:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000077', u.id, 'completed', 157465.00, 0.00, 18895.80, 176360.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-03-25 17:42:00', '2025-03-25 17:42:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000078', u.id, 'completed', 31795.00, 0.00, 3815.40, 35610.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 922 678 9012', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-26 13:26:00', '2025-02-26 13:26:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000079', u.id, 'completed', 84190.00, 0.00, 10102.80, 94292.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-05-07 12:28:00', '2025-05-07 12:28:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000080', u.id, 'completed', 105785.00, 0.00, 12694.20, 118479.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-11-24 13:42:00', '2025-11-24 13:42:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000081', u.id, 'completed', 73990.00, 0.00, 8878.80, 82868.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-04-17 23:33:00', '2025-04-17 23:33:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000082', u.id, 'completed', 30990.00, 0.00, 3718.80, 34708.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-04-03 10:31:00', '2025-04-03 10:31:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000083', u.id, 'completed', 102185.00, 0.00, 12262.20, 114447.20, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 924 890 1234', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-06-18 04:26:00', '2025-06-18 04:26:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000084', u.id, 'completed', 131970.00, 0.00, 15836.40, 147806.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 921 567 8901', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-11-21 05:08:00', '2025-11-21 05:08:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000085', u.id, 'cancelled', 49985.00, 0.00, 5998.20, 55983.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-09-12 13:22:00', '2025-09-12 13:22:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000086', u.id, 'completed', 235370.00, 0.00, 28244.40, 263614.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 924 890 1234', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-10-30 07:00:00', '2025-10-30 07:00:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000087', u.id, 'completed', 109975.00, 0.00, 13197.00, 123172.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-11-12 00:28:00', '2025-11-12 00:28:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000088', u.id, 'completed', 219970.00, 0.00, 26396.40, 246366.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-05-11 13:39:00', '2025-05-11 13:39:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000089', u.id, 'completed', 70280.00, 0.00, 8433.60, 78713.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 918 234 5678', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-12-19 13:52:00', '2025-12-19 13:52:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000090', u.id, 'completed', 115380.00, 0.00, 13845.60, 129225.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-06 05:39:00', '2025-05-06 05:39:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000091', u.id, 'completed', 33190.00, 0.00, 3982.80, 37172.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 917 123 4567', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-11-24 14:39:00', '2025-11-24 14:39:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000092', u.id, 'completed', 203770.00, 0.00, 24452.40, 228222.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-01-27 04:28:00', '2025-01-27 04:28:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000093', u.id, 'cancelled', 37990.00, 0.00, 4558.80, 42548.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-16 10:36:00', '2025-06-16 10:36:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000094', u.id, 'completed', 145780.00, 0.00, 17493.60, 163273.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-06-12 08:15:00', '2025-06-12 08:15:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000095', u.id, 'completed', 91775.00, 0.00, 11013.00, 102788.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-02-02 15:55:00', '2025-02-02 15:55:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000096', u.id, 'cancelled', 245970.00, 0.00, 29516.40, 275486.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-05-02 18:18:00', '2025-05-02 18:18:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000097', u.id, 'completed', 153975.00, 0.00, 18477.00, 172452.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 918 234 5678', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-10-14 10:43:00', '2025-10-14 10:43:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000098', u.id, 'completed', 71185.00, 0.00, 8542.20, 79727.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-07-12 15:55:00', '2025-07-12 15:55:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000099', u.id, 'completed', 37290.00, 0.00, 4474.80, 41764.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-09-01 06:13:00', '2025-09-01 06:13:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000100', u.id, 'completed', 33990.00, 0.00, 4078.80, 38068.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 917 123 4567', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-07-31 14:28:00', '2025-07-31 14:28:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000101', u.id, 'completed', 130485.00, 0.00, 15658.20, 146143.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 921 567 8901', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-09-19 05:17:00', '2025-09-19 05:17:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000102', u.id, 'completed', 185470.00, 0.00, 22256.40, 207726.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-22 17:43:00', '2025-06-22 17:43:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000103', u.id, 'completed', 145980.00, 0.00, 17517.60, 163497.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-23 16:02:00', '2025-12-23 16:02:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000104', u.id, 'completed', 200775.00, 0.00, 24093.00, 224868.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-10-02 08:39:00', '2025-10-02 08:39:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000105', u.id, 'cancelled', 19495.00, 0.00, 2339.40, 21834.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-07-28 04:54:00', '2025-07-28 04:54:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000106', u.id, 'completed', 102785.00, 0.00, 12334.20, 115119.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-06-28 01:48:00', '2025-06-28 01:48:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000107', u.id, 'completed', 73990.00, 0.00, 8878.80, 82868.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 923 789 0123', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-07-15 22:36:00', '2025-07-15 22:36:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000108', u.id, 'completed', 30990.00, 0.00, 3718.80, 34708.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-01-28 21:51:00', '2025-01-28 21:51:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000109', u.id, 'completed', 24195.00, 0.00, 2903.40, 27098.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-08 11:04:00', '2025-04-08 11:04:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000110', u.id, 'completed', 247765.00, 0.00, 29731.80, 277496.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 924 890 1234', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-11-18 14:17:00', '2025-11-18 14:17:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000111', u.id, 'cancelled', 84285.00, 0.00, 10114.20, 94399.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-09-14 15:53:00', '2025-09-14 15:53:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000112', u.id, 'completed', 26795.00, 0.00, 3215.40, 30010.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-07-18 03:16:00', '2025-07-18 03:16:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000113', u.id, 'completed', 167475.00, 0.00, 20097.00, 187572.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 924 890 1234', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-01-14 14:32:00', '2025-01-14 14:32:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000114', u.id, 'completed', 15295.00, 0.00, 1835.40, 17130.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 921 567 8901', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-11-20 08:03:00', '2025-11-20 08:03:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000115', u.id, 'cancelled', 88985.00, 0.00, 10678.20, 99663.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-01-11 08:54:00', '2025-01-11 08:54:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000116', u.id, 'completed', 53990.00, 0.00, 6478.80, 60468.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-02-18 08:56:00', '2025-02-18 08:56:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000117', u.id, 'completed', 83590.00, 0.00, 10030.80, 93620.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-09-22 08:42:00', '2025-09-22 08:42:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000118', u.id, 'completed', 46990.00, 0.00, 5638.80, 52628.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-03-21 06:58:00', '2025-03-21 06:58:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000119', u.id, 'completed', 148270.00, 0.00, 17792.40, 166062.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-03-02 02:03:00', '2025-03-02 02:03:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000120', u.id, 'cancelled', 134975.00, 0.00, 16197.00, 151172.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-06-10 10:26:00', '2025-06-10 10:26:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000121', u.id, 'completed', 123180.00, 0.00, 14781.60, 137961.60, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-10-09 10:00:00', '2025-10-09 10:00:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000122', u.id, 'completed', 95570.00, 0.00, 11468.40, 107038.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-09 06:52:00', '2025-05-09 06:52:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000123', u.id, 'completed', 65490.00, 0.00, 7858.80, 73348.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-01-28 15:27:00', '2025-01-28 15:27:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000124', u.id, 'completed', 85985.00, 0.00, 10318.20, 96303.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-08-09 14:21:00', '2025-08-09 14:21:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000125', u.id, 'completed', 97590.00, 0.00, 11710.80, 109300.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-05-01 16:57:00', '2025-05-01 16:57:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000126', u.id, 'completed', 104380.00, 0.00, 12525.60, 116905.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-10-26 18:42:00', '2025-10-26 18:42:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000127', u.id, 'completed', 18295.00, 0.00, 2195.40, 20490.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-07-20 10:21:00', '2025-07-20 10:21:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000128', u.id, 'cancelled', 116475.00, 0.00, 13977.00, 130452.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 921 567 8901', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-04-15 03:33:00', '2025-04-15 03:33:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000129', u.id, 'completed', 58990.00, 0.00, 7078.80, 66068.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 925 901 2345', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-05 13:29:00', '2025-06-05 13:29:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000130', u.id, 'completed', 111080.00, 0.00, 13329.60, 124409.60, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-06-17 22:15:00', '2025-06-17 22:15:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000131', u.id, 'completed', 104980.00, 0.00, 12597.60, 117577.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '369 Session Road, Baguio City, Benguet, 2600', '2025-09-21 15:21:00', '2025-09-21 15:21:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000132', u.id, 'completed', 28990.00, 0.00, 3478.80, 32468.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-04-24 14:04:00', '2025-04-24 14:04:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000133', u.id, 'cancelled', 47985.00, 0.00, 5758.20, 53743.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-11-05 04:03:00', '2025-11-05 04:03:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000134', u.id, 'completed', 18995.00, 0.00, 2279.40, 21274.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 923 789 0123', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-07-17 00:30:00', '2025-07-17 00:30:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000135', u.id, 'completed', 275560.00, 0.00, 33067.20, 308627.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-08-22 08:26:00', '2025-08-22 08:26:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000136', u.id, 'completed', 129785.00, 0.00, 15574.20, 145359.20, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 921 567 8901', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-11-11 09:43:00', '2025-11-11 09:43:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000137', u.id, 'cancelled', 44795.00, 0.00, 5375.40, 50170.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-11-04 03:13:00', '2025-11-04 03:13:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000138', u.id, 'completed', 259270.00, 0.00, 31112.40, 290382.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 923 789 0123', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-04-19 12:41:00', '2025-04-19 12:41:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000139', u.id, 'completed', 51990.00, 0.00, 6238.80, 58228.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 917 123 4567', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-01-19 08:10:00', '2025-01-19 08:10:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000140', u.id, 'cancelled', 54485.00, 0.00, 6538.20, 61023.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-06-16 21:01:00', '2025-06-16 21:01:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000141', u.id, 'completed', 57990.00, 0.00, 6958.80, 64948.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-06-17 21:34:00', '2025-06-17 21:34:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000142', u.id, 'completed', 165865.00, 0.00, 19903.80, 185768.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-12-03 07:22:00', '2025-12-03 07:22:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000143', u.id, 'completed', 124975.00, 0.00, 14997.00, 139972.00, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-02-20 04:18:00', '2025-02-20 04:18:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000144', u.id, 'completed', 65990.00, 0.00, 7918.80, 73908.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-03-24 05:51:00', '2025-03-24 05:51:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000145', u.id, 'completed', 45995.00, 0.00, 5519.40, 51514.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-06-22 13:40:00', '2025-06-22 13:40:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000146', u.id, 'cancelled', 158180.00, 0.00, 18981.60, 177161.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-16 08:48:00', '2025-12-16 08:48:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000147', u.id, 'completed', 263170.00, 0.00, 31580.40, 294750.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-01-12 07:35:00', '2025-01-12 07:35:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000148', u.id, 'cancelled', 162570.00, 0.00, 19508.40, 182078.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-11-07 15:56:00', '2025-11-07 15:56:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000149', u.id, 'completed', 134985.00, 0.00, 16198.20, 151183.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-04-06 19:49:00', '2025-04-06 19:49:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000150', u.id, 'completed', 244165.00, 0.00, 29299.80, 273464.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 921 567 8901', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-02-04 19:28:00', '2025-02-04 19:28:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000151', u.id, 'completed', 95990.00, 0.00, 11518.80, 107508.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-10 14:44:00', '2025-02-10 14:44:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000152', u.id, 'completed', 44795.00, 0.00, 5375.40, 50170.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-01-11 02:33:00', '2025-01-11 02:33:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000153', u.id, 'completed', 28990.00, 0.00, 3478.80, 32468.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-08-23 10:46:00', '2025-08-23 10:46:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000154', u.id, 'completed', 68390.00, 0.00, 8206.80, 76596.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-02-23 13:35:00', '2025-02-23 13:35:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000155', u.id, 'cancelled', 126875.00, 0.00, 15225.00, 142100.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-01-18 22:23:00', '2025-01-18 22:23:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000156', u.id, 'completed', 30590.00, 0.00, 3670.80, 34260.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-12-14 18:07:00', '2025-12-14 18:07:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000157', u.id, 'completed', 122575.00, 0.00, 14709.00, 137284.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-07-02 21:02:00', '2025-07-02 21:02:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000158', u.id, 'completed', 178770.00, 0.00, 21452.40, 200222.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 923 789 0123', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-09-20 08:55:00', '2025-09-20 08:55:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000159', u.id, 'completed', 136370.00, 0.00, 16364.40, 152734.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-07-02 14:30:00', '2025-07-02 14:30:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000160', u.id, 'completed', 46495.00, 0.00, 5579.40, 52074.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 923 789 0123', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-06-08 19:34:00', '2025-06-08 19:34:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000161', u.id, 'cancelled', 50495.00, 0.00, 6059.40, 56554.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-01-16 04:26:00', '2025-01-16 04:26:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000162', u.id, 'completed', 83590.00, 0.00, 10030.80, 93620.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-11-21 10:51:00', '2025-11-21 10:51:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000163', u.id, 'completed', 169975.00, 0.00, 20397.00, 190372.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-08-08 20:36:00', '2025-08-08 20:36:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000164', u.id, 'completed', 49995.00, 0.00, 5999.40, 55994.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-02 08:53:00', '2025-02-02 08:53:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000165', u.id, 'completed', 135775.00, 0.00, 16293.00, 152068.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 920 456 7890', '369 Session Road, Baguio City, Benguet, 2600', '2025-05-14 06:22:00', '2025-05-14 06:22:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000166', u.id, 'completed', 117480.00, 0.00, 14097.60, 131577.60, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-06-23 21:26:00', '2025-06-23 21:26:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000167', u.id, 'completed', 85485.00, 0.00, 10258.20, 95743.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-16 23:43:00', '2025-12-16 23:43:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000168', u.id, 'completed', 26795.00, 0.00, 3215.40, 30010.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-05-14 03:19:00', '2025-05-14 03:19:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000169', u.id, 'completed', 113380.00, 0.00, 13605.60, 126985.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-10-14 20:49:00', '2025-10-14 20:49:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000170', u.id, 'completed', 131780.00, 0.00, 15813.60, 147593.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-06-22 03:43:00', '2025-06-22 03:43:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000171', u.id, 'completed', 74990.00, 0.00, 8998.80, 83988.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-01-23 08:31:00', '2025-01-23 08:31:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000172', u.id, 'cancelled', 257970.00, 0.00, 30956.40, 288926.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-11-08 06:45:00', '2025-11-08 06:45:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000173', u.id, 'completed', 72190.00, 0.00, 8662.80, 80852.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-10-19 23:02:00', '2025-10-19 23:02:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000174', u.id, 'completed', 73985.00, 0.00, 8878.20, 82863.20, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-11-29 09:07:00', '2025-11-29 09:07:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000175', u.id, 'completed', 126180.00, 0.00, 15141.60, 141321.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-10-05 06:59:00', '2025-10-05 06:59:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000176', u.id, 'cancelled', 209770.00, 0.00, 25172.40, 234942.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-05-16 22:17:00', '2025-05-16 22:17:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000177', u.id, 'completed', 52585.00, 0.00, 6310.20, 58895.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 924 890 1234', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-09-12 20:20:00', '2025-09-12 20:20:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000178', u.id, 'completed', 64785.00, 0.00, 7774.20, 72559.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-02-17 20:44:00', '2025-02-17 20:44:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000179', u.id, 'completed', 156075.00, 0.00, 18729.00, 174804.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-04-14 01:38:00', '2025-04-14 01:38:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000180', u.id, 'cancelled', 121380.00, 0.00, 14565.60, 135945.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-01-25 17:07:00', '2025-01-25 17:07:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000181', u.id, 'completed', 86480.00, 0.00, 10377.60, 96857.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-01-10 11:16:00', '2025-01-10 11:16:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000182', u.id, 'completed', 87985.00, 0.00, 10558.20, 98543.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 918 234 5678', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-11-27 07:51:00', '2025-11-27 07:51:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000183', u.id, 'completed', 29990.00, 0.00, 3598.80, 33588.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 922 678 9012', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-26 18:14:00', '2025-12-26 18:14:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000184', u.id, 'completed', 196370.00, 0.00, 23564.40, 219934.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-01-18 21:20:00', '2025-01-18 21:20:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000185', u.id, 'cancelled', 112570.00, 0.00, 13508.40, 126078.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-08-09 12:00:00', '2025-08-09 12:00:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000186', u.id, 'completed', 123980.00, 0.00, 14877.60, 138857.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 919 345 6789', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-11-29 12:46:00', '2025-11-29 12:46:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000187', u.id, 'cancelled', 105780.00, 0.00, 12693.60, 118473.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 923 789 0123', '369 Session Road, Baguio City, Benguet, 2600', '2025-03-30 04:15:00', '2025-03-30 04:15:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000188', u.id, 'completed', 90585.00, 0.00, 10870.20, 101455.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-05-04 19:49:00', '2025-05-04 19:49:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000189', u.id, 'completed', 77385.00, 0.00, 9286.20, 86671.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 919 345 6789', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-12-03 09:08:00', '2025-12-03 09:08:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000190', u.id, 'completed', 193070.00, 0.00, 23168.40, 216238.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 917 123 4567', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-03-05 15:48:00', '2025-03-05 15:48:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000191', u.id, 'completed', 68480.00, 0.00, 8217.60, 76697.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-01-30 07:18:00', '2025-01-30 07:18:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000192', u.id, 'completed', 30990.00, 0.00, 3718.80, 34708.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 921 567 8901', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-04-23 20:16:00', '2025-04-23 20:16:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000193', u.id, 'cancelled', 134480.00, 0.00, 16137.60, 150617.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-06-13 00:11:00', '2025-06-13 00:11:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000194', u.id, 'completed', 132075.00, 0.00, 15849.00, 147924.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 917 123 4567', '369 Session Road, Baguio City, Benguet, 2600', '2025-11-02 02:27:00', '2025-11-02 02:27:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000195', u.id, 'completed', 48790.00, 0.00, 5854.80, 54644.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-17 18:19:00', '2025-05-17 18:19:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000196', u.id, 'completed', 86880.00, 0.00, 10425.60, 97305.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 925 901 2345', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-05-03 05:00:00', '2025-05-03 05:00:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000197', u.id, 'completed', 14995.00, 0.00, 1799.40, 16794.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-07-04 14:57:00', '2025-07-04 14:57:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000198', u.id, 'completed', 40790.00, 0.00, 4894.80, 45684.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-07-13 19:31:00', '2025-07-13 19:31:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000199', u.id, 'completed', 224170.00, 0.00, 26900.40, 251070.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-21 15:01:00', '2025-05-21 15:01:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000200', u.id, 'completed', 156765.00, 0.00, 18811.80, 175576.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-10-02 22:07:00', '2025-10-02 22:07:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000201', u.id, 'completed', 70980.00, 0.00, 8517.60, 79497.60, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-09-30 03:30:00', '2025-09-30 03:30:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000202', u.id, 'completed', 135985.00, 0.00, 16318.20, 152303.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 918 234 5678', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-07-16 17:55:00', '2025-07-16 17:55:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000203', u.id, 'completed', 145875.00, 0.00, 17505.00, 163380.00, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-09-04 17:40:00', '2025-09-04 17:40:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000204', u.id, 'completed', 257770.00, 0.00, 30932.40, 288702.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-08 22:06:00', '2025-06-08 22:06:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000205', u.id, 'completed', 198570.00, 0.00, 23828.40, 222398.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-12 03:56:00', '2025-05-12 03:56:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000206', u.id, 'completed', 57685.00, 0.00, 6922.20, 64607.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-05-13 05:51:00', '2025-05-13 05:51:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000207', u.id, 'completed', 66190.00, 0.00, 7942.80, 74132.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 921 567 8901', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-06-10 05:26:00', '2025-06-10 05:26:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000208', u.id, 'completed', 190070.00, 0.00, 22808.40, 212878.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-08-13 04:28:00', '2025-08-13 04:28:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000209', u.id, 'completed', 88075.00, 0.00, 10569.00, 98644.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-11-20 15:19:00', '2025-11-20 15:19:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000210', u.id, 'completed', 255570.00, 0.00, 30668.40, 286238.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-02-12 10:34:00', '2025-02-12 10:34:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000211', u.id, 'completed', 201165.00, 0.00, 24139.80, 225304.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-11 06:54:00', '2025-12-11 06:54:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000212', u.id, 'completed', 50685.00, 0.00, 6082.20, 56767.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 926 012 3456', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-09-08 06:01:00', '2025-09-08 06:01:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000213', u.id, 'completed', 183775.00, 0.00, 22053.00, 205828.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 918 234 5678', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-02-08 02:11:00', '2025-02-08 02:11:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000214', u.id, 'cancelled', 29990.00, 0.00, 3598.80, 33588.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 922 678 9012', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-12 14:48:00', '2025-06-12 14:48:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000215', u.id, 'completed', 79990.00, 0.00, 9598.80, 89588.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-11-27 00:53:00', '2025-11-27 00:53:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000216', u.id, 'completed', 217170.00, 0.00, 26060.40, 243230.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-09-20 15:42:00', '2025-09-20 15:42:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000217', u.id, 'cancelled', 151375.00, 0.00, 18165.00, 169540.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-09 00:23:00', '2025-04-09 00:23:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000218', u.id, 'completed', 117280.00, 0.00, 14073.60, 131353.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-09-23 05:42:00', '2025-09-23 05:42:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000219', u.id, 'cancelled', 15495.00, 0.00, 1859.40, 17354.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-05-31 23:54:00', '2025-05-31 23:54:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000220', u.id, 'completed', 232165.00, 0.00, 27859.80, 260024.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-09-13 08:58:00', '2025-09-13 08:58:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000221', u.id, 'completed', 70980.00, 0.00, 8517.60, 79497.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 926 012 3456', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-02-05 14:00:00', '2025-02-05 14:00:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000222', u.id, 'cancelled', 91990.00, 0.00, 11038.80, 103028.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-04-13 01:05:00', '2025-04-13 01:05:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000223', u.id, 'completed', 139375.00, 0.00, 16725.00, 156100.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-10-04 23:19:00', '2025-10-04 23:19:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000224', u.id, 'completed', 186875.00, 0.00, 22425.00, 209300.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-09-24 13:39:00', '2025-09-24 13:39:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000225', u.id, 'completed', 125775.00, 0.00, 15093.00, 140868.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-10-03 00:21:00', '2025-10-03 00:21:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000226', u.id, 'cancelled', 138380.00, 0.00, 16605.60, 154985.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-03-29 21:20:00', '2025-03-29 21:20:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000227', u.id, 'completed', 179375.00, 0.00, 21525.00, 200900.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-10-25 08:45:00', '2025-10-25 08:45:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000228', u.id, 'completed', 96880.00, 0.00, 11625.60, 108505.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 922 678 9012', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-07-14 07:52:00', '2025-07-14 07:52:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000229', u.id, 'completed', 160375.00, 0.00, 19245.00, 179620.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-04-08 09:51:00', '2025-04-08 09:51:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000230', u.id, 'cancelled', 89590.00, 0.00, 10750.80, 100340.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-01 13:05:00', '2025-06-01 13:05:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000231', u.id, 'cancelled', 94390.00, 0.00, 11326.80, 105716.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-01-01 07:43:00', '2025-01-01 07:43:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000232', u.id, 'completed', 149365.00, 0.00, 17923.80, 167288.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-07-28 07:56:00', '2025-07-28 07:56:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000233', u.id, 'completed', 95785.00, 0.00, 11494.20, 107279.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-09-28 22:30:00', '2025-09-28 22:30:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000234', u.id, 'completed', 203970.00, 0.00, 24476.40, 228446.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-12-31 05:53:00', '2025-12-31 05:53:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000235', u.id, 'completed', 47195.00, 0.00, 5663.40, 52858.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-02-22 19:43:00', '2025-02-22 19:43:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000236', u.id, 'completed', 81690.00, 0.00, 9802.80, 91492.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 926 012 3456', '369 Session Road, Baguio City, Benguet, 2600', '2025-03-20 22:09:00', '2025-03-20 22:09:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000237', u.id, 'completed', 36995.00, 0.00, 4439.40, 41434.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-08-28 12:44:00', '2025-08-28 12:44:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000238', u.id, 'completed', 144470.00, 0.00, 17336.40, 161806.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 922 678 9012', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-05 05:29:00', '2025-06-05 05:29:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000239', u.id, 'completed', 83985.00, 0.00, 10078.20, 94063.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 923 789 0123', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-06-03 12:57:00', '2025-06-03 12:57:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000240', u.id, 'completed', 29990.00, 0.00, 3598.80, 33588.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 922 678 9012', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-11-13 14:05:00', '2025-11-13 14:05:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000241', u.id, 'completed', 37990.00, 0.00, 4558.80, 42548.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-18 13:06:00', '2025-12-18 13:06:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000242', u.id, 'completed', 32790.00, 0.00, 3934.80, 36724.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-04-07 04:22:00', '2025-04-07 04:22:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000243', u.id, 'completed', 16495.00, 0.00, 1979.40, 18474.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-02-01 23:08:00', '2025-02-01 23:08:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000244', u.id, 'completed', 237560.00, 0.00, 28507.20, 266067.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '369 Session Road, Baguio City, Benguet, 2600', '2025-06-01 05:07:00', '2025-06-01 05:07:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000245', u.id, 'cancelled', 168480.00, 0.00, 20217.60, 188697.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 923 789 0123', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-08-08 06:38:00', '2025-08-08 06:38:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000246', u.id, 'completed', 76390.00, 0.00, 9166.80, 85556.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-01 08:58:00', '2025-06-01 08:58:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000247', u.id, 'completed', 65985.00, 0.00, 7918.20, 73903.20, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 919 345 6789', '369 Session Road, Baguio City, Benguet, 2600', '2025-01-02 15:05:00', '2025-01-02 15:05:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000248', u.id, 'completed', 98375.00, 0.00, 11805.00, 110180.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 918 234 5678', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-06-13 06:13:00', '2025-06-13 06:13:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000249', u.id, 'completed', 188975.00, 0.00, 22677.00, 211652.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-23 22:42:00', '2025-12-23 22:42:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000250', u.id, 'completed', 170965.00, 0.00, 20515.80, 191480.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-03-11 02:33:00', '2025-03-11 02:33:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000251', u.id, 'completed', 115080.00, 0.00, 13809.60, 128889.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-09-22 10:48:00', '2025-09-22 10:48:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000252', u.id, 'cancelled', 100980.00, 0.00, 12117.60, 113097.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-10 05:05:00', '2025-02-10 05:05:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000253', u.id, 'completed', 26995.00, 0.00, 3239.40, 30234.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-07-04 04:03:00', '2025-07-04 04:03:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000254', u.id, 'completed', 74685.00, 0.00, 8962.20, 83647.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-07-20 11:59:00', '2025-07-20 11:59:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000255', u.id, 'completed', 49990.00, 0.00, 5998.80, 55988.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-02-16 13:18:00', '2025-02-16 13:18:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000256', u.id, 'completed', 26795.00, 0.00, 3215.40, 30010.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-06-19 04:26:00', '2025-06-19 04:26:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000257', u.id, 'cancelled', 172765.00, 0.00, 20731.80, 193496.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2025-04-13 10:33:00', '2025-04-13 10:33:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000258', u.id, 'completed', 192865.00, 0.00, 23143.80, 216008.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 924 890 1234', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-01-06 03:56:00', '2025-01-06 03:56:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000259', u.id, 'cancelled', 233360.00, 0.00, 28003.20, 261363.20, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-02-06 19:54:00', '2025-02-06 19:54:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000260', u.id, 'completed', 224565.00, 0.00, 26947.80, 251512.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 919 345 6789', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-02-22 00:19:00', '2025-02-22 00:19:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000261', u.id, 'completed', 112365.00, 0.00, 13483.80, 125848.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-07-11 21:55:00', '2025-07-11 21:55:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000262', u.id, 'completed', 221070.00, 0.00, 26528.40, 247598.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 921 567 8901', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-09-22 19:41:00', '2025-09-22 19:41:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000263', u.id, 'cancelled', 143580.00, 0.00, 17229.60, 160809.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 919 345 6789', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-06-04 18:53:00', '2025-06-04 18:53:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000264', u.id, 'cancelled', 44795.00, 0.00, 5375.40, 50170.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-08-09 20:30:00', '2025-08-09 20:30:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000265', u.id, 'completed', 41795.00, 0.00, 5015.40, 46810.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 922 678 9012', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-03-30 15:52:00', '2025-03-30 15:52:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000266', u.id, 'completed', 112585.00, 0.00, 13510.20, 126095.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-06-30 20:09:00', '2025-06-30 20:09:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000267', u.id, 'completed', 24195.00, 0.00, 2903.40, 27098.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 926 012 3456', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-07-03 11:10:00', '2025-07-03 11:10:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000268', u.id, 'completed', 79385.00, 0.00, 9526.20, 88911.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 917 123 4567', '369 Session Road, Baguio City, Benguet, 2600', '2025-12-24 03:44:00', '2025-12-24 03:44:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000269', u.id, 'completed', 115980.00, 0.00, 13917.60, 129897.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-06-18 07:00:00', '2025-06-18 07:00:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000270', u.id, 'completed', 143580.00, 0.00, 17229.60, 160809.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-12-29 08:10:00', '2025-12-29 08:10:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000271', u.id, 'completed', 110780.00, 0.00, 13293.60, 124073.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-05-07 15:12:00', '2025-05-07 15:12:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000272', u.id, 'completed', 136780.00, 0.00, 16413.60, 153193.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 918 234 5678', '369 Session Road, Baguio City, Benguet, 2600', '2025-02-04 05:29:00', '2025-02-04 05:29:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000273', u.id, 'completed', 76390.00, 0.00, 9166.80, 85556.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-10-27 21:25:00', '2025-10-27 21:25:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000274', u.id, 'completed', 193475.00, 0.00, 23217.00, 216692.00, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-10-03 15:02:00', '2025-10-03 15:02:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000275', u.id, 'completed', 119485.00, 0.00, 14338.20, 133823.20, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-12-03 13:19:00', '2025-12-03 13:19:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000276', u.id, 'completed', 229770.00, 0.00, 27572.40, 257342.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 919 345 6789', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2025-09-16 19:29:00', '2025-09-16 19:29:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000277', u.id, 'completed', 69990.00, 0.00, 8398.80, 78388.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-10-05 21:00:00', '2025-10-05 21:00:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000278', u.id, 'completed', 86980.00, 0.00, 10437.60, 97417.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-02-02 23:49:00', '2025-02-02 23:49:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000279', u.id, 'completed', 138485.00, 0.00, 16618.20, 155103.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-08-18 19:48:00', '2025-08-18 19:48:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000280', u.id, 'completed', 203970.00, 0.00, 24476.40, 228446.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '369 Session Road, Baguio City, Benguet, 2600', '2025-11-06 10:48:00', '2025-11-06 10:48:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000281', u.id, 'completed', 111285.00, 0.00, 13354.20, 124639.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 922 678 9012', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-08-27 16:19:00', '2025-08-27 16:19:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000282', u.id, 'completed', 133180.00, 0.00, 15981.60, 149161.60, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-09-05 00:55:00', '2025-09-05 00:55:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000283', u.id, 'completed', 279360.00, 0.00, 33523.20, 312883.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2025-12-09 18:26:00', '2025-12-09 18:26:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000284', u.id, 'completed', 14995.00, 0.00, 1799.40, 16794.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2025-01-15 08:39:00', '2025-01-15 08:39:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000285', u.id, 'completed', 56390.00, 0.00, 6766.80, 63156.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-08-30 21:43:00', '2025-08-30 21:43:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000286', u.id, 'completed', 30590.00, 0.00, 3670.80, 34260.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2025-06-26 00:38:00', '2025-06-26 00:38:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000287', u.id, 'completed', 100780.00, 0.00, 12093.60, 112873.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-07-05 10:25:00', '2025-07-05 10:25:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000288', u.id, 'completed', 235560.00, 0.00, 28267.20, 263827.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 922 678 9012', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-06-23 05:03:00', '2025-06-23 05:03:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000289', u.id, 'completed', 199470.00, 0.00, 23936.40, 223406.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 919 345 6789', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-05-26 02:04:00', '2025-05-26 02:04:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000290', u.id, 'completed', 56185.00, 0.00, 6742.20, 62927.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-03-10 11:05:00', '2025-03-10 11:05:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000291', u.id, 'completed', 142375.00, 0.00, 17085.00, 159460.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-04-11 12:10:00', '2025-04-11 12:10:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000292', u.id, 'completed', 207360.00, 0.00, 24883.20, 232243.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2025-12-26 03:47:00', '2025-12-26 03:47:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000293', u.id, 'completed', 17495.00, 0.00, 2099.40, 19594.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-12-22 15:49:00', '2025-12-22 15:49:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000294', u.id, 'cancelled', 91690.00, 0.00, 11002.80, 102692.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-12-05 15:48:00', '2025-12-05 15:48:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000295', u.id, 'completed', 185175.00, 0.00, 22221.00, 207396.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-12-14 22:11:00', '2025-12-14 22:11:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000296', u.id, 'completed', 192370.00, 0.00, 23084.40, 215454.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 919 345 6789', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2025-07-29 22:34:00', '2025-07-29 22:34:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000297', u.id, 'completed', 138870.00, 0.00, 16664.40, 155534.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2025-04-06 04:45:00', '2025-04-06 04:45:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000298', u.id, 'completed', 123080.00, 0.00, 14769.60, 137849.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2025-03-28 05:04:00', '2025-03-28 05:04:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000299', u.id, 'completed', 93580.00, 0.00, 11229.60, 104809.60, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2025-06-15 16:42:00', '2025-06-15 16:42:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000300', u.id, 'completed', 162665.00, 0.00, 19519.80, 182184.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '369 Session Road, Baguio City, Benguet, 2600', '2025-10-16 08:44:00', '2025-10-16 08:44:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000301', u.id, 'processing', 179575.00, 0.00, 21549.00, 201124.00, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-11 03:01:00', '2026-01-11 03:01:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000302', u.id, 'processing', 153180.00, 0.00, 18381.60, 171561.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 922 678 9012', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-09 22:43:00', '2026-01-09 22:43:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000303', u.id, 'completed', 115980.00, 0.00, 13917.60, 129897.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 922 678 9012', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-01 22:49:00', '2026-01-01 22:49:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000304', u.id, 'completed', 143370.00, 0.00, 17204.40, 160574.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 926 012 3456', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-05 19:00:00', '2026-01-05 19:00:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000305', u.id, 'completed', 108585.00, 0.00, 13030.20, 121615.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-01 11:41:00', '2026-01-01 11:41:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000306', u.id, 'shipped', 156970.00, 0.00, 18836.40, 175806.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-08 23:20:00', '2026-01-08 23:20:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000307', u.id, 'completed', 36995.00, 0.00, 4439.40, 41434.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-04 16:56:00', '2026-01-04 16:56:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000308', u.id, 'completed', 192965.00, 0.00, 23155.80, 216120.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-07 06:13:00', '2026-01-07 06:13:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000309', u.id, 'completed', 53590.00, 0.00, 6430.80, 60020.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 923 789 0123', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-04 03:39:00', '2026-01-04 03:39:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000310', u.id, 'completed', 196770.00, 0.00, 23612.40, 220382.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-01 16:02:00', '2026-01-01 16:02:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000311', u.id, 'processing', 141780.00, 0.00, 17013.60, 158793.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 919 345 6789', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-06 10:29:00', '2026-01-06 10:29:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000312', u.id, 'completed', 59985.00, 0.00, 7198.20, 67183.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-04 22:30:00', '2026-01-04 22:30:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000313', u.id, 'completed', 130785.00, 0.00, 15694.20, 146479.20, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 923 789 0123', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-08 14:24:00', '2026-01-08 14:24:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000314', u.id, 'completed', 152775.00, 0.00, 18333.00, 171108.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 918 234 5678', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-11 10:46:00', '2026-01-11 10:46:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000315', u.id, 'completed', 33190.00, 0.00, 3982.80, 37172.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 922 678 9012', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-07 01:10:00', '2026-01-07 01:10:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000316', u.id, 'completed', 26995.00, 0.00, 3239.40, 30234.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-10 09:42:00', '2026-01-10 09:42:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000317', u.id, 'completed', 135175.00, 0.00, 16221.00, 151396.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-03 22:15:00', '2026-01-03 22:15:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000318', u.id, 'processing', 45995.00, 0.00, 5519.40, 51514.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 918 234 5678', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-05 21:29:00', '2026-01-05 21:29:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000319', u.id, 'processing', 141470.00, 0.00, 16976.40, 158446.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 917 123 4567', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-09 20:03:00', '2026-01-09 20:03:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000320', u.id, 'completed', 173275.00, 0.00, 20793.00, 194068.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-06 22:21:00', '2026-01-06 22:21:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000321', u.id, 'shipped', 187870.00, 0.00, 22544.40, 210414.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 922 678 9012', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-03 22:09:00', '2026-01-03 22:09:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000322', u.id, 'shipped', 54990.00, 0.00, 6598.80, 61588.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 919 345 6789', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-03 21:35:00', '2026-01-03 21:35:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000323', u.id, 'shipped', 152475.00, 0.00, 18297.00, 170772.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-03 11:40:00', '2026-01-03 11:40:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000324', u.id, 'completed', 41195.00, 0.00, 4943.40, 46138.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-10 09:48:00', '2026-01-10 09:48:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000325', u.id, 'completed', 13795.00, 0.00, 1655.40, 15450.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 918 234 5678', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-11 06:17:00', '2026-01-11 06:17:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000326', u.id, 'shipped', 124985.00, 0.00, 14998.20, 139983.20, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 919 345 6789', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-02 13:30:00', '2026-01-02 13:30:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000327', u.id, 'processing', 34990.00, 0.00, 4198.80, 39188.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 923 789 0123', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-09 12:23:00', '2026-01-09 12:23:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000328', u.id, 'completed', 86385.00, 0.00, 10366.20, 96751.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-03 09:21:00', '2026-01-03 09:21:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000329', u.id, 'completed', 148475.00, 0.00, 17817.00, 166292.00, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 921 567 8901', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-07 01:48:00', '2026-01-07 01:48:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000330', u.id, 'completed', 157465.00, 0.00, 18895.80, 176360.80, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-05 08:57:00', '2026-01-05 08:57:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000331', u.id, 'completed', 91080.00, 0.00, 10929.60, 102009.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-06 00:25:00', '2026-01-06 00:25:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000332', u.id, 'shipped', 152170.00, 0.00, 18260.40, 170430.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-11 23:35:00', '2026-01-11 23:35:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000333', u.id, 'completed', 122585.00, 0.00, 14710.20, 137295.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 922 678 9012', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-08 19:42:00', '2026-01-08 19:42:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000334', u.id, 'shipped', 172580.00, 0.00, 20709.60, 193289.60, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 922 678 9012', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-06 07:50:00', '2026-01-06 07:50:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000335', u.id, 'completed', 219470.00, 0.00, 26336.40, 245806.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 919 345 6789', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-11 11:11:00', '2026-01-11 11:11:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000336', u.id, 'completed', 190470.00, 0.00, 22856.40, 213326.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-03 13:04:00', '2026-01-03 13:04:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000337', u.id, 'completed', 70685.00, 0.00, 8482.20, 79167.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-08 08:09:00', '2026-01-08 08:09:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000338', u.id, 'completed', 140780.00, 0.00, 16893.60, 157673.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-01 16:23:00', '2026-01-01 16:23:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000339', u.id, 'shipped', 37990.00, 0.00, 4558.80, 42548.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 921 567 8901', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-11 15:38:00', '2026-01-11 15:38:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000340', u.id, 'completed', 134485.00, 0.00, 16138.20, 150623.20, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-01 02:57:00', '2026-01-01 02:57:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000341', u.id, 'shipped', 199470.00, 0.00, 23936.40, 223406.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 921 567 8901', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-02 06:16:00', '2026-01-02 06:16:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000342', u.id, 'completed', 132475.00, 0.00, 15897.00, 148372.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-07 05:23:00', '2026-01-07 05:23:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000343', u.id, 'shipped', 79990.00, 0.00, 9598.80, 89588.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 918 234 5678', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-10 08:19:00', '2026-01-10 08:19:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000344', u.id, 'completed', 36390.00, 0.00, 4366.80, 40756.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-07 19:17:00', '2026-01-07 19:17:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000345', u.id, 'processing', 80885.00, 0.00, 9706.20, 90591.20, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-04 05:07:00', '2026-01-04 05:07:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000346', u.id, 'completed', 75990.00, 0.00, 9118.80, 85108.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-10 13:38:00', '2026-01-10 13:38:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000347', u.id, 'completed', 69585.00, 0.00, 8350.20, 77935.20, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 926 012 3456', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-07 18:51:00', '2026-01-07 18:51:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000348', u.id, 'completed', 164570.00, 0.00, 19748.40, 184318.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-06 21:46:00', '2026-01-06 21:46:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000349', u.id, 'completed', 187475.00, 0.00, 22497.00, 209972.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 919 345 6789', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-06 14:08:00', '2026-01-06 14:08:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000350', u.id, 'completed', 139980.00, 0.00, 16797.60, 156777.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-10 07:12:00', '2026-01-10 07:12:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000351', u.id, 'completed', 76390.00, 0.00, 9166.80, 85556.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-08 05:49:00', '2026-01-08 05:49:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000352', u.id, 'completed', 39390.00, 0.00, 4726.80, 44116.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-03 21:24:00', '2026-01-03 21:24:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000353', u.id, 'completed', 197570.00, 0.00, 23708.40, 221278.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 919 345 6789', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-08 17:53:00', '2026-01-08 17:53:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000354', u.id, 'completed', 106585.00, 0.00, 12790.20, 119375.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-02 10:14:00', '2026-01-02 10:14:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000355', u.id, 'shipped', 250265.00, 0.00, 30031.80, 280296.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-03 02:45:00', '2026-01-03 02:45:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000356', u.id, 'shipped', 181765.00, 0.00, 21811.80, 203576.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-02 00:40:00', '2026-01-02 00:40:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000357', u.id, 'processing', 168175.00, 0.00, 20181.00, 188356.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-07 01:10:00', '2026-01-07 01:10:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000358', u.id, 'processing', 94390.00, 0.00, 11326.80, 105716.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-04 03:30:00', '2026-01-04 03:30:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000359', u.id, 'completed', 175580.00, 0.00, 21069.60, 196649.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-08 03:09:00', '2026-01-08 03:09:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000360', u.id, 'shipped', 266960.00, 0.00, 32035.20, 298995.20, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-08 21:51:00', '2026-01-08 21:51:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000361', u.id, 'shipped', 179770.00, 0.00, 21572.40, 201342.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-05 15:36:00', '2026-01-05 15:36:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000362', u.id, 'shipped', 39995.00, 0.00, 4799.40, 44794.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-01 23:35:00', '2026-01-01 23:35:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000363', u.id, 'completed', 252970.00, 0.00, 30356.40, 283326.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 924 890 1234', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-05 20:29:00', '2026-01-05 20:29:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000364', u.id, 'shipped', 71980.00, 0.00, 8637.60, 80617.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 922 678 9012', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-05 19:29:00', '2026-01-05 19:29:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000365', u.id, 'completed', 150075.00, 0.00, 18009.00, 168084.00, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 919 345 6789', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-06 21:43:00', '2026-01-06 21:43:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000366', u.id, 'completed', 122870.00, 0.00, 14744.40, 137614.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-10 10:57:00', '2026-01-10 10:57:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000367', u.id, 'shipped', 49995.00, 0.00, 5999.40, 55994.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 926 012 3456', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-10 17:57:00', '2026-01-10 17:57:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000368', u.id, 'processing', 45995.00, 0.00, 5519.40, 51514.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-10 23:50:00', '2026-01-10 23:50:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000369', u.id, 'processing', 29990.00, 0.00, 3598.80, 33588.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-05 03:01:00', '2026-01-05 03:01:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000370', u.id, 'completed', 63790.00, 0.00, 7654.80, 71444.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-10 07:16:00', '2026-01-10 07:16:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000371', u.id, 'processing', 76590.00, 0.00, 9190.80, 85780.80, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 923 789 0123', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-04 13:59:00', '2026-01-04 13:59:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000372', u.id, 'completed', 64990.00, 0.00, 7798.80, 72788.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-07 18:17:00', '2026-01-07 18:17:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000373', u.id, 'completed', 165375.00, 0.00, 19845.00, 185220.00, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 920 456 7890', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-02 01:20:00', '2026-01-02 01:20:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000374', u.id, 'completed', 140980.00, 0.00, 16917.60, 157897.60, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 920 456 7890', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-07 15:58:00', '2026-01-07 15:58:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000375', u.id, 'shipped', 177670.00, 0.00, 21320.40, 198990.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-08 10:16:00', '2026-01-08 10:16:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000376', u.id, 'completed', 108780.00, 0.00, 13053.60, 121833.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-02 17:39:00', '2026-01-02 17:39:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000377', u.id, 'shipped', 81985.00, 0.00, 9838.20, 91823.20, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-05 10:49:00', '2026-01-05 10:49:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000378', u.id, 'completed', 132370.00, 0.00, 15884.40, 148254.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-01 14:53:00', '2026-01-01 14:53:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000379', u.id, 'completed', 57490.00, 0.00, 6898.80, 64388.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 919 345 6789', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-03 17:49:00', '2026-01-03 17:49:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000380', u.id, 'completed', 118980.00, 0.00, 14277.60, 133257.60, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 924 890 1234', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-07 22:20:00', '2026-01-07 22:20:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000381', u.id, 'shipped', 148380.00, 0.00, 17805.60, 166185.60, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 921 567 8901', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-07 05:56:00', '2026-01-07 05:56:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000382', u.id, 'completed', 14995.00, 0.00, 1799.40, 16794.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-03 16:01:00', '2026-01-03 16:01:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000383', u.id, 'completed', 111285.00, 0.00, 13354.20, 124639.20, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-05 18:43:00', '2026-01-05 18:43:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000384', u.id, 'shipped', 48795.00, 0.00, 5855.40, 54650.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-10 20:15:00', '2026-01-10 20:15:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000385', u.id, 'shipped', 209970.00, 0.00, 25196.40, 235166.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-03 00:49:00', '2026-01-03 00:49:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000386', u.id, 'processing', 59785.00, 0.00, 7174.20, 66959.20, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 924 890 1234', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-09 23:35:00', '2026-01-09 23:35:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000387', u.id, 'processing', 36590.00, 0.00, 4390.80, 40980.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-01 17:01:00', '2026-01-01 17:01:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000388', u.id, 'completed', 132280.00, 0.00, 15873.60, 148153.60, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-09 09:27:00', '2026-01-09 09:27:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000389', u.id, 'processing', 265565.00, 0.00, 31867.80, 297432.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-07 15:31:00', '2026-01-07 15:31:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000390', u.id, 'completed', 194575.00, 0.00, 23349.00, 217924.00, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-09 11:01:00', '2026-01-09 11:01:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000391', u.id, 'completed', 169375.00, 0.00, 20325.00, 189700.00, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-08 04:36:00', '2026-01-08 04:36:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000392', u.id, 'shipped', 108385.00, 0.00, 13006.20, 121391.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-02 09:44:00', '2026-01-02 09:44:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000393', u.id, 'completed', 135375.00, 0.00, 16245.00, 151620.00, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-05 03:08:00', '2026-01-05 03:08:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000394', u.id, 'processing', 27590.00, 0.00, 3310.80, 30900.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 918 234 5678', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-10 00:17:00', '2026-01-10 00:17:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000395', u.id, 'completed', 81790.00, 0.00, 9814.80, 91604.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 925 901 2345', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-10 12:28:00', '2026-01-10 12:28:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000396', u.id, 'completed', 168970.00, 0.00, 20276.40, 189246.40, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 922 678 9012', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-09 01:44:00', '2026-01-09 01:44:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000397', u.id, 'completed', 161365.00, 0.00, 19363.80, 180728.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-11 12:07:00', '2026-01-11 12:07:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000398', u.id, 'completed', 158270.00, 0.00, 18992.40, 177262.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 918 234 5678', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-09 01:28:00', '2026-01-09 01:28:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000399', u.id, 'completed', 118680.00, 0.00, 14241.60, 132921.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-09 01:41:00', '2026-01-09 01:41:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000400', u.id, 'shipped', 14995.00, 0.00, 1799.40, 16794.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 924 890 1234', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-09 07:52:00', '2026-01-09 07:52:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000401', u.id, 'completed', 143165.00, 0.00, 17179.80, 160344.80, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-06 10:22:00', '2026-01-06 10:22:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000402', u.id, 'processing', 82390.00, 0.00, 9886.80, 92276.80, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-07 21:47:00', '2026-01-07 21:47:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000403', u.id, 'processing', 209170.00, 0.00, 25100.40, 234270.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 922 678 9012', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-06 08:09:00', '2026-01-06 08:09:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000404', u.id, 'completed', 116470.00, 0.00, 13976.40, 130446.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 920 456 7890', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-03 02:19:00', '2026-01-03 02:19:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000405', u.id, 'shipped', 228165.00, 0.00, 27379.80, 255544.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 922 678 9012', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-05 12:26:00', '2026-01-05 12:26:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000406', u.id, 'completed', 83580.00, 0.00, 10029.60, 93609.60, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 925 901 2345', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-04 13:59:00', '2026-01-04 13:59:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000407', u.id, 'completed', 150575.00, 0.00, 18069.00, 168644.00, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-09 21:38:00', '2026-01-09 21:38:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000408', u.id, 'completed', 82390.00, 0.00, 9886.80, 92276.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-04 15:18:00', '2026-01-04 15:18:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000409', u.id, 'shipped', 47195.00, 0.00, 5663.40, 52858.40, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-11 06:38:00', '2026-01-11 06:38:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000410', u.id, 'processing', 73990.00, 0.00, 8878.80, 82868.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 919 345 6789', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-04 22:47:00', '2026-01-04 22:47:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000411', u.id, 'completed', 100990.00, 0.00, 12118.80, 113108.80, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-04 03:57:00', '2026-01-04 03:57:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000412', u.id, 'processing', 178970.00, 0.00, 21476.40, 200446.40, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 923 789 0123', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-02 09:46:00', '2026-01-02 09:46:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000413', u.id, 'completed', 27995.00, 0.00, 3359.40, 31354.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 923 789 0123', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-11 01:18:00', '2026-01-11 01:18:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000414', u.id, 'completed', 155565.00, 0.00, 18667.80, 174232.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 925 901 2345', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-03 18:16:00', '2026-01-03 18:16:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000415', u.id, 'completed', 103380.00, 0.00, 12405.60, 115785.60, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 926 012 3456', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-09 03:51:00', '2026-01-09 03:51:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000416', u.id, 'completed', 77680.00, 0.00, 9321.60, 87001.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 925 901 2345', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-10 05:38:00', '2026-01-10 05:38:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000417', u.id, 'completed', 95980.00, 0.00, 11517.60, 107497.60, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 926 012 3456', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-08 15:45:00', '2026-01-08 15:45:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000418', u.id, 'completed', 181580.00, 0.00, 21789.60, 203369.60, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 925 901 2345', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-10 16:05:00', '2026-01-10 16:05:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000419', u.id, 'completed', 48285.00, 0.00, 5794.20, 54079.20, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 924 890 1234', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-02 18:17:00', '2026-01-02 18:17:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000420', u.id, 'completed', 168175.00, 0.00, 20181.00, 188356.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 921 567 8901', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-07 06:15:00', '2026-01-07 06:15:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000421', u.id, 'shipped', 150670.00, 0.00, 18080.40, 168750.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 924 890 1234', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-01 06:51:00', '2026-01-01 06:51:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000422', u.id, 'completed', 115185.00, 0.00, 13822.20, 129007.20, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 919 345 6789', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-03 02:18:00', '2026-01-03 02:18:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000423', u.id, 'shipped', 16995.00, 0.00, 2039.40, 19034.40, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-06 16:57:00', '2026-01-06 16:57:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000424', u.id, 'shipped', 45995.00, 0.00, 5519.40, 51514.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 926 012 3456', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-08 03:50:00', '2026-01-08 03:50:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000425', u.id, 'completed', 30590.00, 0.00, 3670.80, 34260.80, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 924 890 1234', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-01 07:51:00', '2026-01-01 07:51:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000426', u.id, 'completed', 45995.00, 0.00, 5519.40, 51514.40, 'Araceli Miranda', 'araceli.miranda5@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-06 20:26:00', '2026-01-06 20:26:00'
-FROM users u WHERE u.email = 'araceli.miranda5@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000427', u.id, 'completed', 234770.00, 0.00, 28172.40, 262942.40, 'Antonio Gonzalez', 'antonio.gonzalez1@mypc.com', '+63 926 012 3456', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-11 04:51:00', '2026-01-11 04:51:00'
-FROM users u WHERE u.email = 'antonio.gonzalez1@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000428', u.id, 'processing', 195365.00, 0.00, 23443.80, 218808.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 925 901 2345', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-01 19:03:00', '2026-01-01 19:03:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000429', u.id, 'processing', 144175.00, 0.00, 17301.00, 161476.00, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 921 567 8901', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-04 13:59:00', '2026-01-04 13:59:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000430', u.id, 'completed', 266965.00, 0.00, 32035.80, 299000.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 920 456 7890', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-10 06:24:00', '2026-01-10 06:24:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000431', u.id, 'shipped', 104185.00, 0.00, 12502.20, 116687.20, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 921 567 8901', '789 Mabini Street, Manila, Metro Manila, 1000', '2026-01-06 15:34:00', '2026-01-06 15:34:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000432', u.id, 'shipped', 23495.00, 0.00, 2819.40, 26314.40, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 920 456 7890', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-06 23:52:00', '2026-01-06 23:52:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000433', u.id, 'shipped', 155375.00, 0.00, 18645.00, 174020.00, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 920 456 7890', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-03 12:50:00', '2026-01-03 12:50:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000434', u.id, 'processing', 85990.00, 0.00, 10318.80, 96308.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 919 345 6789', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-06 11:40:00', '2026-01-06 11:40:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000435', u.id, 'completed', 36990.00, 0.00, 4438.80, 41428.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 918 234 5678', '456 Bonifacio Avenue, Quezon City, Metro Manila, 1100', '2026-01-04 08:42:00', '2026-01-04 08:42:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000436', u.id, 'processing', 53085.00, 0.00, 6370.20, 59455.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 920 456 7890', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-04 20:48:00', '2026-01-04 20:48:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000437', u.id, 'completed', 62985.00, 0.00, 7558.20, 70543.20, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 924 890 1234', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-09 11:51:00', '2026-01-09 11:51:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000438', u.id, 'processing', 27590.00, 0.00, 3310.80, 30900.80, 'Rosa Solntseff', 'rosa.solntseff7@mypc.com', '+63 924 890 1234', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-03 21:56:00', '2026-01-03 21:56:00'
-FROM users u WHERE u.email = 'rosa.solntseff7@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000439', u.id, 'completed', 171370.00, 0.00, 20564.40, 191934.40, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 918 234 5678', '654 Aguinaldo Highway, Cavite City, Cavite, 4100', '2026-01-01 08:59:00', '2026-01-01 08:59:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000440', u.id, 'processing', 68380.00, 0.00, 8205.60, 76585.60, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 926 012 3456', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-08 00:18:00', '2026-01-08 00:18:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000441', u.id, 'processing', 222765.00, 0.00, 26731.80, 249496.80, 'Margarita Soto', 'margarita.soto9@mypc.com', '+63 925 901 2345', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-08 10:22:00', '2026-01-08 10:22:00'
-FROM users u WHERE u.email = 'margarita.soto9@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000442', u.id, 'completed', 255770.00, 0.00, 30692.40, 286462.40, 'Gregorio Reyes', 'gregorio.reyes11@mypc.com', '+63 924 890 1234', '123 Rizal Street, Makati City, Metro Manila, 1200', '2026-01-03 05:23:00', '2026-01-03 05:23:00'
-FROM users u WHERE u.email = 'gregorio.reyes11@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000443', u.id, 'completed', 83085.00, 0.00, 9970.20, 93055.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 922 678 9012', '987 MacArthur Highway, Angeles City, Pampanga, 2009', '2026-01-01 01:32:00', '2026-01-01 01:32:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000444', u.id, 'processing', 92990.00, 0.00, 11158.80, 104148.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-06 07:05:00', '2026-01-06 07:05:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000445', u.id, 'completed', 14995.00, 0.00, 1799.40, 16794.40, 'Ana Soliz', 'ana.soliz6@mypc.com', '+63 917 123 4567', '321 Del Pilar Street, Pasig City, Metro Manila, 1600', '2026-01-05 05:36:00', '2026-01-05 05:36:00'
-FROM users u WHERE u.email = 'ana.soliz6@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000446', u.id, 'completed', 47985.00, 0.00, 5758.20, 53743.20, 'Rosalinda Campanilla', 'rosalinda.campanilla10@mypc.com', '+63 917 123 4567', '741 Burgos Street, Iloilo City, Iloilo, 5000', '2026-01-05 06:27:00', '2026-01-05 06:27:00'
-FROM users u WHERE u.email = 'rosalinda.campanilla10@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000447', u.id, 'processing', 148775.00, 0.00, 17853.00, 166628.00, 'Estanislao Voitlexner', 'estanislao.voitlexner4@mypc.com', '+63 921 567 8901', '369 Session Road, Baguio City, Benguet, 2600', '2026-01-07 00:40:00', '2026-01-07 00:40:00'
-FROM users u WHERE u.email = 'estanislao.voitlexner4@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000448', u.id, 'completed', 56990.00, 0.00, 6838.80, 63828.80, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 917 123 4567', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-04 21:09:00', '2026-01-04 21:09:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000449', u.id, 'completed', 73590.00, 0.00, 8830.80, 82420.80, 'Ana Sollus', 'ana.sollus2@mypc.com', '+63 920 456 7890', '258 Araneta Avenue, Davao City, Davao del Sur, 8000', '2026-01-02 00:54:00', '2026-01-02 00:54:00'
-FROM users u WHERE u.email = 'ana.sollus2@mypc.com' LIMIT 1;
-INSERT INTO `orders` (`order_number`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `placed_at`, `updated_at`) 
-SELECT 'ORD-00000450', u.id, 'completed', 121180.00, 0.00, 14541.60, 135721.60, 'Miguel Sollner', 'miguel.sollner3@mypc.com', '+63 924 890 1234', '147 Osmeña Boulevard, Cebu City, Cebu, 6000', '2026-01-04 07:19:00', '2026-01-04 07:19:00'
-FROM users u WHERE u.email = 'miguel.sollner3@mypc.com' LIMIT 1;
-
--- =====================================================
--- INSERT ORDER ITEMS (using order_number lookup)
--- =====================================================
-
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000001' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000001' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000001' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000001' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000002' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 1, 27495.00
-FROM orders o WHERE o.order_number = 'ORD-00000002' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000002' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000002' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000003' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000003' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000003' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000003' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000004' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000004' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 1, 27495.00
-FROM orders o WHERE o.order_number = 'ORD-00000005' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000005' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000006' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000006' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000006' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000007' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000007' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000007' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000007' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000008' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000008' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000009' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000010' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000010' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000010' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000010' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000011' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000011' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000011' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000012' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000012' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000012' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000013' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000013' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000013' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000014' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000014' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000014' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 1, 51195.00
-FROM orders o WHERE o.order_number = 'ORD-00000015' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000015' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000015' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000015' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000016' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000016' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 2, 102390.00
-FROM orders o WHERE o.order_number = 'ORD-00000016' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000017' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000017' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000017' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000017' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000018' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000018' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000018' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000019' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000019' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000019' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000019' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000020' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000020' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000020' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000021' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000021' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000021' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000021' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000022' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000022' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000022' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000023' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000023' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000024' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000024' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000024' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000025' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000025' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000026' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000026' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000026' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000027' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000027' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000027' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000028' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000029' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000030' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000030' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000031' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000031' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000031' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000032' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000032' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000032' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000033' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 1, 51195.00
-FROM orders o WHERE o.order_number = 'ORD-00000034' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000035' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000036' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000036' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000036' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000036' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000037' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000037' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000038' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000038' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000038' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000039' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000039' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000039' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000039' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000040' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000040' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000040' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000041' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000041' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000041' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000042' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000042' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000042' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000042' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000043' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000043' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000043' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000044' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000044' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000044' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000044' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000045' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000045' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000045' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000046' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000046' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000047' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000047' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000047' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 1, 27995.00
-FROM orders o WHERE o.order_number = 'ORD-00000048' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000049' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000049' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000050' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000051' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000051' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000051' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000051' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000052' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 1, 27495.00
-FROM orders o WHERE o.order_number = 'ORD-00000052' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000052' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000052' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000053' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000053' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000053' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000053' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000054' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000054' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000054' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000054' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000055' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000056' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000056' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 1, 51195.00
-FROM orders o WHERE o.order_number = 'ORD-00000057' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000057' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000057' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000058' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000058' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000059' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000059' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000059' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000060' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000061' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000061' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000061' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000061' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000062' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000062' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000063' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000063' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000063' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000063' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000064' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000064' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000064' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000065' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000065' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000065' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000065' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000066' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000067' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000067' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000067' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000067' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000068' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000069' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000070' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000070' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000070' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000070' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000071' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000071' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000071' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000072' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000072' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000072' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000073' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000073' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000074' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000074' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000074' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000074' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000075' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000075' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000075' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000076' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000076' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000077' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000077' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000077' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000077' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000078' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000079' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000079' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000080' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000080' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000080' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000081' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000082' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000083' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000083' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000084' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000084' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000084' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000084' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000085' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000085' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000086' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000086' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000086' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000086' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000087' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000087' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000087' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000088' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000088' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 2, 102390.00
-FROM orders o WHERE o.order_number = 'ORD-00000088' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000089' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000089' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000089' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000090' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000090' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000090' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000091' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000091' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000092' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000092' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000092' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000092' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000093' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000094' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000094' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000094' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000095' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000095' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000095' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000096' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000096' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000096' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000096' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000097' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000097' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000097' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000098' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000098' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000099' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000099' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000100' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000101' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000101' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000101' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000102' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000102' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000102' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000102' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000103' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000103' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000104' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000104' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000104' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000105' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000106' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000106' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000107' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000108' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000109' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000110' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000110' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000110' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000110' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000111' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000111' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000112' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000113' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000113' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000113' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000114' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000115' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000115' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000116' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000117' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000118' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000119' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000119' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000119' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000119' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000120' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000120' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000120' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000120' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000121' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000121' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000121' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000121' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000122' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000122' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000122' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000122' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000123' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000123' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000124' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000124' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000124' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000125' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000126' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000126' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000126' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000127' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000128' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000128' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000128' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000129' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000129' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000130' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000130' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000130' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000131' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000131' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000132' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000133' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000133' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000134' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000135' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000135' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000135' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000135' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000136' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000136' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000137' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000138' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000138' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000138' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000138' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000139' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000139' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000140' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 1, 23495.00
-FROM orders o WHERE o.order_number = 'ORD-00000140' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000141' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000141' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000142' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000142' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000142' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000142' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000143' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000143' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000143' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000144' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000145' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000146' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000146' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000146' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000147' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000147' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000147' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000148' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000148' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000148' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000149' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000149' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000150' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000150' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000150' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000150' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000151' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000151' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000152' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000153' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000154' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 1, 23495.00
-FROM orders o WHERE o.order_number = 'ORD-00000155' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000155' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000155' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000156' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 1, 27995.00
-FROM orders o WHERE o.order_number = 'ORD-00000157' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000157' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000157' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000158' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000158' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000158' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000159' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000159' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000159' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000160' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000161' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000162' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000163' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000163' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000163' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000164' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000165' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000165' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000165' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000166' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000166' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000166' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000166' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000167' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000167' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000168' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000169' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000169' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000170' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000170' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000170' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000171' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000172' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000172' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000172' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000173' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000173' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000174' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000174' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000174' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000175' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000175' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000176' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000176' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000176' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 1, 27495.00
-FROM orders o WHERE o.order_number = 'ORD-00000176' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000177' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000177' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000178' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000178' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000179' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000179' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000179' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000179' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000180' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000180' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000181' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000181' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000181' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000182' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000182' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000183' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000184' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000184' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000184' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000184' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000185' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000185' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000185' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000185' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000186' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000186' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000187' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000187' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000187' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000187' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000188' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000188' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000189' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 2, 35590.00
-FROM orders o WHERE o.order_number = 'ORD-00000189' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000190' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000190' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000190' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000190' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000191' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000191' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000191' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000192' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000193' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000193' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000193' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000194' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000194' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000194' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000195' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000195' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000196' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000196' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000196' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000197' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000198' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000198' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000199' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000199' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000199' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000199' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000200' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000200' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000200' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000200' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000201' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000201' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000202' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000202' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000203' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000203' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000203' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000203' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000204' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000204' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000204' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000204' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000205' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000205' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000205' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000205' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000206' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000206' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000207' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000207' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000208' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000208' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000208' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000208' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000209' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000209' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000209' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000210' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000210' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000210' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000210' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000211' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000211' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000211' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000211' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000212' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000212' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000213' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000213' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000213' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000214' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000215' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 2, 102390.00
-FROM orders o WHERE o.order_number = 'ORD-00000216' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000216' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000216' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000216' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000217' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000217' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000217' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000218' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000218' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000218' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000218' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000219' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000220' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000220' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000220' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000220' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000221' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000221' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000222' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 1, 27995.00
-FROM orders o WHERE o.order_number = 'ORD-00000223' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000223' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000223' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000224' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000224' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000224' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000225' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000225' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000225' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000226' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000226' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000227' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000227' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000227' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000228' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000228' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000228' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000229' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000229' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000229' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000229' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000230' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000231' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000232' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000232' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000232' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000232' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000233' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000233' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000234' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000234' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000234' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000235' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000236' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000236' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000237' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000238' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000238' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000238' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000238' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000239' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000239' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000240' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000241' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000242' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000242' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000243' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000244' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000244' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000244' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000244' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000245' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000245' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000245' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000246' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000247' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000247' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000248' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000248' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000248' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000248' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000249' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000249' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000249' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000250' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000250' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000250' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000250' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000251' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000251' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000251' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000252' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000252' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000253' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000254' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000254' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000255' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000255' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000256' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000257' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000257' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000257' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000257' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000258' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000258' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000258' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000258' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000259' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000259' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000259' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000259' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000260' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000260' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000260' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000260' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000261' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000261' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000261' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000261' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000262' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000262' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000262' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000262' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000263' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000263' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000263' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000264' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000265' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000266' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000266' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000267' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000268' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000268' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000268' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000269' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000269' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000269' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000270' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000270' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000271' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000271' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000271' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000272' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000272' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000272' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000273' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000274' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000274' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000274' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 1, 27995.00
-FROM orders o WHERE o.order_number = 'ORD-00000274' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000275' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000275' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000276' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000276' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000276' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000276' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000277' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000277' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000278' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000278' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000279' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000279' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000280' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000280' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000280' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000281' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000281' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000282' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000282' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000282' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000283' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000283' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000283' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000283' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000284' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000285' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000286' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000287' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000287' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000287' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000288' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000288' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000288' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000288' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000289' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 2, 102390.00
-FROM orders o WHERE o.order_number = 'ORD-00000289' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000289' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000289' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000290' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000290' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000291' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000291' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000291' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000292' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000292' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000292' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000292' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000293' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000294' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000294' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000295' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000295' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000295' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000295' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000296' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000296' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000296' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000296' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000297' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000297' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000297' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000297' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000298' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000298' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000298' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000299' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000299' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000299' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000300' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000300' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000300' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000300' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000301' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000301' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000301' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000302' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000302' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000303' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000303' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000303' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000304' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000304' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000304' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000305' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000305' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000306' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000306' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000306' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000307' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000308' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000308' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000308' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000308' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000309' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000310' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000310' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000310' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000310' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000311' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000311' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000311' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000312' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000312' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000313' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000313' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000314' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000314' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000314' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000315' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000315' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000316' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000317' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000317' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000317' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000317' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000318' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000319' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000319' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000319' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000319' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000320' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000320' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000320' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000320' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000321' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000321' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000321' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000321' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000322' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000323' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000323' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000323' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000323' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000324' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000325' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000326' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000326' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000327' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000328' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000328' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000329' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000329' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000329' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 2, 46990.00
-FROM orders o WHERE o.order_number = 'ORD-00000330' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000330' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000330' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000330' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000331' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000331' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 1, 14495.00
-FROM orders o WHERE o.order_number = 'ORD-00000331' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000332' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000332' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000332' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000332' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000333' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000333' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000334' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000334' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000335' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000335' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000335' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000335' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000336' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000336' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000336' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000336' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000337' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000337' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000337' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000338' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000338' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000338' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000339' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000340' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000340' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000341' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000341' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000341' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000341' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000342' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000342' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000342' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000343' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000344' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000345' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000345' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000345' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000346' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000347' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000347' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000348' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000348' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000348' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000349' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000349' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000349' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000349' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000350' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000350' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 2, 76390.00
-FROM orders o WHERE o.order_number = 'ORD-00000351' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000352' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000353' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000353' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000353' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000353' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000354' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000354' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 2, 56390.00
-FROM orders o WHERE o.order_number = 'ORD-00000355' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000355' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000355' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000355' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000356' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000356' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000356' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000356' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 1, 18495.00
-FROM orders o WHERE o.order_number = 'ORD-00000357' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000357' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 1, 34195.00
-FROM orders o WHERE o.order_number = 'ORD-00000357' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000357' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000358' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000359' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 2, 83590.00
-FROM orders o WHERE o.order_number = 'ORD-00000359' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000360' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000360' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000360' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000360' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000361' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000361' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000361' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000361' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000362' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000363' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 1, 40495.00
-FROM orders o WHERE o.order_number = 'ORD-00000363' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000363' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000363' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000364' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000364' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000364' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000365' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000365' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 1, 50495.00
-FROM orders o WHERE o.order_number = 'ORD-00000365' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000365' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000366' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000366' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000366' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000366' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000367' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000368' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000369' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000370' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000370' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000371' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000371' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000372' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000372' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000373' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000373' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000373' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 2, 92990.00
-FROM orders o WHERE o.order_number = 'ORD-00000374' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000374' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000374' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000375' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 1, 27495.00
-FROM orders o WHERE o.order_number = 'ORD-00000375' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000375' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000375' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000376' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000376' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000376' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000377' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000377' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 34, 'AMD Radeon RX 7700 XT', 'Dual-Fan', 27495.00, 2, 54990.00
-FROM orders o WHERE o.order_number = 'ORD-00000378' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000378' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000378' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 1, 39995.00
-FROM orders o WHERE o.order_number = 'ORD-00000379' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000379' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000380' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000380' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000381' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000381' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000382' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000383' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 1, 23495.00
-FROM orders o WHERE o.order_number = 'ORD-00000383' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000383' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000384' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000385' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000385' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000385' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 1, 37995.00
-FROM orders o WHERE o.order_number = 'ORD-00000385' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000386' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000386' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000387' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 1, 22995.00
-FROM orders o WHERE o.order_number = 'ORD-00000388' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000388' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000388' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000389' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 2, 102390.00
-FROM orders o WHERE o.order_number = 'ORD-00000389' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000389' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000389' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000390' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000390' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000390' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000391' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000391' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000391' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000392' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 1, 44795.00
-FROM orders o WHERE o.order_number = 'ORD-00000392' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000393' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000393' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000393' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000394' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 1, 31795.00
-FROM orders o WHERE o.order_number = 'ORD-00000395' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 17, 'AMD Ryzen 9 9950X3D', 'Boxed', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000395' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000396' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000396' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000396' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000397' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 2, 53990.00
-FROM orders o WHERE o.order_number = 'ORD-00000397' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 11, 'AMD Ryzen 7 9800X3D', 'Boxed', 32995.00, 1, 32995.00
-FROM orders o WHERE o.order_number = 'ORD-00000397' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000397' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000398' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000398' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000398' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 35, 'AMD Radeon RX 7700 XT', 'Triple-Fan', 28195.00, 1, 28195.00
-FROM orders o WHERE o.order_number = 'ORD-00000398' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 1, 23495.00
-FROM orders o WHERE o.order_number = 'ORD-00000399' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000399' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000399' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000400' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000401' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000401' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000401' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 2, 30990.00
-FROM orders o WHERE o.order_number = 'ORD-00000401' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000402' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000403' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000403' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 16, 'AMD Ryzen 9 7950X3D', 'OEM (Tray)', 41795.00, 1, 41795.00
-FROM orders o WHERE o.order_number = 'ORD-00000403' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000403' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000404' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000404' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 1, 17495.00
-FROM orders o WHERE o.order_number = 'ORD-00000404' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 2, 33990.00
-FROM orders o WHERE o.order_number = 'ORD-00000404' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 1, 36795.00
-FROM orders o WHERE o.order_number = 'ORD-00000405' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000405' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 13, 'AMD Ryzen 9 7900X3D', 'Boxed', 37995.00, 2, 75990.00
-FROM orders o WHERE o.order_number = 'ORD-00000405' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000405' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000406' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000406' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000407' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000407' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000407' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000408' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 1, 47195.00
-FROM orders o WHERE o.order_number = 'ORD-00000409' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000410' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 43, 'AMD Radeon RX 7900 XTX', 'Dual-Fan', 50495.00, 2, 100990.00
-FROM orders o WHERE o.order_number = 'ORD-00000411' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 2, 38990.00
-FROM orders o WHERE o.order_number = 'ORD-00000412' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000412' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000412' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000412' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 1, 27995.00
-FROM orders o WHERE o.order_number = 'ORD-00000413' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000414' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000414' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 2, 74990.00
-FROM orders o WHERE o.order_number = 'ORD-00000414' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000414' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 2, 36390.00
-FROM orders o WHERE o.order_number = 'ORD-00000415' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000415' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 2, 48390.00
-FROM orders o WHERE o.order_number = 'ORD-00000416' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 32, 'AMD Radeon RX 7600', 'Triple-Fan', 15495.00, 1, 15495.00
-FROM orders o WHERE o.order_number = 'ORD-00000416' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000416' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000417' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000417' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000417' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000418' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000418' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 1, 18295.00
-FROM orders o WHERE o.order_number = 'ORD-00000419' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 31, 'AMD Radeon RX 7600', 'Dual-Fan', 14995.00, 2, 29990.00
-FROM orders o WHERE o.order_number = 'ORD-00000419' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 3, 'AMD Ryzen 7 7800X3D', 'Boxed', 27995.00, 2, 55990.00
-FROM orders o WHERE o.order_number = 'ORD-00000420' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000420' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 41, 'AMD Radeon RX 7900 GRE', 'Triple-Fan', 38195.00, 1, 38195.00
-FROM orders o WHERE o.order_number = 'ORD-00000420' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 1, 15295.00
-FROM orders o WHERE o.order_number = 'ORD-00000421' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 2, 32990.00
-FROM orders o WHERE o.order_number = 'ORD-00000421' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 2, 53590.00
-FROM orders o WHERE o.order_number = 'ORD-00000421' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 1, 48795.00
-FROM orders o WHERE o.order_number = 'ORD-00000421' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000422' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000422' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000423' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000424' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 6, 'AMD Ryzen 5 7600X', 'OEM (Tray)', 15295.00, 2, 30590.00
-FROM orders o WHERE o.order_number = 'ORD-00000425' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 48, 'AMD Radeon RX 9070 XT', 'Reference', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000426' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 20, 'AMD Ryzen 9 9950X', 'OEM (Tray)', 44795.00, 2, 89590.00
-FROM orders o WHERE o.order_number = 'ORD-00000427' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 2, 91990.00
-FROM orders o WHERE o.order_number = 'ORD-00000427' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 1, 19695.00
-FROM orders o WHERE o.order_number = 'ORD-00000427' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 1, 33495.00
-FROM orders o WHERE o.order_number = 'ORD-00000427' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000428' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 2, 37990.00
-FROM orders o WHERE o.order_number = 'ORD-00000428' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 2, 82390.00
-FROM orders o WHERE o.order_number = 'ORD-00000428' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 1, 36995.00
-FROM orders o WHERE o.order_number = 'ORD-00000428' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 47, 'AMD Radeon RX 9070', 'Triple-Fan', 41195.00, 1, 41195.00
-FROM orders o WHERE o.order_number = 'ORD-00000429' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000429' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 36, 'AMD Radeon RX 7800 XT', 'Reference', 32995.00, 2, 65990.00
-FROM orders o WHERE o.order_number = 'ORD-00000429' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000430' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 46, 'AMD Radeon RX 9070', 'Dual-Fan', 40495.00, 2, 80990.00
-FROM orders o WHERE o.order_number = 'ORD-00000430' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 37, 'AMD Radeon RX 7800 XT', 'Dual-Fan', 33495.00, 2, 66990.00
-FROM orders o WHERE o.order_number = 'ORD-00000430' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000430' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 23, 'AMD Radeon RX 6600 XT', 'Triple-Fan', 18195.00, 1, 18195.00
-FROM orders o WHERE o.order_number = 'ORD-00000431' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000431' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 28, 'AMD Radeon RX 6700 XT', 'Dual-Fan', 23495.00, 1, 23495.00
-FROM orders o WHERE o.order_number = 'ORD-00000432' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 4, 'AMD Ryzen 7 7800X3D', 'OEM (Tray)', 26795.00, 1, 26795.00
-FROM orders o WHERE o.order_number = 'ORD-00000433' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 25, 'AMD Radeon RX 6650 XT', 'Dual-Fan', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000433' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 19, 'AMD Ryzen 9 9950X', 'Boxed', 45995.00, 1, 45995.00
-FROM orders o WHERE o.order_number = 'ORD-00000433' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000433' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 2, 85990.00
-FROM orders o WHERE o.order_number = 'ORD-00000434' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 24, 'AMD Radeon RX 6650 XT', 'Reference', 18495.00, 2, 36990.00
-FROM orders o WHERE o.order_number = 'ORD-00000435' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 5, 'AMD Ryzen 5 7600X', 'Boxed with Cooler', 16495.00, 1, 16495.00
-FROM orders o WHERE o.order_number = 'ORD-00000436' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000436' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000437' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 27, 'AMD Radeon RX 6700 XT', 'Reference', 22995.00, 2, 45990.00
-FROM orders o WHERE o.order_number = 'ORD-00000437' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 2, 27590.00
-FROM orders o WHERE o.order_number = 'ORD-00000438' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 12, 'AMD Ryzen 7 9800X3D', 'OEM (Tray)', 31795.00, 2, 63590.00
-FROM orders o WHERE o.order_number = 'ORD-00000439' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 38, 'AMD Radeon RX 7800 XT', 'Triple-Fan', 34195.00, 2, 68390.00
-FROM orders o WHERE o.order_number = 'ORD-00000439' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000439' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000440' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 26, 'AMD Radeon RX 6650 XT', 'Triple-Fan', 19695.00, 2, 39390.00
-FROM orders o WHERE o.order_number = 'ORD-00000440' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 50, 'AMD Radeon RX 9070 XT', 'Triple-Fan', 47195.00, 2, 94390.00
-FROM orders o WHERE o.order_number = 'ORD-00000441' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 39, 'AMD Radeon RX 7900 GRE', 'Reference', 36995.00, 2, 73990.00
-FROM orders o WHERE o.order_number = 'ORD-00000441' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000441' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 8, 'AMD Ryzen 5 9600X', 'OEM (Tray)', 17795.00, 1, 17795.00
-FROM orders o WHERE o.order_number = 'ORD-00000441' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 18, 'AMD Ryzen 9 9950X3D', 'OEM (Tray)', 48795.00, 2, 97590.00
-FROM orders o WHERE o.order_number = 'ORD-00000442' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000442' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 33, 'AMD Radeon RX 7700 XT', 'Reference', 26995.00, 1, 26995.00
-FROM orders o WHERE o.order_number = 'ORD-00000442' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 44, 'AMD Radeon RX 7900 XTX', 'Triple-Fan', 51195.00, 1, 51195.00
-FROM orders o WHERE o.order_number = 'ORD-00000442' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 49, 'AMD Radeon RX 9070 XT', 'Dual-Fan', 46495.00, 1, 46495.00
-FROM orders o WHERE o.order_number = 'ORD-00000443' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 10, 'AMD Ryzen 7 7700', 'OEM (Tray)', 18295.00, 2, 36590.00
-FROM orders o WHERE o.order_number = 'ORD-00000443' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 15, 'AMD Ryzen 9 7950X3D', 'Boxed', 42995.00, 1, 42995.00
-FROM orders o WHERE o.order_number = 'ORD-00000444' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 1, 49995.00
-FROM orders o WHERE o.order_number = 'ORD-00000444' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 1, 'AMD Ryzen 5 7600', 'Boxed with Cooler', 14995.00, 1, 14995.00
-FROM orders o WHERE o.order_number = 'ORD-00000445' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 7, 'AMD Ryzen 5 9600X', 'Boxed with Cooler', 18995.00, 1, 18995.00
-FROM orders o WHERE o.order_number = 'ORD-00000446' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 30, 'AMD Radeon RX 7600', 'Reference', 14495.00, 2, 28990.00
-FROM orders o WHERE o.order_number = 'ORD-00000446' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 22, 'AMD Radeon RX 6600 XT', 'Dual-Fan', 17495.00, 2, 34990.00
-FROM orders o WHERE o.order_number = 'ORD-00000447' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 42, 'AMD Radeon RX 7900 XTX', 'Reference', 49995.00, 2, 99990.00
-FROM orders o WHERE o.order_number = 'ORD-00000447' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 2, 'AMD Ryzen 5 7600', 'OEM (Tray)', 13795.00, 1, 13795.00
-FROM orders o WHERE o.order_number = 'ORD-00000447' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 40, 'AMD Radeon RX 7900 GRE', 'Dual-Fan', 37495.00, 1, 37495.00
-FROM orders o WHERE o.order_number = 'ORD-00000448' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 9, 'AMD Ryzen 7 7700', 'Boxed with Cooler', 19495.00, 1, 19495.00
-FROM orders o WHERE o.order_number = 'ORD-00000448' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 14, 'AMD Ryzen 9 7900X3D', 'OEM (Tray)', 36795.00, 2, 73590.00
-FROM orders o WHERE o.order_number = 'ORD-00000449' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 21, 'AMD Radeon RX 6600 XT', 'Reference', 16995.00, 1, 16995.00
-FROM orders o WHERE o.order_number = 'ORD-00000450' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 29, 'AMD Radeon RX 6700 XT', 'Triple-Fan', 24195.00, 1, 24195.00
-FROM orders o WHERE o.order_number = 'ORD-00000450' LIMIT 1;
-INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-SELECT o.id, 45, 'AMD Radeon RX 9070', 'Reference', 39995.00, 2, 79990.00
-FROM orders o WHERE o.order_number = 'ORD-00000450' LIMIT 1;
-
-SET FOREIGN_KEY_CHECKS = 1;
-
--- =====================================================
--- COMPLETION MESSAGE
--- =====================================================
-
-SELECT '450 orders with items added successfully!' as message,
-       '300 orders from 2025 (completed/cancelled)' as note_2025,
-       '150 orders from 2026 (processing/shipped/completed)' as note_2026,
-       'Sales dashboard now has data to display' as status;
+-- Insert orders
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (1, 121, 'shipped', 45351.0, 0, 5442.12, 50793.12, '2024-06-28 00:00:00', '2024-07-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (2, 18, 'paid', 12033.0, 0, 1443.96, 13476.96, '2024-04-12 00:00:00', '2024-04-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (3, 40, 'completed', 66544.0, 500, 7985.28, 75029.28, '2024-12-08 00:00:00', '2024-12-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (4, 145, 'completed', 110952.0, 0, 13314.24, 124266.24, '2024-07-07 00:00:00', '2024-07-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (5, 30, 'cancelled', 90768.0, 0, 10892.16, 101660.16, '2024-10-23 00:00:00', '2024-10-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (6, 7, 'processing', 248384.0, 500, 29806.08, 278690.08, '2024-04-11 00:00:00', '2024-04-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (7, 63, 'processing', 29764.0, 1000, 3571.68, 34335.68, '2024-03-02 00:00:00', '2024-03-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (8, 11, 'pending', 289655.0, 500, 34758.6, 324913.6, '2024-12-04 00:00:00', '2024-12-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (9, 95, 'shipped', 43158.0, 0, 5178.96, 48336.96, '2024-01-07 00:00:00', '2024-01-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (10, 126, 'completed', 38411.0, 0, 4609.32, 43020.32, '2024-11-21 00:00:00', '2024-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (11, 40, 'pending', 392346.0, 1000, 47081.52, 440427.52, '2024-11-29 00:00:00', '2024-11-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (12, 70, 'completed', 543727.0, 500, 65247.24, 609474.24, '2024-10-30 00:00:00', '2024-11-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (13, 83, 'processing', 61359.0, 0, 7363.08, 68722.08, '2024-08-18 00:00:00', '2024-08-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (14, 119, 'completed', 476368.0, 0, 57164.16, 533532.16, '2024-09-10 00:00:00', '2024-09-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (15, 47, 'completed', 411211.0, 0, 49345.32, 460556.32, '2024-05-12 00:00:00', '2024-05-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (16, 72, 'completed', 295697.0, 0, 35483.64, 331180.64, '2024-09-21 00:00:00', '2024-10-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (17, 22, 'cancelled', 144381.0, 500, 17325.72, 162206.72, '2024-09-07 00:00:00', '2024-09-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (18, 143, 'completed', 140519.0, 500, 16862.28, 157881.28, '2024-11-26 00:00:00', '2024-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (19, 126, 'paid', 309040.0, 0, 37084.8, 346124.8, '2024-05-30 00:00:00', '2024-05-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (20, 104, 'completed', 90135.0, 1000, 10816.2, 101951.2, '2024-07-07 00:00:00', '2024-07-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (21, 142, 'completed', 261543.0, 1000, 31385.16, 293928.16, '2024-06-18 00:00:00', '2024-07-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (22, 117, 'completed', 230379.0, 0, 27645.48, 258024.48, '2024-04-28 00:00:00', '2024-05-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (23, 50, 'completed', 181340.0, 1000, 21760.8, 204100.8, '2024-12-19 00:00:00', '2024-12-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (24, 50, 'refunded', 146810.0, 500, 17617.2, 164927.2, '2024-05-21 00:00:00', '2024-07-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (25, 73, 'completed', 22721.0, 0, 2726.52, 25447.52, '2024-04-26 00:00:00', '2024-05-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (26, 46, 'completed', 153708.0, 1000, 18444.96, 173152.96, '2024-03-05 00:00:00', '2024-03-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (27, 12, 'paid', 46264.0, 0, 5551.68, 51815.68, '2024-12-23 00:00:00', '2024-12-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (28, 126, 'processing', 10803.0, 1000, 1296.36, 13099.36, '2024-05-25 00:00:00', '2024-05-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (29, 123, 'shipped', 478628.0, 0, 57435.36, 536063.36, '2024-01-27 00:00:00', '2024-02-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (30, 123, 'completed', 14282.0, 500, 1713.84, 16495.84, '2024-09-08 00:00:00', '2024-09-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (31, 148, 'shipped', 19943.0, 0, 2393.16, 22336.16, '2024-10-15 00:00:00', '2024-10-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (32, 22, 'processing', 65525.0, 1000, 7863.0, 74388.0, '2024-08-01 00:00:00', '2024-08-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (33, 58, 'shipped', 536199.0, 500, 64343.88, 601042.88, '2024-06-01 00:00:00', '2024-06-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (34, 79, 'processing', 49952.0, 0, 5994.24, 55946.24, '2024-04-16 00:00:00', '2024-04-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (35, 55, 'cancelled', 171282.0, 0, 20553.84, 191835.84, '2024-05-02 00:00:00', '2024-05-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (36, 45, 'completed', 20258.0, 0, 2430.96, 22688.96, '2024-07-28 00:00:00', '2024-08-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (37, 121, 'completed', 158556.0, 0, 19026.72, 177582.72, '2024-05-27 00:00:00', '2024-06-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (38, 73, 'cancelled', 337318.0, 0, 40478.16, 377796.16, '2024-05-15 00:00:00', '2024-05-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (39, 151, 'paid', 105723.0, 0, 12686.76, 118409.76, '2024-10-05 00:00:00', '2024-10-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (40, 39, 'processing', 187286.0, 0, 22474.32, 209760.32, '2024-01-31 00:00:00', '2024-01-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (41, 79, 'pending', 265121.0, 0, 31814.52, 296935.52, '2024-08-27 00:00:00', '2024-08-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (42, 78, 'completed', 442735.0, 1000, 53128.2, 496863.2, '2024-10-03 00:00:00', '2024-10-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (43, 113, 'pending', 49192.0, 0, 5903.04, 55095.04, '2024-08-09 00:00:00', '2024-08-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (44, 83, 'completed', 156780.0, 0, 18813.6, 175593.6, '2024-04-27 00:00:00', '2024-05-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (45, 148, 'paid', 27662.0, 1000, 3319.44, 31981.44, '2024-01-21 00:00:00', '2024-01-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (46, 121, 'completed', 445834.0, 0, 53500.08, 499334.08, '2024-10-26 00:00:00', '2024-11-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (47, 126, 'processing', 40802.0, 0, 4896.24, 45698.24, '2024-07-28 00:00:00', '2024-07-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (48, 83, 'completed', 20539.0, 0, 2464.68, 23003.68, '2024-07-29 00:00:00', '2024-08-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (49, 127, 'processing', 254976.0, 1000, 30597.12, 286573.12, '2024-01-19 00:00:00', '2024-01-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (50, 23, 'pending', 216164.0, 0, 25939.68, 242103.68, '2024-02-29 00:00:00', '2024-02-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (51, 104, 'pending', 45559.0, 500, 5467.08, 51526.08, '2024-07-30 00:00:00', '2024-07-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (52, 14, 'shipped', 117952.0, 0, 14154.24, 132106.24, '2024-11-14 00:00:00', '2024-11-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (53, 114, 'shipped', 23340.0, 0, 2800.8, 26140.8, '2024-10-08 00:00:00', '2024-10-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (54, 74, 'shipped', 554128.0, 0, 66495.36, 620623.36, '2024-01-15 00:00:00', '2024-01-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (55, 41, 'shipped', 294399.0, 0, 35327.88, 329726.88, '2024-10-09 00:00:00', '2024-10-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (56, 24, 'completed', 64871.0, 500, 7784.52, 73155.52, '2024-03-01 00:00:00', '2024-03-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (57, 40, 'paid', 453019.0, 1000, 54362.28, 508381.28, '2024-12-27 00:00:00', '2024-12-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (58, 107, 'completed', 547579.0, 0, 65709.48, 613288.48, '2024-08-21 00:00:00', '2024-09-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (59, 38, 'cancelled', 399934.0, 1000, 47992.08, 448926.08, '2024-09-17 00:00:00', '2024-09-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (60, 35, 'completed', 28104.0, 500, 3372.48, 31976.48, '2024-06-23 00:00:00', '2024-07-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (61, 69, 'processing', 28536.0, 0, 3424.32, 31960.32, '2024-10-27 00:00:00', '2024-10-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (62, 126, 'completed', 108529.0, 1000, 13023.48, 122552.48, '2024-09-04 00:00:00', '2024-09-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (63, 86, 'completed', 538731.0, 0, 64647.72, 603378.72, '2024-04-06 00:00:00', '2024-05-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (64, 62, 'shipped', 422453.0, 500, 50694.36, 473647.36, '2024-01-23 00:00:00', '2024-01-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (65, 122, 'processing', 502416.0, 0, 60289.92, 562705.92, '2024-09-10 00:00:00', '2024-09-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (66, 33, 'pending', 176309.0, 500, 21157.08, 197966.08, '2024-02-21 00:00:00', '2024-02-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (67, 135, 'processing', 308046.0, 0, 36965.52, 345011.52, '2024-07-28 00:00:00', '2024-07-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (68, 40, 'processing', 40768.0, 0, 4892.16, 45660.16, '2024-06-22 00:00:00', '2024-06-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (69, 102, 'pending', 31532.0, 1000, 3783.84, 36315.84, '2024-07-13 00:00:00', '2024-07-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (70, 82, 'completed', 583648.0, 0, 70037.76, 653685.76, '2024-11-12 00:00:00', '2024-11-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (71, 61, 'completed', 209634.0, 0, 25156.08, 234790.08, '2024-08-10 00:00:00', '2024-08-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (72, 26, 'completed', 387223.0, 0, 46466.76, 433689.76, '2024-01-15 00:00:00', '2024-01-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (73, 84, 'paid', 29226.0, 0, 3507.12, 32733.12, '2024-07-10 00:00:00', '2024-07-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (74, 38, 'pending', 119621.0, 500, 14354.52, 134475.52, '2024-10-16 00:00:00', '2024-10-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (75, 47, 'paid', 72946.0, 0, 8753.52, 81699.52, '2024-11-08 00:00:00', '2024-11-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (76, 62, 'completed', 375034.0, 0, 45004.08, 420038.08, '2024-08-24 00:00:00', '2024-09-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (77, 66, 'completed', 433864.0, 0, 52063.68, 485927.68, '2024-08-26 00:00:00', '2024-09-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (78, 140, 'completed', 59681.0, 500, 7161.72, 67342.72, '2024-06-25 00:00:00', '2024-07-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (79, 77, 'completed', 431123.0, 500, 51734.76, 483357.76, '2024-06-03 00:00:00', '2024-06-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (80, 99, 'completed', 355917.0, 0, 42710.04, 398627.04, '2024-07-14 00:00:00', '2024-08-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (81, 92, 'shipped', 227392.0, 0, 27287.04, 254679.04, '2024-12-03 00:00:00', '2024-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (82, 71, 'completed', 47088.0, 0, 5650.56, 52738.56, '2024-11-06 00:00:00', '2024-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (83, 128, 'pending', 210324.0, 1000, 25238.88, 236562.88, '2024-06-29 00:00:00', '2024-06-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (84, 57, 'shipped', 131381.0, 0, 15765.72, 147146.72, '2024-12-13 00:00:00', '2024-12-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (85, 25, 'processing', 30246.0, 500, 3629.52, 34375.52, '2024-01-18 00:00:00', '2024-01-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (86, 94, 'cancelled', 61813.0, 0, 7417.56, 69230.56, '2024-06-16 00:00:00', '2024-06-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (87, 107, 'paid', 76318.0, 0, 9158.16, 85476.16, '2024-10-03 00:00:00', '2024-10-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (88, 136, 'shipped', 193134.0, 0, 23176.08, 216310.08, '2024-09-03 00:00:00', '2024-09-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (89, 87, 'completed', 40692.0, 0, 4883.04, 45575.04, '2024-03-13 00:00:00', '2024-03-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (90, 102, 'paid', 173672.0, 500, 20840.64, 195012.64, '2024-01-08 00:00:00', '2024-01-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (91, 138, 'processing', 39804.0, 0, 4776.48, 44580.48, '2024-12-10 00:00:00', '2024-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (92, 68, 'completed', 494759.0, 0, 59371.08, 554130.08, '2024-12-11 00:00:00', '2024-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (93, 121, 'completed', 46792.0, 0, 5615.04, 52407.04, '2024-11-08 00:00:00', '2024-11-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (94, 17, 'completed', 458434.0, 500, 55012.08, 513946.08, '2024-02-29 00:00:00', '2024-03-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (95, 12, 'processing', 29946.0, 500, 3593.52, 34039.52, '2024-02-29 00:00:00', '2024-02-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (96, 61, 'pending', 100940.0, 500, 12112.8, 113552.8, '2024-07-08 00:00:00', '2024-07-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (97, 139, 'cancelled', 381014.0, 500, 45721.68, 427235.68, '2024-12-01 00:00:00', '2024-12-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (98, 26, 'shipped', 513970.0, 0, 61676.4, 575646.4, '2024-01-17 00:00:00', '2024-01-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (99, 56, 'shipped', 533148.0, 0, 63977.76, 597125.76, '2024-07-04 00:00:00', '2024-07-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (100, 95, 'paid', 165872.0, 500, 19904.64, 186276.64, '2024-05-21 00:00:00', '2024-05-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (101, 32, 'shipped', 348063.0, 0, 41767.56, 389830.56, '2024-11-24 00:00:00', '2024-11-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (102, 13, 'completed', 213850.0, 0, 25662.0, 239512.0, '2024-10-16 00:00:00', '2024-10-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (103, 18, 'completed', 126858.0, 0, 15222.96, 142080.96, '2024-04-29 00:00:00', '2024-05-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (104, 38, 'completed', 28171.0, 0, 3380.52, 31551.52, '2024-03-07 00:00:00', '2024-03-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (105, 65, 'completed', 64408.0, 0, 7728.96, 72136.96, '2024-03-08 00:00:00', '2024-03-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (106, 92, 'completed', 127182.0, 0, 15261.84, 142443.84, '2024-01-09 00:00:00', '2024-01-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (107, 68, 'completed', 18307.0, 500, 2196.84, 21003.84, '2024-09-26 00:00:00', '2024-10-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (108, 17, 'completed', 535025.0, 0, 64203.0, 599228.0, '2024-09-19 00:00:00', '2024-10-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (109, 28, 'processing', 564156.0, 0, 67698.72, 631854.72, '2024-11-10 00:00:00', '2024-11-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (110, 134, 'paid', 270073.0, 0, 32408.76, 302481.76, '2024-02-01 00:00:00', '2024-02-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (111, 103, 'completed', 356603.0, 500, 42792.36, 399895.36, '2024-12-30 00:00:00', '2025-01-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (112, 19, 'completed', 31109.0, 1000, 3733.08, 35842.08, '2024-03-16 00:00:00', '2024-03-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (113, 33, 'processing', 293748.0, 0, 35249.76, 328997.76, '2024-07-14 00:00:00', '2024-07-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (114, 136, 'completed', 268938.0, 1000, 32272.56, 302210.56, '2024-11-05 00:00:00', '2024-11-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (115, 26, 'completed', 46132.0, 0, 5535.84, 51667.84, '2024-08-08 00:00:00', '2024-08-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (116, 59, 'completed', 477697.0, 500, 57323.64, 535520.64, '2024-07-23 00:00:00', '2024-08-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (117, 25, 'shipped', 261873.0, 0, 31424.76, 293297.76, '2024-12-06 00:00:00', '2024-12-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (118, 96, 'pending', 140023.0, 500, 16802.76, 157325.76, '2024-02-04 00:00:00', '2024-02-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (119, 24, 'completed', 16109.0, 500, 1933.08, 18542.08, '2024-02-19 00:00:00', '2024-03-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (120, 96, 'paid', 122924.0, 0, 14750.88, 137674.88, '2024-10-27 00:00:00', '2024-10-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (121, 32, 'completed', 485387.0, 500, 58246.44, 544133.44, '2024-01-27 00:00:00', '2024-02-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (122, 80, 'processing', 177158.0, 1000, 21258.96, 199416.96, '2024-09-16 00:00:00', '2024-09-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (123, 40, 'cancelled', 417568.0, 0, 50108.16, 467676.16, '2024-06-28 00:00:00', '2024-06-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (124, 143, 'shipped', 180116.0, 0, 21613.92, 201729.92, '2024-10-20 00:00:00', '2024-10-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (125, 110, 'processing', 49911.0, 0, 5989.32, 55900.32, '2024-01-15 00:00:00', '2024-01-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (126, 70, 'completed', 239082.0, 0, 28689.84, 267771.84, '2024-01-04 00:00:00', '2024-01-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (127, 37, 'processing', 336482.0, 0, 40377.84, 376859.84, '2024-11-20 00:00:00', '2024-11-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (128, 24, 'completed', 99308.0, 500, 11916.96, 111724.96, '2024-08-20 00:00:00', '2024-09-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (129, 41, 'paid', 231693.0, 0, 27803.16, 259496.16, '2024-10-17 00:00:00', '2024-10-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (130, 14, 'refunded', 70632.0, 1000, 8475.84, 80107.84, '2024-01-26 00:00:00', '2024-02-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (131, 70, 'processing', 522305.0, 500, 62676.6, 585481.6, '2024-11-06 00:00:00', '2024-11-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (132, 107, 'processing', 206510.0, 1000, 24781.2, 232291.2, '2024-02-28 00:00:00', '2024-02-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (133, 111, 'completed', 28562.0, 1000, 3427.44, 32989.44, '2024-09-06 00:00:00', '2024-09-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (134, 79, 'completed', 24451.0, 500, 2934.12, 27885.12, '2024-11-02 00:00:00', '2024-11-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (135, 2, 'processing', 89507.0, 0, 10740.84, 100247.84, '2024-03-11 00:00:00', '2024-03-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (136, 75, 'cancelled', 181453.0, 0, 21774.36, 203227.36, '2024-09-11 00:00:00', '2024-09-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (137, 111, 'processing', 66932.0, 500, 8031.84, 75463.84, '2024-09-29 00:00:00', '2024-10-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (138, 59, 'completed', 168894.0, 500, 20267.28, 189661.28, '2024-01-22 00:00:00', '2024-02-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (139, 5, 'completed', 340822.0, 0, 40898.64, 381720.64, '2024-10-21 00:00:00', '2024-11-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (140, 147, 'processing', 518991.0, 0, 62278.92, 581269.92, '2024-02-28 00:00:00', '2024-02-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (141, 6, 'completed', 195055.0, 1000, 23406.6, 219461.6, '2024-08-23 00:00:00', '2024-09-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (142, 93, 'completed', 38620.0, 0, 4634.4, 43254.4, '2024-05-04 00:00:00', '2024-05-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (143, 151, 'completed', 574707.0, 0, 68964.84, 643671.84, '2024-07-21 00:00:00', '2024-08-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (144, 87, 'completed', 93655.0, 0, 11238.6, 104893.6, '2024-02-09 00:00:00', '2024-03-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (145, 30, 'processing', 95793.0, 0, 11495.16, 107288.16, '2024-11-26 00:00:00', '2024-11-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (146, 61, 'refunded', 19597.0, 0, 2351.64, 21948.64, '2024-04-11 00:00:00', '2024-05-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (147, 40, 'processing', 21609.0, 500, 2593.08, 24702.08, '2024-08-25 00:00:00', '2024-08-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (148, 149, 'paid', 595956.0, 1000, 71514.72, 668470.72, '2024-06-14 00:00:00', '2024-06-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (149, 39, 'pending', 335801.0, 500, 40296.12, 376597.12, '2024-08-14 00:00:00', '2024-08-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (150, 78, 'completed', 164725.0, 0, 19767.0, 184492.0, '2024-09-16 00:00:00', '2024-09-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (151, 80, 'shipped', 536933.0, 0, 64431.96, 601364.96, '2024-01-30 00:00:00', '2024-02-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (152, 74, 'paid', 15917.0, 1000, 1910.04, 18827.04, '2024-10-31 00:00:00', '2024-11-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (153, 119, 'paid', 39473.0, 1000, 4736.76, 45209.76, '2024-11-29 00:00:00', '2024-11-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (154, 83, 'shipped', 562860.0, 0, 67543.2, 630403.2, '2024-02-01 00:00:00', '2024-02-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (155, 27, 'completed', 172106.0, 1000, 20652.72, 193758.72, '2024-11-26 00:00:00', '2024-12-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (156, 11, 'paid', 142749.0, 500, 17129.88, 160378.88, '2024-08-12 00:00:00', '2024-08-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (157, 94, 'completed', 224158.0, 500, 26898.96, 251556.96, '2024-07-28 00:00:00', '2024-08-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (158, 14, 'processing', 167278.0, 0, 20073.36, 187351.36, '2024-02-18 00:00:00', '2024-02-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (159, 99, 'completed', 216059.0, 1000, 25927.08, 242986.08, '2024-03-17 00:00:00', '2024-04-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (160, 21, 'completed', 95851.0, 0, 11502.12, 107353.12, '2024-12-01 00:00:00', '2024-12-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (161, 101, 'completed', 127993.0, 0, 15359.16, 143352.16, '2024-06-07 00:00:00', '2024-07-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (162, 97, 'processing', 183500.0, 1000, 22020.0, 206520.0, '2024-02-17 00:00:00', '2024-02-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (163, 109, 'paid', 154779.0, 0, 18573.48, 173352.48, '2024-06-07 00:00:00', '2024-06-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (164, 55, 'completed', 277473.0, 0, 33296.76, 310769.76, '2024-04-25 00:00:00', '2024-05-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (165, 40, 'shipped', 29385.0, 0, 3526.2, 32911.2, '2024-09-16 00:00:00', '2024-09-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (166, 87, 'processing', 128282.0, 500, 15393.84, 144175.84, '2024-03-19 00:00:00', '2024-03-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (167, 47, 'pending', 144526.0, 500, 17343.12, 162369.12, '2024-01-23 00:00:00', '2024-01-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (168, 106, 'processing', 212267.0, 500, 25472.04, 238239.04, '2024-11-08 00:00:00', '2024-11-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (169, 115, 'pending', 119993.0, 0, 14399.16, 134392.16, '2024-06-07 00:00:00', '2024-06-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (170, 121, 'completed', 98213.0, 1000, 11785.56, 110998.56, '2024-08-13 00:00:00', '2024-09-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (171, 73, 'completed', 563667.0, 1000, 67640.04, 632307.04, '2024-08-02 00:00:00', '2024-08-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (172, 52, 'completed', 82768.0, 0, 9932.16, 92700.16, '2024-11-24 00:00:00', '2024-12-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (173, 96, 'processing', 43810.0, 0, 5257.2, 49067.2, '2024-05-25 00:00:00', '2024-05-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (174, 42, 'processing', 267786.0, 1000, 32134.32, 300920.32, '2024-03-16 00:00:00', '2024-03-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (175, 24, 'refunded', 109130.0, 0, 13095.6, 122225.6, '2024-01-14 00:00:00', '2024-02-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (176, 14, 'completed', 563196.0, 0, 67583.52, 630779.52, '2024-04-30 00:00:00', '2024-05-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (177, 21, 'shipped', 208861.0, 0, 25063.32, 233924.32, '2024-06-12 00:00:00', '2024-06-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (178, 86, 'completed', 68035.0, 0, 8164.2, 76199.2, '2024-05-26 00:00:00', '2024-06-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (179, 36, 'processing', 535196.0, 1000, 64223.52, 600419.52, '2024-01-03 00:00:00', '2024-01-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (180, 5, 'pending', 206532.0, 0, 24783.84, 231315.84, '2024-10-07 00:00:00', '2024-10-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (181, 136, 'pending', 358293.0, 0, 42995.16, 401288.16, '2024-05-01 00:00:00', '2024-05-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (182, 78, 'processing', 13129.0, 0, 1575.48, 14704.48, '2024-08-02 00:00:00', '2024-08-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (183, 118, 'processing', 17265.0, 500, 2071.8, 19836.8, '2024-11-01 00:00:00', '2024-11-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (184, 5, 'processing', 144181.0, 0, 17301.72, 161482.72, '2024-05-29 00:00:00', '2024-05-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (185, 1, 'cancelled', 213062.0, 1000, 25567.44, 239629.44, '2024-08-01 00:00:00', '2024-08-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (186, 48, 'pending', 44307.0, 0, 5316.84, 49623.84, '2024-02-04 00:00:00', '2024-02-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (187, 135, 'shipped', 35588.0, 500, 4270.56, 40358.56, '2024-01-23 00:00:00', '2024-02-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (188, 96, 'shipped', 154257.0, 0, 18510.84, 172767.84, '2024-02-04 00:00:00', '2024-02-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (189, 62, 'shipped', 48135.0, 0, 5776.2, 53911.2, '2024-03-09 00:00:00', '2024-03-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (190, 91, 'completed', 195898.0, 500, 23507.76, 219905.76, '2024-12-22 00:00:00', '2025-01-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (191, 47, 'paid', 58270.0, 500, 6992.4, 65762.4, '2024-01-19 00:00:00', '2024-01-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (192, 52, 'cancelled', 23072.0, 0, 2768.64, 25840.64, '2024-06-10 00:00:00', '2024-06-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (193, 80, 'shipped', 584704.0, 500, 70164.48, 655368.48, '2024-05-09 00:00:00', '2024-05-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (194, 49, 'paid', 243578.0, 0, 29229.36, 272807.36, '2024-12-01 00:00:00', '2024-12-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (195, 70, 'completed', 34118.0, 500, 4094.16, 38712.16, '2024-07-23 00:00:00', '2024-08-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (196, 113, 'cancelled', 477752.0, 0, 57330.24, 535082.24, '2024-09-11 00:00:00', '2024-09-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (197, 128, 'completed', 286125.0, 0, 34335.0, 320460.0, '2024-02-12 00:00:00', '2024-03-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (198, 109, 'shipped', 38220.0, 1000, 4586.4, 43806.4, '2024-04-02 00:00:00', '2024-04-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (199, 83, 'completed', 15247.0, 0, 1829.64, 17076.64, '2024-12-04 00:00:00', '2024-12-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (200, 79, 'completed', 523407.0, 0, 62808.84, 586215.84, '2024-12-19 00:00:00', '2025-01-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (201, 90, 'shipped', 322206.0, 0, 38664.72, 360870.72, '2024-11-10 00:00:00', '2024-11-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (202, 71, 'shipped', 14917.0, 500, 1790.04, 17207.04, '2024-07-05 00:00:00', '2024-07-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (203, 8, 'completed', 129635.0, 500, 15556.2, 145691.2, '2024-01-18 00:00:00', '2024-01-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (204, 18, 'completed', 134562.0, 0, 16147.44, 150709.44, '2024-07-04 00:00:00', '2024-07-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (205, 146, 'paid', 49655.0, 0, 5958.6, 55613.6, '2024-12-13 00:00:00', '2024-12-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (206, 95, 'completed', 266376.0, 0, 31965.12, 298341.12, '2024-10-20 00:00:00', '2024-10-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (207, 136, 'cancelled', 254342.0, 0, 30521.04, 284863.04, '2024-11-28 00:00:00', '2024-11-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (208, 72, 'cancelled', 64869.0, 0, 7784.28, 72653.28, '2024-04-05 00:00:00', '2024-04-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (209, 128, 'processing', 594478.0, 0, 71337.36, 665815.36, '2024-05-14 00:00:00', '2024-05-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (210, 115, 'processing', 130199.0, 0, 15623.88, 145822.88, '2024-12-21 00:00:00', '2024-12-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (211, 52, 'refunded', 18895.0, 0, 2267.4, 21162.4, '2024-08-19 00:00:00', '2024-09-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (212, 114, 'pending', 30944.0, 0, 3713.28, 34657.28, '2024-12-29 00:00:00', '2024-12-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (213, 17, 'processing', 228631.0, 0, 27435.72, 256066.72, '2024-12-30 00:00:00', '2025-01-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (214, 45, 'pending', 283367.0, 0, 34004.04, 317371.04, '2024-03-03 00:00:00', '2024-03-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (215, 52, 'processing', 81029.0, 500, 9723.48, 91252.48, '2024-01-14 00:00:00', '2024-01-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (216, 142, 'shipped', 272527.0, 1000, 32703.24, 306230.24, '2024-03-07 00:00:00', '2024-03-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (217, 17, 'completed', 254375.0, 500, 30525.0, 285400.0, '2024-09-26 00:00:00', '2024-10-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (218, 105, 'shipped', 18213.0, 0, 2185.56, 20398.56, '2024-11-24 00:00:00', '2024-11-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (219, 116, 'paid', 571245.0, 0, 68549.4, 639794.4, '2024-03-06 00:00:00', '2024-03-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (220, 34, 'shipped', 563645.0, 0, 67637.4, 631282.4, '2024-03-04 00:00:00', '2024-03-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (221, 78, 'completed', 71229.0, 0, 8547.48, 79776.48, '2024-12-29 00:00:00', '2025-01-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (222, 89, 'processing', 170672.0, 0, 20480.64, 191152.64, '2024-04-10 00:00:00', '2024-04-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (223, 142, 'paid', 182812.0, 0, 21937.44, 204749.44, '2024-11-10 00:00:00', '2024-11-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (224, 129, 'completed', 127569.0, 1000, 15308.28, 143877.28, '2024-03-19 00:00:00', '2024-03-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (225, 87, 'processing', 11859.0, 0, 1423.08, 13282.08, '2024-01-24 00:00:00', '2024-01-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (226, 148, 'completed', 205262.0, 1000, 24631.44, 230893.44, '2024-08-01 00:00:00', '2024-08-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (227, 8, 'shipped', 586039.0, 0, 70324.68, 656363.68, '2024-11-24 00:00:00', '2024-12-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (228, 124, 'completed', 139783.0, 500, 16773.96, 157056.96, '2024-06-01 00:00:00', '2024-06-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (229, 19, 'shipped', 20359.0, 500, 2443.08, 23302.08, '2024-07-31 00:00:00', '2024-08-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (230, 119, 'completed', 94589.0, 1000, 11350.68, 106939.68, '2024-03-14 00:00:00', '2024-03-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (231, 82, 'pending', 254521.0, 0, 30542.52, 285063.52, '2024-07-08 00:00:00', '2024-07-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (232, 132, 'completed', 30913.0, 0, 3709.56, 34622.56, '2024-08-26 00:00:00', '2024-09-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (233, 69, 'completed', 429980.0, 0, 51597.6, 481577.6, '2024-02-19 00:00:00', '2024-02-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (234, 75, 'paid', 519223.0, 0, 62306.76, 581529.76, '2024-03-22 00:00:00', '2024-03-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (235, 148, 'shipped', 199763.0, 0, 23971.56, 223734.56, '2024-09-12 00:00:00', '2024-09-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (236, 128, 'shipped', 280382.0, 0, 33645.84, 314027.84, '2024-02-16 00:00:00', '2024-02-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (237, 130, 'shipped', 426211.0, 0, 51145.32, 477356.32, '2024-10-25 00:00:00', '2024-11-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (238, 13, 'paid', 28438.0, 500, 3412.56, 32350.56, '2024-11-01 00:00:00', '2024-11-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (239, 74, 'completed', 17044.0, 500, 2045.28, 19589.28, '2024-03-09 00:00:00', '2024-03-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (240, 94, 'completed', 491856.0, 0, 59022.72, 550878.72, '2024-07-24 00:00:00', '2024-08-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (241, 146, 'shipped', 97516.0, 1000, 11701.92, 110217.92, '2024-05-27 00:00:00', '2024-05-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (242, 99, 'completed', 588283.0, 0, 70593.96, 658876.96, '2024-11-15 00:00:00', '2024-12-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (243, 31, 'completed', 62672.0, 500, 7520.64, 70692.64, '2024-07-10 00:00:00', '2024-07-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (244, 143, 'completed', 187818.0, 0, 22538.16, 210356.16, '2024-11-04 00:00:00', '2024-11-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (245, 103, 'refunded', 12969.0, 0, 1556.28, 14525.28, '2025-03-12 00:00:00', '2025-04-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (246, 122, 'shipped', 378087.0, 1000, 45370.44, 424457.44, '2025-09-21 00:00:00', '2025-09-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (247, 84, 'completed', 192598.0, 500, 23111.76, 216209.76, '2025-11-12 00:00:00', '2025-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (248, 77, 'completed', 282989.0, 1000, 33958.68, 317947.68, '2025-09-30 00:00:00', '2025-10-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (249, 145, 'completed', 274490.0, 0, 32938.8, 307428.8, '2025-07-08 00:00:00', '2025-07-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (250, 29, 'shipped', 461311.0, 0, 55357.32, 516668.32, '2025-11-02 00:00:00', '2025-11-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (251, 68, 'shipped', 144555.0, 0, 17346.6, 161901.6, '2025-10-26 00:00:00', '2025-11-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (252, 44, 'shipped', 377477.0, 0, 45297.24, 422774.24, '2025-01-17 00:00:00', '2025-01-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (253, 49, 'shipped', 38903.0, 0, 4668.36, 43571.36, '2025-08-03 00:00:00', '2025-08-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (254, 106, 'completed', 103788.0, 1000, 12454.56, 117242.56, '2025-11-10 00:00:00', '2025-12-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (255, 16, 'cancelled', 117984.0, 0, 14158.08, 132142.08, '2025-10-15 00:00:00', '2025-10-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (256, 84, 'paid', 575501.0, 500, 69060.12, 645061.12, '2025-06-10 00:00:00', '2025-06-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (257, 118, 'completed', 293202.0, 0, 35184.24, 328386.24, '2025-12-13 00:00:00', '2026-01-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (258, 68, 'paid', 400801.0, 0, 48096.12, 448897.12, '2025-05-23 00:00:00', '2025-05-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (259, 58, 'completed', 225760.0, 0, 27091.2, 252851.2, '2025-12-20 00:00:00', '2026-01-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (260, 126, 'paid', 275777.0, 0, 33093.24, 308870.24, '2025-10-14 00:00:00', '2025-10-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (261, 74, 'completed', 47583.0, 1000, 5709.96, 54292.96, '2025-07-14 00:00:00', '2025-08-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (262, 89, 'completed', 88070.0, 0, 10568.4, 98638.4, '2025-05-28 00:00:00', '2025-06-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (263, 21, 'completed', 265966.0, 0, 31915.92, 297881.92, '2025-09-03 00:00:00', '2025-09-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (264, 52, 'pending', 297329.0, 0, 35679.48, 333008.48, '2025-03-12 00:00:00', '2025-03-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (265, 28, 'completed', 81779.0, 0, 9813.48, 91592.48, '2025-12-09 00:00:00', '2026-01-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (266, 58, 'paid', 56880.0, 0, 6825.6, 63705.6, '2025-07-31 00:00:00', '2025-08-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (267, 121, 'cancelled', 19009.0, 0, 2281.08, 21290.08, '2025-10-09 00:00:00', '2025-10-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (268, 41, 'completed', 549403.0, 500, 65928.36, 615831.36, '2025-11-30 00:00:00', '2025-12-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (269, 74, 'cancelled', 224819.0, 0, 26978.28, 251797.28, '2025-02-15 00:00:00', '2025-02-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (270, 147, 'paid', 120143.0, 0, 14417.16, 134560.16, '2025-03-31 00:00:00', '2025-04-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (271, 46, 'processing', 36017.0, 500, 4322.04, 40839.04, '2025-04-06 00:00:00', '2025-04-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (272, 75, 'completed', 10607.0, 0, 1272.84, 11879.84, '2025-10-18 00:00:00', '2025-11-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (273, 28, 'completed', 224596.0, 500, 26951.52, 252047.52, '2025-11-25 00:00:00', '2025-12-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (274, 135, 'completed', 370359.0, 1000, 44443.08, 415802.08, '2025-08-28 00:00:00', '2025-09-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (275, 50, 'completed', 31671.0, 0, 3800.52, 35471.52, '2025-08-23 00:00:00', '2025-09-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (276, 66, 'completed', 51846.0, 0, 6221.52, 58067.52, '2025-06-01 00:00:00', '2025-06-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (277, 50, 'shipped', 130079.0, 500, 15609.48, 146188.48, '2025-08-07 00:00:00', '2025-08-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (278, 23, 'pending', 350009.0, 0, 42001.08, 392010.08, '2025-03-13 00:00:00', '2025-03-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (279, 123, 'paid', 215024.0, 0, 25802.88, 240826.88, '2025-05-14 00:00:00', '2025-05-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (280, 61, 'shipped', 439981.0, 0, 52797.72, 492778.72, '2025-06-04 00:00:00', '2025-06-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (281, 67, 'completed', 211945.0, 0, 25433.4, 237378.4, '2025-12-08 00:00:00', '2025-12-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (282, 120, 'shipped', 191868.0, 500, 23024.16, 215392.16, '2025-12-18 00:00:00', '2025-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (283, 31, 'paid', 246349.0, 1000, 29561.88, 276910.88, '2025-04-24 00:00:00', '2025-04-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (284, 35, 'completed', 380313.0, 500, 45637.56, 426450.56, '2025-11-07 00:00:00', '2025-11-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (285, 107, 'processing', 581814.0, 0, 69817.68, 651631.68, '2025-05-07 00:00:00', '2025-05-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (286, 21, 'completed', 576914.0, 0, 69229.68, 646143.68, '2025-02-09 00:00:00', '2025-03-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (287, 29, 'completed', 45890.0, 1000, 5506.8, 52396.8, '2025-04-14 00:00:00', '2025-05-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (288, 138, 'refunded', 71566.0, 0, 8587.92, 80153.92, '2025-09-24 00:00:00', '2025-11-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (289, 30, 'paid', 143967.0, 1000, 17276.04, 162243.04, '2025-09-08 00:00:00', '2025-09-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (290, 131, 'shipped', 329169.0, 500, 39500.28, 369169.28, '2025-03-09 00:00:00', '2025-03-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (291, 117, 'completed', 46621.0, 500, 5594.52, 52715.52, '2025-12-11 00:00:00', '2025-12-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (292, 6, 'processing', 433408.0, 0, 52008.96, 485416.96, '2025-04-22 00:00:00', '2025-04-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (293, 19, 'processing', 37767.0, 0, 4532.04, 42299.04, '2025-12-25 00:00:00', '2025-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (294, 139, 'completed', 14523.0, 500, 1742.76, 16765.76, '2025-01-17 00:00:00', '2025-02-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (295, 105, 'completed', 67750.0, 500, 8130.0, 76380.0, '2025-07-11 00:00:00', '2025-07-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (296, 115, 'completed', 496946.0, 0, 59633.52, 556579.52, '2025-12-16 00:00:00', '2026-01-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (297, 139, 'shipped', 135660.0, 0, 16279.2, 151939.2, '2025-03-02 00:00:00', '2025-03-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (298, 138, 'pending', 577265.0, 0, 69271.8, 646536.8, '2025-04-25 00:00:00', '2025-04-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (299, 1, 'pending', 29553.0, 500, 3546.36, 33599.36, '2025-12-11 00:00:00', '2025-12-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (300, 140, 'processing', 578886.0, 500, 69466.32, 648852.32, '2025-04-28 00:00:00', '2025-04-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (301, 118, 'completed', 190664.0, 0, 22879.68, 213543.68, '2025-04-07 00:00:00', '2025-05-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (302, 29, 'processing', 37475.0, 1000, 4497.0, 42972.0, '2025-01-09 00:00:00', '2025-01-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (303, 53, 'shipped', 16612.0, 1000, 1993.44, 19605.44, '2025-01-18 00:00:00', '2025-01-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (304, 13, 'completed', 147064.0, 0, 17647.68, 164711.68, '2025-07-25 00:00:00', '2025-08-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (305, 60, 'completed', 148878.0, 0, 17865.36, 166743.36, '2025-03-13 00:00:00', '2025-04-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (306, 75, 'completed', 145881.0, 1000, 17505.72, 164386.72, '2025-06-13 00:00:00', '2025-07-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (307, 83, 'completed', 89552.0, 0, 10746.24, 100298.24, '2025-12-05 00:00:00', '2025-12-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (308, 57, 'shipped', 457549.0, 0, 54905.88, 512454.88, '2025-02-01 00:00:00', '2025-02-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (309, 110, 'completed', 324580.0, 0, 38949.6, 363529.6, '2025-11-26 00:00:00', '2025-12-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (310, 98, 'pending', 259137.0, 500, 31096.44, 290733.44, '2025-03-18 00:00:00', '2025-03-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (311, 77, 'shipped', 396405.0, 1000, 47568.6, 444973.6, '2025-08-31 00:00:00', '2025-09-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (312, 58, 'shipped', 187840.0, 500, 22540.8, 210880.8, '2025-01-30 00:00:00', '2025-02-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (313, 107, 'completed', 100910.0, 0, 12109.2, 113019.2, '2025-05-11 00:00:00', '2025-05-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (314, 85, 'paid', 39477.0, 0, 4737.24, 44214.24, '2025-02-17 00:00:00', '2025-02-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (315, 14, 'pending', 248872.0, 1000, 29864.64, 279736.64, '2025-11-05 00:00:00', '2025-11-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (316, 11, 'completed', 22331.0, 1000, 2679.72, 26010.72, '2025-12-10 00:00:00', '2026-01-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (317, 56, 'processing', 409518.0, 0, 49142.16, 458660.16, '2025-06-05 00:00:00', '2025-06-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (318, 55, 'shipped', 147186.0, 0, 17662.32, 164848.32, '2025-09-03 00:00:00', '2025-09-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (319, 53, 'pending', 425478.0, 1000, 51057.36, 477535.36, '2025-06-14 00:00:00', '2025-06-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (320, 73, 'completed', 544449.0, 1000, 65333.88, 610782.88, '2025-11-29 00:00:00', '2025-12-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (321, 79, 'processing', 244278.0, 1000, 29313.36, 274591.36, '2025-09-12 00:00:00', '2025-09-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (322, 26, 'completed', 467894.0, 0, 56147.28, 524041.28, '2025-07-09 00:00:00', '2025-07-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (323, 106, 'completed', 46865.0, 0, 5623.8, 52488.8, '2025-03-16 00:00:00', '2025-03-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (324, 67, 'pending', 454765.0, 0, 54571.8, 509336.8, '2025-04-11 00:00:00', '2025-04-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (325, 85, 'paid', 99786.0, 1000, 11974.32, 112760.32, '2025-05-06 00:00:00', '2025-05-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (326, 141, 'completed', 217456.0, 500, 26094.72, 244050.72, '2025-11-25 00:00:00', '2025-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (327, 126, 'pending', 388202.0, 0, 46584.24, 434786.24, '2025-03-28 00:00:00', '2025-03-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (328, 36, 'shipped', 396494.0, 1000, 47579.28, 445073.28, '2025-11-25 00:00:00', '2025-11-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (329, 135, 'completed', 14871.0, 0, 1784.52, 16655.52, '2025-01-04 00:00:00', '2025-01-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (330, 36, 'completed', 58908.0, 0, 7068.96, 65976.96, '2025-01-05 00:00:00', '2025-01-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (331, 130, 'processing', 495664.0, 0, 59479.68, 555143.68, '2025-11-13 00:00:00', '2025-11-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (332, 124, 'processing', 308247.0, 0, 36989.64, 345236.64, '2025-09-30 00:00:00', '2025-10-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (333, 106, 'processing', 11096.0, 1000, 1331.52, 13427.52, '2025-05-21 00:00:00', '2025-05-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (334, 74, 'cancelled', 42913.0, 500, 5149.56, 48562.56, '2025-04-02 00:00:00', '2025-04-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (335, 28, 'processing', 44366.0, 0, 5323.92, 49689.92, '2025-05-04 00:00:00', '2025-05-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (336, 135, 'completed', 242914.0, 0, 29149.68, 272063.68, '2025-07-23 00:00:00', '2025-08-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (337, 96, 'completed', 540647.0, 1000, 64877.64, 606524.64, '2025-05-05 00:00:00', '2025-06-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (338, 58, 'pending', 171133.0, 0, 20535.96, 191668.96, '2025-02-17 00:00:00', '2025-02-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (339, 104, 'shipped', 497745.0, 1000, 59729.4, 558474.4, '2025-09-01 00:00:00', '2025-09-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (340, 3, 'completed', 60837.0, 500, 7300.44, 68637.44, '2025-08-11 00:00:00', '2025-09-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (341, 85, 'completed', 44613.0, 0, 5353.56, 49966.56, '2025-04-28 00:00:00', '2025-05-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (342, 146, 'completed', 442131.0, 0, 53055.72, 495186.72, '2025-02-08 00:00:00', '2025-03-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (343, 72, 'cancelled', 21754.0, 0, 2610.48, 24364.48, '2025-01-09 00:00:00', '2025-01-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (344, 54, 'completed', 148599.0, 500, 17831.88, 166930.88, '2025-02-09 00:00:00', '2025-02-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (345, 42, 'processing', 124277.0, 500, 14913.24, 139690.24, '2025-12-13 00:00:00', '2025-12-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (346, 85, 'pending', 373374.0, 0, 44804.88, 418178.88, '2025-09-14 00:00:00', '2025-09-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (347, 89, 'completed', 16401.0, 500, 1968.12, 18869.12, '2025-04-29 00:00:00', '2025-05-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (348, 88, 'shipped', 471115.0, 0, 56533.8, 527648.8, '2025-11-21 00:00:00', '2025-11-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (349, 116, 'completed', 419610.0, 0, 50353.2, 469963.2, '2025-10-11 00:00:00', '2025-10-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (350, 111, 'processing', 139088.0, 1000, 16690.56, 156778.56, '2025-12-05 00:00:00', '2025-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (351, 22, 'completed', 214605.0, 0, 25752.6, 240357.6, '2025-02-12 00:00:00', '2025-02-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (352, 40, 'processing', 380885.0, 500, 45706.2, 427091.2, '2025-06-12 00:00:00', '2025-06-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (353, 28, 'processing', 10340.0, 0, 1240.8, 11580.8, '2025-08-16 00:00:00', '2025-08-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (354, 70, 'processing', 18683.0, 0, 2241.96, 20924.96, '2025-04-06 00:00:00', '2025-04-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (355, 115, 'completed', 354155.0, 0, 42498.6, 396653.6, '2025-02-15 00:00:00', '2025-03-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (356, 142, 'completed', 49120.0, 1000, 5894.4, 56014.4, '2025-06-16 00:00:00', '2025-07-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (357, 4, 'processing', 258477.0, 500, 31017.24, 289994.24, '2025-02-13 00:00:00', '2025-02-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (358, 144, 'pending', 124967.0, 1000, 14996.04, 140963.04, '2025-03-28 00:00:00', '2025-03-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (359, 98, 'completed', 68198.0, 0, 8183.76, 76381.76, '2025-06-04 00:00:00', '2025-06-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (360, 127, 'shipped', 58292.0, 0, 6995.04, 65287.04, '2025-08-11 00:00:00', '2025-08-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (361, 108, 'processing', 276938.0, 0, 33232.56, 310170.56, '2025-07-04 00:00:00', '2025-07-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (362, 64, 'paid', 402523.0, 500, 48302.76, 451325.76, '2025-02-24 00:00:00', '2025-02-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (363, 78, 'completed', 35932.0, 0, 4311.84, 40243.84, '2025-11-14 00:00:00', '2025-12-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (364, 85, 'shipped', 475498.0, 500, 57059.76, 533057.76, '2025-11-30 00:00:00', '2025-12-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (365, 77, 'completed', 202652.0, 500, 24318.24, 227470.24, '2025-06-10 00:00:00', '2025-06-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (366, 102, 'shipped', 226401.0, 500, 27168.12, 254069.12, '2025-10-22 00:00:00', '2025-10-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (367, 84, 'paid', 446958.0, 500, 53634.96, 501092.96, '2025-07-06 00:00:00', '2025-07-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (368, 145, 'cancelled', 127624.0, 1000, 15314.88, 143938.88, '2025-04-03 00:00:00', '2025-04-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (369, 141, 'completed', 40252.0, 0, 4830.24, 45082.24, '2025-08-13 00:00:00', '2025-08-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (370, 18, 'pending', 561778.0, 0, 67413.36, 629191.36, '2025-11-21 00:00:00', '2025-11-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (371, 78, 'completed', 83119.0, 0, 9974.28, 93093.28, '2025-08-05 00:00:00', '2025-08-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (372, 19, 'processing', 551257.0, 1000, 66150.84, 618407.84, '2025-07-25 00:00:00', '2025-07-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (373, 130, 'processing', 585026.0, 0, 70203.12, 655229.12, '2025-07-04 00:00:00', '2025-07-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (374, 138, 'processing', 17167.0, 0, 2060.04, 19227.04, '2025-12-03 00:00:00', '2025-12-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (375, 91, 'pending', 134803.0, 1000, 16176.36, 151979.36, '2025-01-23 00:00:00', '2025-01-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (376, 145, 'pending', 473852.0, 500, 56862.24, 531214.24, '2025-02-24 00:00:00', '2025-02-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (377, 3, 'processing', 26956.0, 0, 3234.72, 30190.72, '2025-09-19 00:00:00', '2025-09-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (378, 133, 'completed', 108429.0, 0, 13011.48, 121440.48, '2025-07-20 00:00:00', '2025-08-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (379, 151, 'cancelled', 95215.0, 0, 11425.8, 106640.8, '2025-09-05 00:00:00', '2025-09-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (380, 27, 'pending', 259045.0, 0, 31085.4, 290130.4, '2025-03-01 00:00:00', '2025-03-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (381, 37, 'completed', 231760.0, 0, 27811.2, 259571.2, '2025-08-22 00:00:00', '2025-09-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (382, 134, 'processing', 482609.0, 500, 57913.08, 541022.08, '2025-02-19 00:00:00', '2025-02-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (383, 116, 'completed', 167609.0, 0, 20113.08, 187722.08, '2025-01-23 00:00:00', '2025-02-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (384, 30, 'shipped', 32483.0, 0, 3897.96, 36380.96, '2025-12-13 00:00:00', '2025-12-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (385, 63, 'completed', 122339.0, 0, 14680.68, 137019.68, '2025-06-19 00:00:00', '2025-07-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (386, 110, 'processing', 421559.0, 500, 50587.08, 472646.08, '2025-11-19 00:00:00', '2025-11-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (387, 48, 'paid', 507399.0, 0, 60887.88, 568286.88, '2025-11-11 00:00:00', '2025-11-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (388, 116, 'processing', 503861.0, 0, 60463.32, 564324.32, '2025-12-27 00:00:00', '2025-12-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (389, 53, 'completed', 166400.0, 1000, 19968.0, 187368.0, '2025-02-22 00:00:00', '2025-03-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (390, 48, 'refunded', 235454.0, 0, 28254.48, 263708.48, '2025-08-23 00:00:00', '2025-09-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (391, 68, 'completed', 576674.0, 0, 69200.88, 645874.88, '2025-11-02 00:00:00', '2025-11-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (392, 101, 'completed', 32801.0, 0, 3936.12, 36737.12, '2025-08-23 00:00:00', '2025-09-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (393, 45, 'shipped', 172217.0, 0, 20666.04, 192883.04, '2025-06-10 00:00:00', '2025-06-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (394, 62, 'paid', 180657.0, 0, 21678.84, 202335.84, '2025-07-11 00:00:00', '2025-07-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (395, 131, 'paid', 519277.0, 1000, 62313.24, 582590.24, '2025-03-12 00:00:00', '2025-03-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (396, 109, 'pending', 113788.0, 1000, 13654.56, 128442.56, '2025-12-22 00:00:00', '2025-12-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (397, 45, 'completed', 114178.0, 0, 13701.36, 127879.36, '2025-03-13 00:00:00', '2025-03-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (398, 81, 'processing', 328107.0, 0, 39372.84, 367479.84, '2025-01-05 00:00:00', '2025-01-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (399, 35, 'shipped', 100324.0, 1000, 12038.88, 113362.88, '2025-09-16 00:00:00', '2025-09-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (400, 105, 'shipped', 517910.0, 500, 62149.2, 580559.2, '2025-09-08 00:00:00', '2025-09-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (401, 22, 'completed', 24452.0, 0, 2934.24, 27386.24, '2025-01-17 00:00:00', '2025-02-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (402, 58, 'paid', 194094.0, 500, 23291.28, 217885.28, '2025-10-17 00:00:00', '2025-10-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (403, 141, 'pending', 47533.0, 0, 5703.96, 53236.96, '2025-05-18 00:00:00', '2025-05-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (404, 140, 'completed', 292093.0, 0, 35051.16, 327144.16, '2025-08-14 00:00:00', '2025-09-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (405, 56, 'processing', 353695.0, 0, 42443.4, 396138.4, '2025-06-02 00:00:00', '2025-06-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (406, 116, 'cancelled', 241377.0, 0, 28965.24, 270342.24, '2025-08-13 00:00:00', '2025-08-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (407, 31, 'completed', 77509.0, 1000, 9301.08, 87810.08, '2025-12-19 00:00:00', '2026-01-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (408, 110, 'completed', 130760.0, 0, 15691.2, 146451.2, '2025-04-16 00:00:00', '2025-04-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (409, 16, 'completed', 289534.0, 0, 34744.08, 324278.08, '2025-11-02 00:00:00', '2025-11-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (410, 44, 'shipped', 226712.0, 0, 27205.44, 253917.44, '2025-10-21 00:00:00', '2025-10-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (411, 132, 'completed', 18885.0, 500, 2266.2, 21651.2, '2025-01-31 00:00:00', '2025-02-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (412, 33, 'completed', 82725.0, 0, 9927.0, 92652.0, '2025-12-31 00:00:00', '2026-01-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (413, 64, 'cancelled', 556617.0, 0, 66794.04, 623411.04, '2025-10-23 00:00:00', '2025-10-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (414, 69, 'processing', 496698.0, 500, 59603.76, 556801.76, '2025-02-08 00:00:00', '2025-02-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (415, 24, 'cancelled', 570329.0, 0, 68439.48, 638768.48, '2025-12-22 00:00:00', '2025-12-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (416, 95, 'shipped', 555875.0, 0, 66705.0, 622580.0, '2025-10-25 00:00:00', '2025-10-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (417, 24, 'processing', 487811.0, 0, 58537.32, 546348.32, '2025-10-01 00:00:00', '2025-10-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (418, 56, 'processing', 411071.0, 500, 49328.52, 460899.52, '2025-05-18 00:00:00', '2025-05-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (419, 73, 'shipped', 293474.0, 1000, 35216.88, 329690.88, '2025-03-08 00:00:00', '2025-03-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (420, 88, 'pending', 13010.0, 0, 1561.2, 14571.2, '2025-11-17 00:00:00', '2025-11-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (421, 118, 'completed', 18142.0, 0, 2177.04, 20319.04, '2025-08-14 00:00:00', '2025-09-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (422, 1, 'shipped', 406073.0, 0, 48728.76, 454801.76, '2025-11-29 00:00:00', '2025-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (423, 41, 'shipped', 174468.0, 0, 20936.16, 195404.16, '2025-05-09 00:00:00', '2025-05-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (424, 96, 'completed', 56787.0, 500, 6814.44, 64101.44, '2025-11-17 00:00:00', '2025-12-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (425, 60, 'completed', 347814.0, 0, 41737.68, 389551.68, '2025-01-01 00:00:00', '2025-01-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (426, 123, 'completed', 18696.0, 1000, 2243.52, 21939.52, '2025-04-26 00:00:00', '2025-05-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (427, 114, 'completed', 10528.0, 0, 1263.36, 11791.36, '2025-03-03 00:00:00', '2025-03-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (428, 34, 'completed', 337134.0, 0, 40456.08, 377590.08, '2025-07-16 00:00:00', '2025-07-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (429, 27, 'refunded', 30535.0, 0, 3664.2, 34199.2, '2025-06-03 00:00:00', '2025-06-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (430, 98, 'paid', 134092.0, 0, 16091.04, 150183.04, '2025-02-05 00:00:00', '2025-02-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (431, 43, 'paid', 484123.0, 0, 58094.76, 542217.76, '2025-11-18 00:00:00', '2025-11-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (432, 106, 'paid', 413898.0, 0, 49667.76, 463565.76, '2025-02-21 00:00:00', '2025-02-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (433, 32, 'paid', 484305.0, 500, 58116.6, 542921.6, '2025-06-11 00:00:00', '2025-06-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (434, 64, 'paid', 172085.0, 0, 20650.2, 192735.2, '2025-10-11 00:00:00', '2025-10-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (435, 7, 'completed', 203856.0, 1000, 24462.72, 229318.72, '2025-11-07 00:00:00', '2025-11-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (436, 49, 'paid', 454949.0, 0, 54593.88, 509542.88, '2025-05-03 00:00:00', '2025-05-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (437, 99, 'shipped', 25799.0, 500, 3095.88, 29394.88, '2025-11-23 00:00:00', '2025-11-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (438, 136, 'shipped', 33664.0, 0, 4039.68, 37703.68, '2025-03-09 00:00:00', '2025-03-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (439, 146, 'completed', 491581.0, 1000, 58989.72, 551570.72, '2025-12-16 00:00:00', '2025-12-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (440, 121, 'paid', 11093.0, 1000, 1331.16, 13424.16, '2025-02-04 00:00:00', '2025-02-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (441, 68, 'shipped', 55220.0, 0, 6626.4, 61846.4, '2025-07-23 00:00:00', '2025-07-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (442, 129, 'paid', 522075.0, 500, 62649.0, 585224.0, '2025-02-12 00:00:00', '2025-02-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (443, 72, 'processing', 30310.0, 0, 3637.2, 33947.2, '2025-09-19 00:00:00', '2025-09-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (444, 40, 'refunded', 252427.0, 1000, 30291.24, 283718.24, '2025-11-21 00:00:00', '2025-12-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (445, 80, 'cancelled', 425114.0, 0, 51013.68, 476127.68, '2025-05-06 00:00:00', '2025-05-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (446, 23, 'refunded', 360810.0, 500, 43297.2, 404607.2, '2025-11-10 00:00:00', '2025-11-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (447, 80, 'pending', 65655.0, 0, 7878.6, 73533.6, '2025-12-29 00:00:00', '2025-12-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (448, 36, 'pending', 20736.0, 500, 2488.32, 23724.32, '2025-06-27 00:00:00', '2025-06-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (449, 134, 'shipped', 193768.0, 0, 23252.16, 217020.16, '2025-03-06 00:00:00', '2025-03-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (450, 31, 'completed', 31955.0, 500, 3834.6, 36289.6, '2025-05-20 00:00:00', '2025-06-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (451, 17, 'completed', 170203.0, 500, 20424.36, 191127.36, '2025-08-22 00:00:00', '2025-09-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (452, 93, 'shipped', 42742.0, 1000, 5129.04, 48871.04, '2025-03-27 00:00:00', '2025-04-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (453, 41, 'paid', 176975.0, 1000, 21237.0, 199212.0, '2025-12-12 00:00:00', '2025-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (454, 59, 'completed', 12886.0, 0, 1546.32, 14432.32, '2025-05-06 00:00:00', '2025-05-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (455, 121, 'paid', 250395.0, 0, 30047.4, 280442.4, '2025-04-02 00:00:00', '2025-04-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (456, 142, 'pending', 417710.0, 0, 50125.2, 467835.2, '2025-05-08 00:00:00', '2025-05-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (457, 107, 'pending', 221108.0, 0, 26532.96, 247640.96, '2025-10-20 00:00:00', '2025-10-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (458, 96, 'cancelled', 42901.0, 0, 5148.12, 48049.12, '2025-04-02 00:00:00', '2025-04-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (459, 58, 'completed', 36275.0, 0, 4353.0, 40628.0, '2025-08-27 00:00:00', '2025-09-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (460, 80, 'pending', 172645.0, 1000, 20717.4, 194362.4, '2025-08-22 00:00:00', '2025-08-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (461, 3, 'shipped', 202604.0, 0, 24312.48, 226916.48, '2025-10-16 00:00:00', '2025-10-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (462, 63, 'completed', 493081.0, 1000, 59169.72, 553250.72, '2025-09-10 00:00:00', '2025-09-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (463, 140, 'cancelled', 69735.0, 0, 8368.2, 78103.2, '2025-07-29 00:00:00', '2025-07-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (464, 7, 'completed', 120981.0, 0, 14517.72, 135498.72, '2025-11-22 00:00:00', '2025-12-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (465, 3, 'shipped', 150383.0, 500, 18045.96, 168928.96, '2025-06-07 00:00:00', '2025-06-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (466, 53, 'shipped', 105026.0, 500, 12603.12, 118129.12, '2025-01-31 00:00:00', '2025-02-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (467, 72, 'completed', 12877.0, 0, 1545.24, 14422.24, '2025-09-24 00:00:00', '2025-10-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (468, 96, 'processing', 344513.0, 1000, 41341.56, 386854.56, '2025-02-18 00:00:00', '2025-02-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (469, 35, 'completed', 339232.0, 1000, 40707.84, 380939.84, '2025-10-18 00:00:00', '2025-10-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (470, 112, 'completed', 81034.0, 0, 9724.08, 90758.08, '2025-05-14 00:00:00', '2025-05-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (471, 101, 'completed', 233376.0, 500, 28005.12, 261881.12, '2025-05-20 00:00:00', '2025-06-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (472, 20, 'processing', 67840.0, 1000, 8140.8, 76980.8, '2025-02-25 00:00:00', '2025-02-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (473, 28, 'processing', 108925.0, 500, 13071.0, 122496.0, '2025-06-10 00:00:00', '2025-06-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (474, 31, 'cancelled', 204430.0, 500, 24531.6, 229461.6, '2025-06-07 00:00:00', '2025-06-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (475, 119, 'refunded', 181434.0, 0, 21772.08, 203206.08, '2025-03-22 00:00:00', '2025-04-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (476, 11, 'cancelled', 92964.0, 0, 11155.68, 104119.68, '2025-02-16 00:00:00', '2025-02-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (477, 64, 'shipped', 253873.0, 1000, 30464.76, 285337.76, '2025-01-26 00:00:00', '2025-02-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (478, 67, 'completed', 54073.0, 500, 6488.76, 61061.76, '2025-08-20 00:00:00', '2025-09-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (479, 141, 'completed', 62415.0, 500, 7489.8, 70404.8, '2025-02-22 00:00:00', '2025-03-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (480, 32, 'paid', 14041.0, 0, 1684.92, 15725.92, '2025-03-08 00:00:00', '2025-03-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (481, 103, 'completed', 172030.0, 1000, 20643.6, 193673.6, '2025-10-28 00:00:00', '2025-11-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (482, 20, 'cancelled', 14225.0, 0, 1707.0, 15932.0, '2025-11-27 00:00:00', '2025-11-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (483, 114, 'processing', 62055.0, 0, 7446.6, 69501.6, '2025-03-04 00:00:00', '2025-03-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (484, 119, 'completed', 21009.0, 1000, 2521.08, 24530.08, '2025-08-10 00:00:00', '2025-09-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (485, 102, 'pending', 315457.0, 500, 37854.84, 353811.84, '2025-12-16 00:00:00', '2025-12-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (486, 110, 'completed', 96392.0, 0, 11567.04, 107959.04, '2025-04-06 00:00:00', '2025-04-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (487, 72, 'completed', 377925.0, 0, 45351.0, 423276.0, '2025-11-11 00:00:00', '2025-12-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (488, 63, 'shipped', 280781.0, 500, 33693.72, 314974.72, '2025-10-09 00:00:00', '2025-10-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (489, 16, 'paid', 28335.0, 500, 3400.2, 32235.2, '2025-03-12 00:00:00', '2025-03-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (490, 52, 'shipped', 132674.0, 1000, 15920.88, 149594.88, '2025-01-10 00:00:00', '2025-01-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (491, 92, 'completed', 585484.0, 500, 70258.08, 656242.08, '2025-06-26 00:00:00', '2025-07-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (492, 129, 'completed', 251811.0, 0, 30217.32, 282028.32, '2025-04-03 00:00:00', '2025-04-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (493, 82, 'processing', 53840.0, 0, 6460.8, 60300.8, '2025-01-30 00:00:00', '2025-01-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (494, 136, 'processing', 211017.0, 0, 25322.04, 236339.04, '2025-02-21 00:00:00', '2025-02-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (495, 62, 'shipped', 289903.0, 0, 34788.36, 324691.36, '2025-04-23 00:00:00', '2025-05-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (496, 91, 'shipped', 73081.0, 0, 8769.72, 81850.72, '2025-10-31 00:00:00', '2025-11-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (497, 92, 'pending', 33047.0, 1000, 3965.64, 38012.64, '2025-10-16 00:00:00', '2025-10-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (498, 37, 'pending', 114517.0, 1000, 13742.04, 129259.04, '2025-06-08 00:00:00', '2025-06-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (499, 45, 'pending', 319903.0, 0, 38388.36, 358291.36, '2025-01-29 00:00:00', '2025-01-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (500, 60, 'completed', 52612.0, 1000, 6313.44, 59925.44, '2025-09-02 00:00:00', '2025-09-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (501, 85, 'completed', 67103.0, 0, 8052.36, 75155.36, '2025-04-01 00:00:00', '2025-04-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (502, 16, 'processing', 19680.0, 1000, 2361.6, 23041.6, '2025-12-27 00:00:00', '2025-12-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (503, 29, 'pending', 169013.0, 0, 20281.56, 189294.56, '2025-12-27 00:00:00', '2025-12-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (504, 102, 'completed', 32056.0, 0, 3846.72, 35902.72, '2025-06-15 00:00:00', '2025-06-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (505, 41, 'completed', 555433.0, 0, 66651.96, 622084.96, '2025-03-31 00:00:00', '2025-04-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (506, 144, 'completed', 208520.0, 1000, 25022.4, 234542.4, '2025-03-31 00:00:00', '2025-04-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (507, 79, 'paid', 183383.0, 0, 22005.96, 205388.96, '2025-01-01 00:00:00', '2025-01-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (508, 146, 'shipped', 21932.0, 1000, 2631.84, 25563.84, '2025-06-12 00:00:00', '2025-06-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (509, 145, 'completed', 42517.0, 0, 5102.04, 47619.04, '2025-06-19 00:00:00', '2025-07-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (510, 20, 'shipped', 95457.0, 0, 11454.84, 106911.84, '2025-03-27 00:00:00', '2025-03-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (511, 86, 'completed', 305974.0, 0, 36716.88, 342690.88, '2025-04-18 00:00:00', '2025-05-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (512, 18, 'pending', 217281.0, 0, 26073.72, 243354.72, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (513, 13, 'completed', 529753.0, 500, 63570.36, 593823.36, '2025-03-27 00:00:00', '2025-04-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (514, 127, 'completed', 484146.0, 1000, 58097.52, 543243.52, '2025-07-12 00:00:00', '2025-07-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (515, 123, 'completed', 71319.0, 500, 8558.28, 80377.28, '2025-02-07 00:00:00', '2025-02-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (516, 76, 'cancelled', 30887.0, 0, 3706.44, 34593.44, '2025-02-23 00:00:00', '2025-02-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (517, 19, 'completed', 194592.0, 500, 23351.04, 218443.04, '2025-03-24 00:00:00', '2025-04-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (518, 20, 'completed', 32147.0, 1000, 3857.64, 37004.64, '2025-11-11 00:00:00', '2025-12-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (519, 8, 'processing', 386506.0, 1000, 46380.72, 433886.72, '2025-08-11 00:00:00', '2025-08-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (520, 14, 'pending', 31698.0, 0, 3803.76, 35501.76, '2025-04-08 00:00:00', '2025-04-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (521, 105, 'completed', 223799.0, 0, 26855.88, 250654.88, '2025-05-02 00:00:00', '2025-05-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (522, 13, 'completed', 599772.0, 1000, 71972.64, 672744.64, '2025-09-09 00:00:00', '2025-09-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (523, 14, 'completed', 151000.0, 500, 18120.0, 169620.0, '2025-02-14 00:00:00', '2025-03-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (524, 123, 'shipped', 62712.0, 0, 7525.44, 70237.44, '2025-04-16 00:00:00', '2025-04-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (525, 75, 'shipped', 41035.0, 0, 4924.2, 45959.2, '2026-06-07 00:00:00', '2026-06-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (526, 121, 'paid', 438938.0, 0, 52672.56, 491610.56, '2026-11-25 00:00:00', '2026-11-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (527, 48, 'cancelled', 249993.0, 0, 29999.16, 279992.16, '2026-04-06 00:00:00', '2026-04-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (528, 115, 'processing', 27255.0, 500, 3270.6, 31025.6, '2026-08-27 00:00:00', '2026-08-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (529, 58, 'completed', 297913.0, 0, 35749.56, 333662.56, '2026-03-19 00:00:00', '2026-04-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (530, 25, 'pending', 32530.0, 1000, 3903.6, 37433.6, '2026-07-31 00:00:00', '2026-07-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (531, 151, 'shipped', 122561.0, 0, 14707.32, 137268.32, '2026-07-18 00:00:00', '2026-07-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (532, 138, 'pending', 423544.0, 500, 50825.28, 474869.28, '2026-06-03 00:00:00', '2026-06-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (533, 21, 'completed', 318207.0, 1000, 38184.84, 357391.84, '2026-10-20 00:00:00', '2026-11-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (534, 147, 'shipped', 65765.0, 500, 7891.8, 74156.8, '2026-03-30 00:00:00', '2026-04-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (535, 55, 'completed', 66539.0, 0, 7984.68, 74523.68, '2026-08-05 00:00:00', '2026-08-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (536, 112, 'completed', 132211.0, 0, 15865.32, 148076.32, '2026-11-01 00:00:00', '2026-11-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (537, 82, 'completed', 15703.0, 500, 1884.36, 18087.36, '2026-10-12 00:00:00', '2026-10-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (538, 142, 'paid', 222404.0, 1000, 26688.48, 250092.48, '2026-08-23 00:00:00', '2026-08-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (539, 151, 'completed', 358992.0, 500, 43079.04, 402571.04, '2026-03-18 00:00:00', '2026-03-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (540, 146, 'cancelled', 16922.0, 1000, 2030.64, 19952.64, '2026-02-21 00:00:00', '2026-02-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (541, 74, 'completed', 257712.0, 0, 30925.44, 288637.44, '2026-07-16 00:00:00', '2026-08-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (542, 125, 'completed', 319642.0, 0, 38357.04, 357999.04, '2026-05-22 00:00:00', '2026-06-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (543, 37, 'completed', 320333.0, 500, 38439.96, 359272.96, '2026-06-19 00:00:00', '2026-07-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (544, 61, 'processing', 41143.0, 0, 4937.16, 46080.16, '2026-07-10 00:00:00', '2026-07-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (545, 87, 'processing', 231513.0, 0, 27781.56, 259294.56, '2026-09-09 00:00:00', '2026-09-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (546, 26, 'pending', 67614.0, 0, 8113.68, 75727.68, '2026-08-15 00:00:00', '2026-08-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (547, 83, 'completed', 259254.0, 1000, 31110.48, 291364.48, '2026-11-27 00:00:00', '2026-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (548, 49, 'paid', 410829.0, 500, 49299.48, 460628.48, '2026-09-06 00:00:00', '2026-09-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (549, 15, 'processing', 58600.0, 0, 7032.0, 65632.0, '2026-12-30 00:00:00', '2027-01-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (550, 104, 'completed', 118719.0, 1000, 14246.28, 133965.28, '2026-01-15 00:00:00', '2026-01-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (551, 50, 'paid', 57553.0, 0, 6906.36, 64459.36, '2026-01-17 00:00:00', '2026-01-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (552, 13, 'completed', 202195.0, 0, 24263.4, 226458.4, '2026-07-08 00:00:00', '2026-07-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (553, 130, 'processing', 364945.0, 0, 43793.4, 408738.4, '2026-05-04 00:00:00', '2026-05-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (554, 126, 'pending', 393104.0, 500, 47172.48, 440776.48, '2026-10-28 00:00:00', '2026-10-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (555, 142, 'cancelled', 240242.0, 0, 28829.04, 269071.04, '2026-05-13 00:00:00', '2026-05-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (556, 24, 'cancelled', 157195.0, 500, 18863.4, 176558.4, '2026-01-26 00:00:00', '2026-01-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (557, 42, 'processing', 79012.0, 0, 9481.44, 88493.44, '2026-12-13 00:00:00', '2026-12-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (558, 69, 'completed', 569107.0, 0, 68292.84, 637399.84, '2026-12-16 00:00:00', '2026-12-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (559, 122, 'paid', 134852.0, 0, 16182.24, 151034.24, '2026-11-04 00:00:00', '2026-11-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (560, 58, 'completed', 230074.0, 0, 27608.88, 257682.88, '2026-08-05 00:00:00', '2026-08-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (561, 90, 'paid', 432119.0, 0, 51854.28, 483973.28, '2026-08-27 00:00:00', '2026-08-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (562, 134, 'pending', 353641.0, 0, 42436.92, 396077.92, '2026-09-19 00:00:00', '2026-09-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (563, 96, 'completed', 228243.0, 0, 27389.16, 255632.16, '2026-09-04 00:00:00', '2026-09-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (564, 87, 'cancelled', 235232.0, 0, 28227.84, 263459.84, '2026-05-14 00:00:00', '2026-05-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (565, 77, 'completed', 69651.0, 1000, 8358.12, 79009.12, '2026-05-04 00:00:00', '2026-05-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (566, 104, 'shipped', 186681.0, 0, 22401.72, 209082.72, '2026-12-02 00:00:00', '2026-12-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (567, 76, 'cancelled', 259724.0, 500, 31166.88, 291390.88, '2026-07-18 00:00:00', '2026-07-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (568, 10, 'refunded', 94979.0, 0, 11397.48, 106376.48, '2026-12-18 00:00:00', '2027-01-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (569, 122, 'cancelled', 282989.0, 0, 33958.68, 316947.68, '2026-03-29 00:00:00', '2026-03-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (570, 143, 'pending', 88506.0, 0, 10620.72, 99126.72, '2026-08-30 00:00:00', '2026-08-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (571, 33, 'cancelled', 296546.0, 0, 35585.52, 332131.52, '2026-12-15 00:00:00', '2026-12-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (572, 86, 'completed', 24565.0, 0, 2947.8, 27512.8, '2026-04-25 00:00:00', '2026-05-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (573, 79, 'completed', 473705.0, 0, 56844.6, 530549.6, '2026-05-14 00:00:00', '2026-06-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (574, 76, 'pending', 361751.0, 500, 43410.12, 405661.12, '2026-01-28 00:00:00', '2026-01-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (575, 150, 'completed', 40947.0, 0, 4913.64, 45860.64, '2026-09-14 00:00:00', '2026-09-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (576, 98, 'paid', 258293.0, 0, 30995.16, 289288.16, '2026-03-19 00:00:00', '2026-03-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (577, 52, 'shipped', 257267.0, 1000, 30872.04, 289139.04, '2026-08-23 00:00:00', '2026-08-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (578, 81, 'shipped', 60592.0, 500, 7271.04, 68363.04, '2026-06-20 00:00:00', '2026-06-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (579, 81, 'shipped', 10308.0, 500, 1236.96, 12044.96, '2026-05-21 00:00:00', '2026-05-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (580, 44, 'completed', 114169.0, 0, 13700.28, 127869.28, '2026-03-08 00:00:00', '2026-04-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (581, 112, 'cancelled', 511494.0, 500, 61379.28, 573373.28, '2026-09-02 00:00:00', '2026-09-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (582, 99, 'cancelled', 12472.0, 1000, 1496.64, 14968.64, '2026-04-13 00:00:00', '2026-04-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (583, 96, 'completed', 31116.0, 1000, 3733.92, 35849.92, '2026-04-08 00:00:00', '2026-04-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (584, 2, 'completed', 79657.0, 0, 9558.84, 89215.84, '2026-06-09 00:00:00', '2026-06-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (585, 27, 'completed', 563893.0, 1000, 67667.16, 632560.16, '2026-06-06 00:00:00', '2026-06-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (586, 17, 'completed', 29542.0, 0, 3545.04, 33087.04, '2026-08-22 00:00:00', '2026-09-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (587, 134, 'paid', 263682.0, 0, 31641.84, 295323.84, '2026-06-25 00:00:00', '2026-06-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (588, 92, 'paid', 71611.0, 500, 8593.32, 80704.32, '2026-01-10 00:00:00', '2026-01-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (589, 58, 'completed', 77681.0, 0, 9321.72, 87002.72, '2026-10-29 00:00:00', '2026-11-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (590, 44, 'pending', 34024.0, 0, 4082.88, 38106.88, '2026-07-12 00:00:00', '2026-07-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (591, 66, 'cancelled', 48923.0, 0, 5870.76, 54793.76, '2026-12-05 00:00:00', '2026-12-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (592, 28, 'shipped', 13161.0, 0, 1579.32, 14740.32, '2026-08-02 00:00:00', '2026-08-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (593, 98, 'shipped', 45866.0, 0, 5503.92, 51369.92, '2026-08-31 00:00:00', '2026-09-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (594, 53, 'completed', 29733.0, 500, 3567.96, 33800.96, '2026-12-05 00:00:00', '2026-12-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (595, 134, 'paid', 185956.0, 500, 22314.72, 208770.72, '2026-02-23 00:00:00', '2026-02-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (596, 73, 'refunded', 16964.0, 500, 2035.68, 19499.68, '2026-04-12 00:00:00', '2026-05-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (597, 68, 'completed', 96913.0, 500, 11629.56, 109042.56, '2026-06-01 00:00:00', '2026-06-13 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (598, 11, 'refunded', 408891.0, 500, 49066.92, 458457.92, '2026-06-19 00:00:00', '2026-07-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (599, 1, 'completed', 15832.0, 0, 1899.84, 17731.84, '2026-10-21 00:00:00', '2026-11-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (600, 127, 'completed', 61807.0, 1000, 7416.84, 70223.84, '2026-02-08 00:00:00', '2026-03-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (601, 26, 'shipped', 210597.0, 500, 25271.64, 236368.64, '2026-06-01 00:00:00', '2026-06-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (602, 119, 'shipped', 16541.0, 0, 1984.92, 18525.92, '2026-01-21 00:00:00', '2026-01-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (603, 93, 'paid', 261672.0, 0, 31400.64, 293072.64, '2026-02-18 00:00:00', '2026-02-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (604, 3, 'completed', 136947.0, 0, 16433.64, 153380.64, '2026-06-18 00:00:00', '2026-07-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (605, 113, 'processing', 174366.0, 0, 20923.92, 195289.92, '2026-06-25 00:00:00', '2026-06-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (606, 30, 'pending', 509846.0, 500, 61181.52, 571527.52, '2026-05-20 00:00:00', '2026-05-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (607, 99, 'completed', 521113.0, 0, 62533.56, 583646.56, '2026-02-27 00:00:00', '2026-03-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (608, 16, 'completed', 63593.0, 500, 7631.16, 71724.16, '2026-10-30 00:00:00', '2026-11-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (609, 146, 'completed', 395032.0, 1000, 47403.84, 443435.84, '2026-07-14 00:00:00', '2026-08-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (610, 8, 'shipped', 113318.0, 500, 13598.16, 127416.16, '2026-02-27 00:00:00', '2026-03-08 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (611, 113, 'processing', 14150.0, 0, 1698.0, 15848.0, '2026-12-02 00:00:00', '2026-12-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (612, 4, 'refunded', 137797.0, 0, 16535.64, 154332.64, '2026-09-23 00:00:00', '2026-11-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (613, 25, 'completed', 430325.0, 500, 51639.0, 482464.0, '2026-06-27 00:00:00', '2026-07-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (614, 99, 'completed', 123183.0, 1000, 14781.96, 138964.96, '2026-01-28 00:00:00', '2026-02-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (615, 41, 'processing', 559960.0, 0, 67195.2, 627155.2, '2026-02-08 00:00:00', '2026-02-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (616, 83, 'completed', 93371.0, 0, 11204.52, 104575.52, '2026-01-26 00:00:00', '2026-02-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (617, 58, 'pending', 511433.0, 0, 61371.96, 572804.96, '2026-02-10 00:00:00', '2026-02-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (618, 118, 'completed', 534932.0, 0, 64191.84, 599123.84, '2026-09-13 00:00:00', '2026-10-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (619, 81, 'shipped', 42595.0, 0, 5111.4, 47706.4, '2026-02-22 00:00:00', '2026-03-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (620, 106, 'shipped', 46512.0, 1000, 5581.44, 53093.44, '2026-01-01 00:00:00', '2026-01-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (621, 78, 'completed', 135799.0, 500, 16295.88, 152594.88, '2026-06-24 00:00:00', '2026-07-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (622, 14, 'refunded', 109566.0, 0, 13147.92, 122713.92, '2026-10-14 00:00:00', '2026-11-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (623, 94, 'paid', 359781.0, 0, 43173.72, 402954.72, '2026-12-04 00:00:00', '2026-12-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (624, 1, 'completed', 243097.0, 0, 29171.64, 272268.64, '2026-10-08 00:00:00', '2026-10-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (625, 96, 'pending', 13000.0, 0, 1560.0, 14560.0, '2026-09-10 00:00:00', '2026-09-10 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (626, 36, 'completed', 356078.0, 0, 42729.36, 398807.36, '2026-11-09 00:00:00', '2026-11-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (627, 49, 'completed', 35748.0, 0, 4289.76, 40037.76, '2026-08-23 00:00:00', '2026-09-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (628, 87, 'completed', 37162.0, 0, 4459.44, 41621.44, '2026-11-21 00:00:00', '2026-12-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (629, 151, 'processing', 39524.0, 500, 4742.88, 44766.88, '2026-12-04 00:00:00', '2026-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (630, 130, 'processing', 115382.0, 0, 13845.84, 129227.84, '2026-09-29 00:00:00', '2026-10-01 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (631, 13, 'completed', 553195.0, 1000, 66383.4, 620578.4, '2026-04-01 00:00:00', '2026-04-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (632, 149, 'processing', 145747.0, 0, 17489.64, 163236.64, '2026-02-23 00:00:00', '2026-02-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (633, 83, 'shipped', 519500.0, 1000, 62340.0, 582840.0, '2026-12-21 00:00:00', '2026-12-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (634, 71, 'cancelled', 479756.0, 0, 57570.72, 537326.72, '2026-08-20 00:00:00', '2026-08-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (635, 35, 'cancelled', 104099.0, 1000, 12491.88, 117590.88, '2026-12-25 00:00:00', '2026-12-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (636, 132, 'completed', 293604.0, 0, 35232.48, 328836.48, '2026-12-31 00:00:00', '2027-01-30 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (637, 142, 'refunded', 76330.0, 0, 9159.6, 85489.6, '2026-11-16 00:00:00', '2026-12-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (638, 89, 'completed', 143113.0, 0, 17173.56, 160286.56, '2026-09-15 00:00:00', '2026-10-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (639, 83, 'processing', 33084.0, 1000, 3970.08, 38054.08, '2026-09-03 00:00:00', '2026-09-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (640, 147, 'completed', 579918.0, 0, 69590.16, 649508.16, '2026-08-05 00:00:00', '2026-08-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (641, 134, 'completed', 11656.0, 500, 1398.72, 13554.72, '2026-03-16 00:00:00', '2026-03-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (642, 15, 'completed', 84993.0, 0, 10199.16, 95192.16, '2026-05-27 00:00:00', '2026-06-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (643, 65, 'completed', 58130.0, 0, 6975.6, 65105.6, '2026-04-15 00:00:00', '2026-05-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (644, 9, 'pending', 268644.0, 0, 32237.28, 300881.28, '2026-11-12 00:00:00', '2026-11-12 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (645, 144, 'processing', 147309.0, 1000, 17677.08, 165986.08, '2026-07-19 00:00:00', '2026-07-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (646, 131, 'cancelled', 162315.0, 500, 19477.8, 182292.8, '2026-07-18 00:00:00', '2026-07-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (647, 107, 'cancelled', 294736.0, 0, 35368.32, 330104.32, '2026-01-07 00:00:00', '2026-01-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (648, 65, 'processing', 131338.0, 500, 15760.56, 147598.56, '2026-04-26 00:00:00', '2026-04-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (649, 95, 'pending', 145015.0, 0, 17401.8, 162416.8, '2026-05-31 00:00:00', '2026-05-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (650, 115, 'completed', 139477.0, 0, 16737.24, 156214.24, '2026-04-06 00:00:00', '2026-04-18 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (651, 132, 'shipped', 34720.0, 0, 4166.4, 38886.4, '2026-08-08 00:00:00', '2026-08-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (652, 143, 'completed', 184096.0, 0, 22091.52, 206187.52, '2026-10-27 00:00:00', '2026-11-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (653, 2, 'paid', 272245.0, 0, 32669.4, 304914.4, '2026-01-21 00:00:00', '2026-01-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (654, 83, 'shipped', 29736.0, 500, 3568.32, 33804.32, '2026-10-21 00:00:00', '2026-10-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (655, 19, 'completed', 287729.0, 0, 34527.48, 322256.48, '2026-04-05 00:00:00', '2026-04-28 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (656, 18, 'completed', 104516.0, 1000, 12541.92, 118057.92, '2026-10-02 00:00:00', '2026-10-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (657, 24, 'pending', 207985.0, 0, 24958.2, 232943.2, '2026-12-06 00:00:00', '2026-12-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (658, 85, 'processing', 244580.0, 0, 29349.6, 273929.6, '2026-04-22 00:00:00', '2026-04-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (659, 136, 'processing', 594301.0, 0, 71316.12, 665617.12, '2026-02-28 00:00:00', '2026-03-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (660, 89, 'completed', 426011.0, 1000, 51121.32, 478132.32, '2026-11-15 00:00:00', '2026-11-29 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (661, 11, 'shipped', 249974.0, 0, 29996.88, 279970.88, '2026-07-17 00:00:00', '2026-07-24 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (662, 139, 'completed', 156476.0, 1000, 18777.12, 176253.12, '2026-07-11 00:00:00', '2026-08-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (663, 131, 'refunded', 555225.0, 0, 66627.0, 621852.0, '2026-06-01 00:00:00', '2026-06-23 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (664, 83, 'processing', 16288.0, 0, 1954.56, 18242.56, '2026-10-03 00:00:00', '2026-10-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (665, 2, 'completed', 23813.0, 0, 2857.56, 26670.56, '2026-12-17 00:00:00', '2027-01-06 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (666, 27, 'completed', 120484.0, 500, 14458.08, 135442.08, '2026-11-28 00:00:00', '2026-12-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (667, 40, 'cancelled', 40095.0, 0, 4811.4, 44906.4, '2026-01-20 00:00:00', '2026-01-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (668, 23, 'processing', 13556.0, 0, 1626.72, 15182.72, '2026-05-09 00:00:00', '2026-05-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (669, 19, 'refunded', 83901.0, 500, 10068.12, 94469.12, '2026-07-18 00:00:00', '2026-08-25 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (670, 104, 'completed', 465886.0, 0, 55906.32, 521792.32, '2026-07-19 00:00:00', '2026-08-16 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (671, 31, 'completed', 14144.0, 1000, 1697.28, 16841.28, '2026-01-24 00:00:00', '2026-02-22 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (672, 19, 'processing', 281815.0, 0, 33817.8, 315632.8, '2026-05-29 00:00:00', '2026-05-31 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (673, 78, 'pending', 28449.0, 500, 3413.88, 32362.88, '2026-07-15 00:00:00', '2026-07-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (674, 102, 'shipped', 41063.0, 0, 4927.56, 45990.56, '2026-10-01 00:00:00', '2026-10-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (675, 35, 'completed', 586116.0, 0, 70333.92, 656449.92, '2026-11-21 00:00:00', '2026-12-02 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (676, 77, 'shipped', 152922.0, 1000, 18350.64, 172272.64, '2026-10-12 00:00:00', '2026-10-17 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (677, 32, 'refunded', 10329.0, 1000, 1239.48, 12568.48, '2026-11-02 00:00:00', '2026-12-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (678, 138, 'cancelled', 29968.0, 0, 3596.16, 33564.16, '2026-06-26 00:00:00', '2026-06-26 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (679, 55, 'completed', 568725.0, 0, 68247.0, 636972.0, '2026-03-24 00:00:00', '2026-04-05 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (680, 57, 'pending', 200941.0, 0, 24112.92, 225053.92, '2026-04-03 00:00:00', '2026-04-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (681, 146, 'completed', 45969.0, 500, 5516.28, 51985.28, '2026-11-27 00:00:00', '2026-12-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (682, 19, 'pending', 167658.0, 0, 20118.96, 187776.96, '2026-02-20 00:00:00', '2026-02-20 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (683, 51, 'paid', 473461.0, 0, 56815.32, 530276.32, '2026-03-07 00:00:00', '2026-03-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (684, 26, 'completed', 168299.0, 0, 20195.88, 188494.88, '2026-06-12 00:00:00', '2026-07-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (685, 116, 'completed', 230130.0, 1000, 27615.6, 258745.6, '2026-03-20 00:00:00', '2026-04-14 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (686, 146, 'completed', 232924.0, 500, 27950.88, 261374.88, '2026-03-28 00:00:00', '2026-04-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (687, 81, 'completed', 79035.0, 500, 9484.2, 89019.2, '2026-05-22 00:00:00', '2026-06-09 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (688, 35, 'completed', 275817.0, 500, 33098.04, 309415.04, '2026-08-17 00:00:00', '2026-09-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (689, 79, 'shipped', 589234.0, 0, 70708.08, 659942.08, '2026-03-31 00:00:00', '2026-04-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (690, 72, 'pending', 120597.0, 0, 14471.64, 135068.64, '2026-05-15 00:00:00', '2026-05-15 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (691, 20, 'completed', 11220.0, 1000, 1346.4, 13566.4, '2026-11-20 00:00:00', '2026-11-27 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (692, 149, 'paid', 411547.0, 0, 49385.64, 460932.64, '2026-10-10 00:00:00', '2026-10-11 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (693, 140, 'completed', 377926.0, 0, 45351.12, 423277.12, '2026-07-20 00:00:00', '2026-08-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (694, 151, 'completed', 185096.0, 500, 22211.52, 207807.52, '2026-09-14 00:00:00', '2026-10-07 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (695, 24, 'completed', 490770.0, 1000, 58892.4, 550662.4, '2026-01-06 00:00:00', '2026-02-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (696, 62, 'completed', 149248.0, 1000, 17909.76, 168157.76, '2026-03-13 00:00:00', '2026-04-03 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (697, 41, 'processing', 124233.0, 1000, 14907.96, 140140.96, '2026-12-04 00:00:00', '2026-12-04 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (698, 124, 'completed', 160595.0, 0, 19271.4, 179866.4, '2026-09-07 00:00:00', '2026-09-21 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (699, 17, 'completed', 246845.0, 0, 29621.4, 276466.4, '2026-01-22 00:00:00', '2026-02-19 00:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `status`, `subtotal`, `shipping`, `tax`, `total`, `placed_at`, `updated_at`) VALUES (700, 53, 'cancelled', 251736.0, 500, 30208.32, 282444.32, '2026-08-21 00:00:00', '2026-08-21 00:00:00');
