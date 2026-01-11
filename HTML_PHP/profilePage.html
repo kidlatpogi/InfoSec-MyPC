@@ -424,7 +424,25 @@
         </div>
     </div>
 
-    <!-- Delete Account Confirmation Modal -->
+    <!-- Delete Account Confirmation Modal (Step 1) -->
+    <div class="delete-account-modal-backdrop" id="delete-account-confirm-backdrop"></div>
+    <div class="delete-account-modal" id="delete-account-confirm-modal">
+        <div class="delete-account-modal-header">
+            <h2>Delete Account</h2>
+            <button class="delete-account-modal-close" id="delete-account-confirm-close">✕</button>
+        </div>
+        <div class="delete-account-modal-body">
+            <div class="delete-account-warning">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button type="button" class="secondary" id="delete-account-confirm-no">No, Keep Account</button>
+                <button type="button" class="danger" id="delete-account-confirm-yes">Yes, Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Password Modal (Step 2) -->
     <div class="delete-account-modal-backdrop" id="delete-account-backdrop"></div>
     <div class="delete-account-modal" id="delete-account-modal">
         <div class="delete-account-modal-header">

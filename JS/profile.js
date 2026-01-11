@@ -788,16 +788,62 @@ function initOrderDetailsModal() {
     }
 }
 
-// Delete (archive) own account
+// Delete (archive) own account - Step 1: Confirmation Modal
 function deleteMyAccount() {
-    // First confirmation
-    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    const confirmModal = document.getElementById('delete-account-confirm-modal');
+    const confirmBackdrop = document.getElementById('delete-account-confirm-backdrop');
+    const confirmNoBtn = document.getElementById('delete-account-confirm-no');
+    const confirmYesBtn = document.getElementById('delete-account-confirm-yes');
+    const confirmCloseBtn = document.getElementById('delete-account-confirm-close');
+    
+    if (!confirmModal || !confirmBackdrop) {
+        alert('Error: Confirmation modal not found');
         return;
     }
     
-    // Show delete account modal
-    const backdrop = document.getElementById('delete-account-backdrop');
+    // Show the initial confirmation modal
+    confirmModal.classList.add('active');
+    confirmBackdrop.classList.add('active');
+    
+    const handleNo = () => {
+        confirmModal.classList.remove('active');
+        confirmBackdrop.classList.remove('active');
+        // Remove event listeners
+        confirmNoBtn.removeEventListener('click', handleNo);
+        confirmYesBtn.removeEventListener('click', handleYes);
+        confirmCloseBtn.removeEventListener('click', handleNo);
+        confirmBackdrop.removeEventListener('click', handleBackdropClick);
+    };
+    
+    const handleYes = () => {
+        confirmModal.classList.remove('active');
+        confirmBackdrop.classList.remove('active');
+        // Remove event listeners
+        confirmNoBtn.removeEventListener('click', handleNo);
+        confirmYesBtn.removeEventListener('click', handleYes);
+        confirmCloseBtn.removeEventListener('click', handleNo);
+        confirmBackdrop.removeEventListener('click', handleBackdropClick);
+        // Show password confirmation modal
+        showPasswordConfirmationModal();
+    };
+    
+    const handleBackdropClick = (e) => {
+        if (e.target === confirmBackdrop) {
+            handleNo();
+        }
+    };
+    
+    // Event listeners for confirmation modal
+    confirmNoBtn.addEventListener('click', handleNo);
+    confirmYesBtn.addEventListener('click', handleYes);
+    confirmCloseBtn.addEventListener('click', handleNo);
+    confirmBackdrop.addEventListener('click', handleBackdropClick);
+}
+
+// Delete Account - Step 2: Password Confirmation Modal
+function showPasswordConfirmationModal() {
     const modal = document.getElementById('delete-account-modal');
+    const backdrop = document.getElementById('delete-account-backdrop');
     const passwordInput = document.getElementById('delete-account-password');
     const confirmCheckbox = document.getElementById('delete-account-confirm');
     const confirmBtn = document.getElementById('delete-account-confirm-btn');
@@ -855,6 +901,19 @@ function deleteMyAccount() {
         modal.classList.remove('active');
         passwordInput.value = '';
         confirmCheckbox.checked = false;
+        // Remove event listeners
+        passwordInput.removeEventListener('input', updateConfirmBtn);
+        confirmCheckbox.removeEventListener('change', updateConfirmBtn);
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        closeBtn.removeEventListener('click', handleCancel);
+        backdrop.removeEventListener('click', handleBackdropClick);
+    };
+    
+    const handleBackdropClick = (e) => {
+        if (e.target === backdrop) {
+            handleCancel();
+        }
     };
     
     // Event listeners
@@ -863,13 +922,10 @@ function deleteMyAccount() {
     confirmBtn.addEventListener('click', handleConfirm);
     cancelBtn.addEventListener('click', handleCancel);
     closeBtn.addEventListener('click', handleCancel);
-    backdrop.addEventListener('click', (e) => {
-        if (e.target === backdrop) {
-            handleCancel();
-        }
-    });
+    backdrop.addEventListener('click', handleBackdropClick);
     
-    // Focus password input
+    // Initialize button state and focus
+    updateConfirmBtn();
     passwordInput.focus();
 }
 
