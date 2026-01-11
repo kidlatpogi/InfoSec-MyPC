@@ -17,19 +17,17 @@ users = [
 ]
 
 # Product variant data (from mypc_complete.sql + inserts.sql) - (variant_id, title, price, product_name)
-# Sample products from mypc_complete.sql (IDs 1-2):
-# Product 1 has variants: 1-2 (AMD Ryzen 5 7600)
-# Product 2 has variants: 3-4 (AMD Ryzen 7 7800X3D)
-# 
-# Additional products from inserts.sql start at product ID 3+
-# Each product has 2-3 variants
+# CORRECT MAPPING:
+# mypc_complete.sql: Product 1 variants 1-2, Product 2 variants 3-4 (Total: 4 variants)
+# inserts.sql: CPUs variants 5-20, GPUs variants 21-50 (Total: 46 variants)
+# GRAND TOTAL: 50 variants across all products
 products = [
-    # Sample CPUs from mypc_complete.sql
+    # Variants 1-4: Sample CPUs from mypc_complete.sql (Products 1-2)
     (1, 'Boxed with Cooler', 14995.00, 'AMD Ryzen 5 7600'),
     (2, 'OEM (Tray)', 13795.00, 'AMD Ryzen 5 7600'),
     (3, 'Boxed', 27995.00, 'AMD Ryzen 7 7800X3D'),
     (4, 'OEM (Tray)', 26795.00, 'AMD Ryzen 7 7800X3D'),
-    # CPUs from inserts.sql (product IDs 3-10, variants 5-24)
+    # Variants 5-20: CPUs from inserts.sql (Products 3-10, 8 products × 2 variants = 16 variants)
     (5, 'Boxed with Cooler', 16495.00, 'AMD Ryzen 5 7600X'),
     (6, 'OEM (Tray)', 15295.00, 'AMD Ryzen 5 7600X'),
     (7, 'Boxed with Cooler', 18995.00, 'AMD Ryzen 5 9600X'),
@@ -46,7 +44,7 @@ products = [
     (18, 'OEM (Tray)', 48795.00, 'AMD Ryzen 9 9950X3D'),
     (19, 'Boxed', 45995.00, 'AMD Ryzen 9 9950X'),
     (20, 'OEM (Tray)', 44795.00, 'AMD Ryzen 9 9950X'),
-    # GPUs from inserts.sql (product IDs 11-20, variants 21-50+)
+    # Variants 21-50: GPUs from inserts.sql (Products 11-20, 10 products × 3 variants = 30 variants)
     (21, 'Reference', 16995.00, 'AMD Radeon RX 6600 XT'),
     (22, 'Dual-Fan', 17495.00, 'AMD Radeon RX 6600 XT'),
     (23, 'Triple-Fan', 18195.00, 'AMD Radeon RX 6600 XT'),
@@ -59,6 +57,24 @@ products = [
     (30, 'Reference', 14495.00, 'AMD Radeon RX 7600'),
     (31, 'Dual-Fan', 14995.00, 'AMD Radeon RX 7600'),
     (32, 'Triple-Fan', 15495.00, 'AMD Radeon RX 7600'),
+    (33, 'Reference', 26995.00, 'AMD Radeon RX 7700 XT'),
+    (34, 'Dual-Fan', 27495.00, 'AMD Radeon RX 7700 XT'),
+    (35, 'Triple-Fan', 28195.00, 'AMD Radeon RX 7700 XT'),
+    (36, 'Reference', 32995.00, 'AMD Radeon RX 7800 XT'),
+    (37, 'Dual-Fan', 33495.00, 'AMD Radeon RX 7800 XT'),
+    (38, 'Triple-Fan', 34195.00, 'AMD Radeon RX 7800 XT'),
+    (39, 'Reference', 36995.00, 'AMD Radeon RX 7900 GRE'),
+    (40, 'Dual-Fan', 37495.00, 'AMD Radeon RX 7900 GRE'),
+    (41, 'Triple-Fan', 38195.00, 'AMD Radeon RX 7900 GRE'),
+    (42, 'Reference', 49995.00, 'AMD Radeon RX 7900 XTX'),
+    (43, 'Dual-Fan', 50495.00, 'AMD Radeon RX 7900 XTX'),
+    (44, 'Triple-Fan', 51195.00, 'AMD Radeon RX 7900 XTX'),
+    (45, 'Reference', 39995.00, 'AMD Radeon RX 9070'),
+    (46, 'Dual-Fan', 40495.00, 'AMD Radeon RX 9070'),
+    (47, 'Triple-Fan', 41195.00, 'AMD Radeon RX 9070'),
+    (48, 'Reference', 45995.00, 'AMD Radeon RX 9070 XT'),
+    (49, 'Dual-Fan', 46495.00, 'AMD Radeon RX 9070 XT'),
+    (50, 'Triple-Fan', 47195.00, 'AMD Radeon RX 9070 XT'),
 ]
 
 # Address templates for Filipino locations
@@ -249,8 +265,9 @@ def generate_sql():
         f.write("-- Run this after mypc_complete.sql and users_insert.sql\n")
         f.write("-- =====================================================\n\n")
         f.write("USE mypc_db;\n\n")
+        f.write("SET FOREIGN_KEY_CHECKS = 0;\n\n")
         
-        # Orders
+        # First pass: Create a temp table mapping order_numbers to IDs
         f.write("-- =====================================================\n")
         f.write("-- INSERT ORDERS\n")
         f.write("-- =====================================================\n\n")
@@ -261,17 +278,25 @@ SELECT '{order['order_number']}', u.id, '{order['status']}', {order['subtotal']:
 FROM users u WHERE u.email = '{order['user_email']}' LIMIT 1;\n"""
             f.write(sql)
         
-        # Order Items
+        # Order Items - use order_number to get correct order_id
         f.write("\n-- =====================================================\n")
-        f.write("-- INSERT ORDER ITEMS\n")
+        f.write("-- INSERT ORDER ITEMS (using order_number lookup)\n")
         f.write("-- =====================================================\n\n")
         
+        # Create a mapping of order numbers to their sequence
+        order_number_map = {}
+        for idx, order in enumerate(orders):
+            order_number_map[order['id']] = order['order_number']
+        
         for item in order_items:
+            order_number = order_number_map[item['order_id']]
             sql = f"""INSERT INTO `order_items` (`order_id`, `variant_id`, `product_name`, `variant_title`, `unit_price`, `quantity`, `line_total`)
-VALUES ({item['order_id']}, {item['variant_id']}, '{item['product_name']}', '{item['variant_title']}', {item['unit_price']:.2f}, {item['quantity']}, {item['line_total']:.2f});\n"""
+SELECT o.id, {item['variant_id']}, '{item['product_name']}', '{item['variant_title']}', {item['unit_price']:.2f}, {item['quantity']}, {item['line_total']:.2f}
+FROM orders o WHERE o.order_number = '{order_number}' LIMIT 1;\n"""
             f.write(sql)
         
-        f.write("\n-- =====================================================\n")
+        f.write("\nSET FOREIGN_KEY_CHECKS = 1;\n\n")
+        f.write("-- =====================================================\n")
         f.write("-- COMPLETION MESSAGE\n")
         f.write("-- =====================================================\n\n")
         f.write("SELECT '450 orders with items added successfully!' as message,\n")
