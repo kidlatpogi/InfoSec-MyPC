@@ -567,52 +567,75 @@ function filterUsersTable() {
   if (!searchInput) return;
 
   const query = searchInput.value.toLowerCase();
-  const rows = document.querySelectorAll('#users-tbody tr');
-
-  rows.forEach((row) => {
-    const email = row.cells[0]?.textContent.toLowerCase() || '';
-    const name = row.cells[1]?.textContent.toLowerCase() || '';
-    const status = row.cells[2]?.textContent.toLowerCase() || '';
-    const createdDate = row.cells[3]?.textContent.toLowerCase() || '';
-
-    const matches =
-      email.includes(query) ||
-      name.includes(query) ||
-      status.includes(query) ||
-      createdDate.includes(query);
-
-    row.style.display = matches ? '' : 'none';
-  });
+  
+  // Filter all data based on search query
+  if (query === '') {
+    // Reset to all data if search is cleared
+    paginationState.users.allData = paginationState.users.originalData;
+  } else {
+    // Filter original data
+    paginationState.users.allData = paginationState.users.originalData.filter(user => {
+      const email = user.email.toLowerCase();
+      const name = `${user.first_name} ${user.last_name}`.toLowerCase();
+      const status = (user.is_archived == 1 ? 'deactivated' : 'active').toLowerCase();
+      
+      return email.includes(query) || name.includes(query) || status.includes(query);
+    });
+  }
+  
+  // Reset to page 1 when filtering
+  paginationState.users.currentPage = 1;
+  paginationState.users.totalItems = paginationState.users.allData.length;
+  
+  // Update display
+  updatePaginationDisplay('users');
 }
 
 function filterTable(tableBodyId) {
   const tbody = document.getElementById(tableBodyId);
   if (!tbody) return;
 
-  // Determine which search input to use based on table
+  // Determine which search input and pagination state to use based on table
   let searchInput = null;
+  let tableType = null;
+  
   if (tableBodyId === 'employees-tbody') {
     searchInput = document.getElementById('employee-search');
+    tableType = 'employees';
   } else if (tableBodyId === 'products-tbody') {
     searchInput = document.getElementById('product-search');
+    tableType = 'products';
   } else if (tableBodyId === 'orders-tbody') {
     searchInput = document.getElementById('order-search');
+    tableType = 'orders';
   }
 
-  if (!searchInput) return;
+  if (!searchInput || !tableType) return;
 
   const query = searchInput.value.toLowerCase();
-  const rows = tbody.querySelectorAll('tr');
-
-  rows.forEach((row) => {
-    // Get all text content from all cells
-    const rowText = Array.from(row.cells)
-      .map((cell) => cell.textContent.toLowerCase())
-      .join(' ');
-
-    const matches = rowText.includes(query);
-    row.style.display = matches ? '' : 'none';
-  });
+  
+  // Filter based on table type
+  if (query === '') {
+    // Reset to all data if search is cleared
+    paginationState[tableType].allData = paginationState[tableType].originalData;
+  } else {
+    // Filter original data
+    paginationState[tableType].allData = paginationState[tableType].originalData.filter(item => {
+      // Get all values from the item and convert to lowercase string
+      const itemText = Object.values(item)
+        .map(val => (val ? String(val).toLowerCase() : ''))
+        .join(' ');
+      
+      return itemText.includes(query);
+    });
+  }
+  
+  // Reset to page 1 when filtering
+  paginationState[tableType].currentPage = 1;
+  paginationState[tableType].totalItems = paginationState[tableType].allData.length;
+  
+  // Update display
+  updatePaginationDisplay(tableType);
 }
 
 // ========================================
@@ -651,6 +674,8 @@ async function loadUsers(includeArchived = null) {
 
     // Store all data in pagination state
     paginationState.users.allData = data.users || [];
+    // Store original data for search filtering
+    paginationState.users.originalData = JSON.parse(JSON.stringify(data.users || []));
     paginationState.users.totalItems = paginationState.users.allData.length;
     paginationState.users.currentPage = 1;
 
@@ -678,6 +703,8 @@ async function loadEmployees(includeArchived = null) {
 
     // Store all data in pagination state
     paginationState.employees.allData = data.employees || [];
+    // Store original data for search filtering
+    paginationState.employees.originalData = JSON.parse(JSON.stringify(data.employees || []));
     paginationState.employees.totalItems = paginationState.employees.allData.length;
     paginationState.employees.currentPage = 1;
 
