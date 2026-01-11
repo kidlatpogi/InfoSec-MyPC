@@ -18,12 +18,6 @@ async function loadProfileData() {
             return;
         }
 
-        // Show the profile content now that we've verified the user is logged in
-        const profileWrapper = document.querySelector('.profile-wrapper');
-        if (profileWrapper) {
-            profileWrapper.style.display = '';
-        }
-
         // Populate profile overview
         const welcomeHeading = document.querySelector('#overview h1');
         if (welcomeHeading) {
@@ -795,31 +789,88 @@ function initOrderDetailsModal() {
 }
 
 // Delete (archive) own account
-async function deleteMyAccount() {
+function deleteMyAccount() {
     // First confirmation
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
         return;
     }
     
-    // Prompt for password
-    const password = prompt('Please enter your password to confirm account deletion:');
-    if (!password) {
-        alert('Password is required to delete your account.');
+    // Show delete account modal
+    const backdrop = document.getElementById('delete-account-backdrop');
+    const modal = document.getElementById('delete-account-modal');
+    const passwordInput = document.getElementById('delete-account-password');
+    const confirmCheckbox = document.getElementById('delete-account-confirm');
+    const confirmBtn = document.getElementById('delete-account-confirm-btn');
+    const cancelBtn = document.getElementById('delete-account-cancel');
+    const closeBtn = document.getElementById('delete-account-close');
+    
+    if (!backdrop || !modal) {
+        alert('Error: Modal not found');
         return;
     }
     
-    // Second confirmation
-    if (!confirm('This will permanently deactivate your account. Are you absolutely sure?')) {
-        return;
-    }
+    // Reset form
+    passwordInput.value = '';
+    confirmCheckbox.checked = false;
+    confirmBtn.disabled = true;
     
-    try {
-        const result = await AuthAPI.deleteAccount(password);
-        alert('Your account has been deactivated. You will be logged out now.');
-        window.location.href = '/';
-    } catch (error) {
-        alert('Failed to delete account: ' + (error.message || 'Unknown error'));
-    }
+    // Show modal
+    backdrop.classList.add('active');
+    modal.classList.add('active');
+    
+    // Update confirm button state based on inputs
+    const updateConfirmBtn = () => {
+        confirmBtn.disabled = !passwordInput.value || !confirmCheckbox.checked;
+    };
+    
+    const handleConfirm = async () => {
+        const password = passwordInput.value;
+        
+        if (!password) {
+            alert('Please enter your password.');
+            return;
+        }
+        
+        if (!confirmCheckbox.checked) {
+            alert('Please confirm that you understand this action cannot be undone.');
+            return;
+        }
+        
+        try {
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Deleting...';
+            
+            const result = await AuthAPI.deleteAccount(password);
+            alert('Your account has been deactivated. You will be logged out now.');
+            window.location.href = '/';
+        } catch (error) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Delete Account';
+            alert('Failed to delete account: ' + (error.message || 'Unknown error'));
+        }
+    };
+    
+    const handleCancel = () => {
+        backdrop.classList.remove('active');
+        modal.classList.remove('active');
+        passwordInput.value = '';
+        confirmCheckbox.checked = false;
+    };
+    
+    // Event listeners
+    passwordInput.addEventListener('input', updateConfirmBtn);
+    confirmCheckbox.addEventListener('change', updateConfirmBtn);
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    closeBtn.addEventListener('click', handleCancel);
+    backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+            handleCancel();
+        }
+    });
+    
+    // Focus password input
+    passwordInput.focus();
 }
 
 // Make functions globally available

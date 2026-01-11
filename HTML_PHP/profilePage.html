@@ -424,6 +424,35 @@
         </div>
     </div>
 
+    <!-- Delete Account Confirmation Modal -->
+    <div class="delete-account-modal-backdrop" id="delete-account-backdrop"></div>
+    <div class="delete-account-modal" id="delete-account-modal">
+        <div class="delete-account-modal-header">
+            <h2>Delete Account</h2>
+            <button class="delete-account-modal-close" id="delete-account-close">✕</button>
+        </div>
+        <div class="delete-account-modal-body">
+            <div class="delete-account-warning">
+                <p style="color: #d32f2f; font-weight: 600; margin-bottom: 1rem;">⚠️ This action cannot be undone</p>
+                <p>This will permanently deactivate your account. All your data will be archived.</p>
+            </div>
+            <div class="form-group">
+                <label for="delete-account-password">Enter your password to confirm:</label>
+                <input type="password" id="delete-account-password" placeholder="Password" />
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="delete-account-confirm" />
+                    <span>I understand that this will permanently deactivate my account</span>
+                </label>
+            </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button type="button" class="secondary" id="delete-account-cancel">Cancel</button>
+                <button type="button" class="danger" id="delete-account-confirm-btn">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/JS/api.js" defer></script>
     <script src="/JS/script.js" defer></script>
     <script src="/JS/profile.js" defer></script>
