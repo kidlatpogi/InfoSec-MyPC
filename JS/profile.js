@@ -700,7 +700,22 @@ async function deleteAddress(addressId) {
     if (!confirm('Delete this address?')) return;
 
     try {
+        // Get all addresses before deletion
+        const data = await AddressesAPI.getAddresses();
+        const addressToDelete = data.addresses.find(addr => addr.id == addressId);
+        
+        // Delete the address
         await AddressesAPI.deleteAddress(addressId);
+        
+        // If the deleted address was default and there are other addresses, make the first remaining one default
+        if (addressToDelete && addressToDelete.is_default && data.addresses.length > 1) {
+            const remainingAddresses = data.addresses.filter(addr => addr.id != addressId);
+            if (remainingAddresses.length > 0) {
+                const newDefaultAddress = remainingAddresses[0];
+                await AddressesAPI.updateAddress(newDefaultAddress.id, { is_default: true });
+            }
+        }
+        
         alert('Address deleted successfully');
         loadAddresses();
     } catch (error) {
