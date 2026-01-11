@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 random.seed(42)
 
 # Parameters
-TOTAL_ORDERS = 700  # Reduced for manageability, can be increased
+TOTAL_ORDERS = 1400  # Generate 1400 orders for better status distribution
 ORDER_START_ID = 1
 USER_IDS = list(range(1, 152))  # Based on 150 test users
 VARIANT_IDS = list(range(1, 51))  # 50 product variants
@@ -96,7 +96,8 @@ def generate_sql():
     lines.append(f"-- Total Orders: {TOTAL_ORDERS}")
     lines.append("-- Status Distribution:")
     for status, percentage in STATUS_DISTRIBUTION.items():
-        lines.append(f"--   {status.capitalize()}: {percentage*100:.0f}%")
+        count = int(TOTAL_ORDERS * percentage)
+        lines.append(f"--   {status.capitalize()}: {percentage*100:.0f}% (~{count} orders)")
     lines.append("-- =====================================================")
     lines.append("")
     lines.append("USE mypc_db;")
@@ -156,10 +157,11 @@ if __name__ == "__main__":
         f.write(sql)
     
     print("Generated sales_insert.sql with", TOTAL_ORDERS, "orders")
-    print("Breakdown by year:")
-    print(f"  2024: ~35% (245 orders)")
-    print(f"  2025: ~40% (280 orders)")
-    print(f"  2026: ~25% (175 orders)")
+    print("\nBreakdown by year:")
+    print(f"  2024: ~35% ({int(TOTAL_ORDERS*0.35)} orders)")
+    print(f"  2025: ~40% ({int(TOTAL_ORDERS*0.40)} orders)")
+    print(f"  2026: ~25% ({int(TOTAL_ORDERS*0.25)} orders)")
     print("\nStatus distribution:")
     for status, percentage in STATUS_DISTRIBUTION.items():
-        print(f"  {status.capitalize()}: {percentage*100:.0f}%")
+        count = int(TOTAL_ORDERS * percentage)
+        print(f"  {status.capitalize()}: {percentage*100:.0f}% (~{count} orders)")
