@@ -155,24 +155,62 @@ object-src 'none'"
     </FilesMatch>
     
     # Static assets - restrict CORS to localhost
-    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|xml|pdf)$">
         # CORS only for same-origin (no wildcard)
         # Allow caching for static assets
         Header set Cache-Control "public, max-age=31536000, immutable"
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # Images - explicit MIME type protection
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # Fonts - explicit MIME type protection
+    <FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # Stylesheets
+    <FilesMatch "\.css$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # JavaScript
+    <FilesMatch "\.js$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # JSON responses
+    <FilesMatch "\.json$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+    
+    # PHP files (API responses)
+    <FilesMatch "\.php$">
+        Header always set X-Content-Type-Options "nosniff"
     </FilesMatch>
 </IfModule>
 
 # =============================================================================
-# 3. FILE ACCESS PROTECTION
+# 3. FILE ACCESS PROTECTION & EXPLICIT SECURITY HEADERS
 # =============================================================================
-# Allow access to PHP files
+# Allow access to PHP files with explicit security headers
 <FilesMatch "\.(php)$">
     Require all granted
+    Header always set X-Content-Type-Options "nosniff"
 </FilesMatch>
 
 # Explicitly allow serve-image.php - needed for product images
 <FilesMatch "^serve-image\.php$">
     Require all granted
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src-elem 'none'"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    Header always set Cache-Control "public, max-age=31536000, immutable"
 </FilesMatch>
 
 # Protect sensitive configuration files
