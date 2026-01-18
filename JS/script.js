@@ -214,10 +214,18 @@ function ensureImageUrl(url) {
 
   // If it's an /assets/ URL that wasn't wrapped, wrap it now
   if (url.startsWith('/assets/')) {
-    // Get the base path from window.router if available
-    const basePath = (typeof window !== 'undefined' && window.router && window.router.baseRoot) ? 
-      window.router.baseRoot : 
-      window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    // Get the base path - need to include /InfoSec-MyPC/
+    let basePath;
+    if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
+      basePath = window.router.baseRoot + '/';
+    } else {
+      // Fallback: get directory from current URL
+      const pathname = window.location.pathname;
+      // If pathname is like /InfoSec-MyPC/index.html or /InfoSec-MyPC/shop
+      // Extract /InfoSec-MyPC/
+      const parts = pathname.split('/').filter(p => p && !p.includes('.html'));
+      basePath = window.location.origin + '/' + (parts[0] || '') + '/';
+    }
     
     return basePath + 'HTML_PHP/serve-image.php?path=' + encodeURIComponent(url);
   }
