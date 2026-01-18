@@ -4,6 +4,16 @@
  * Handles order creation and retrieval with transaction support
  */
 
+// Session configuration must be set before session_start()
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
 require_once 'db_config.php';
 session_start();
 
