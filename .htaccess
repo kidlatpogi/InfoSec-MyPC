@@ -191,6 +191,18 @@ object-src 'none'"
     <FilesMatch "\.php$">
         Header always set X-Content-Type-Options "nosniff"
     </FilesMatch>
+    
+    # HTML files and error pages
+    <FilesMatch "\.html?$">
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+    </FilesMatch>
+    
+    # Catch-all for any response - ensure CSP is always set
+    # (This provides a fallback if more specific rules don't apply)
+    <FilesMatch "\.(php|html?|json|xml)$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
 </IfModule>
 
 # =============================================================================
