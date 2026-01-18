@@ -8,22 +8,17 @@
 ob_start();
 
 require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/security_headers.php';
 
-// Set headers for API responses
+// Apply security headers for API responses
+SecurityHeaders::apply(['api' => true]);
+
+// Set content type for API responses
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Security headers
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-
-// Handle preflight requests
+// Handle preflight OPTIONS requests
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     ob_end_flush();
     exit();
 }
