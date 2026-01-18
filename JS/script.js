@@ -242,7 +242,6 @@ window.STATE = window.STATE || {
 // Load products from backend
 async function loadProducts(filters = {}) {
   try {
-    console.log('[loadProducts] Loading products with filters:', filters);
     const data = await ProductsAPI.getProducts({
       search: filters.search || STATE.query,
       category: filters.category || STATE.category,
@@ -250,7 +249,6 @@ async function loadProducts(filters = {}) {
       limit: filters.limit || STATE.perPage,
     });
 
-    console.log('[loadProducts] API response:', data);
 
     if (data.products) {
       // Transform backend data to match frontend format
@@ -265,7 +263,6 @@ async function loadProducts(filters = {}) {
         dbId: p.id, // Store database ID for cart operations
       }));
 
-      console.log(
         '[loadProducts] Transformed PRODUCTS array:',
         window.PRODUCTS
       );
@@ -361,20 +358,16 @@ async function renderProducts() {
   grid.style.pointerEvents = 'none';
 
   // Load products from backend
-  console.log('[renderProducts] Calling loadProducts');
   const data = await loadProducts();
-  console.log('[renderProducts] loadProducts returned:', data);
 
   // Remove loading state
   grid.style.opacity = '1';
   grid.style.pointerEvents = 'auto';
 
   let list = window.PRODUCTS.slice();
-  console.log('[renderProducts] PRODUCTS array before sort:', list);
 
   // Apply client-side sorting
   list = applySort(list, STATE.sort);
-  console.log('[renderProducts] PRODUCTS array after sort:', list);
 
   grid.innerHTML = '';
 
@@ -423,7 +416,6 @@ async function renderProducts() {
         </button>
       </div>
     `;
-    console.log(
       '[renderProducts] Rendering product:',
       p.id,
       p.title,
@@ -435,7 +427,6 @@ async function renderProducts() {
   grid.appendChild(fragment);
 
   renderPagination(data.pagination?.page || 1, data.pagination?.pages || 1);
-  console.log('[renderProducts] Rendering complete');
 
   // Update cart visibility based on user role
   updateCartVisibility();
@@ -477,9 +468,7 @@ async function loadCartFromBackend() {
       return;
     }
 
-    console.log('[loadCartFromBackend] Fetching cart from API...');
     const data = await CartAPI.getCart();
-    console.log('[loadCartFromBackend] API response:', data);
 
     if (data && data.cart) {
       // Preserve selected state from previous items if they still exist
@@ -502,7 +491,6 @@ async function loadCartFromBackend() {
         }
       });
       
-      console.log('[loadCartFromBackend] Cart data set:', window.CART_DATA);
       updateCartCount();
       renderCartItems(); // Update cart drawer UI and checkout button state
     } else {
@@ -618,9 +606,7 @@ async function renderCartItems() {
 
     // Disable checkout button when cart is empty
     const checkoutBtn = document.getElementById('checkout-btn');
-    console.log('[renderCartItems] Empty cart - checkout button:', checkoutBtn);
     if (checkoutBtn) {
-      console.log('[renderCartItems] Disabling checkout button');
       checkoutBtn.style.opacity = '0.5';
       checkoutBtn.style.cursor = 'not-allowed';
       checkoutBtn.style.pointerEvents = 'none';
@@ -634,9 +620,7 @@ async function renderCartItems() {
 
   // Enable checkout button when cart has items
   const checkoutBtn = document.getElementById('checkout-btn');
-  console.log('[renderCartItems] Cart has items - checkout button:', checkoutBtn);
   if (checkoutBtn) {
-    console.log('[renderCartItems] Enabling checkout button');
     checkoutBtn.style.opacity = '1';
     checkoutBtn.style.cursor = 'pointer';
     checkoutBtn.style.pointerEvents = 'auto';
@@ -782,10 +766,8 @@ async function removeFromCart(cartItemId) {
 }
 
 function openCart() {
-  console.log('[openCart] Opening cart drawer');
   const drawer = document.getElementById('cart-drawer');
   const backdrop = document.getElementById('cart-backdrop');
-  console.log('[openCart] Drawer:', drawer, 'Backdrop:', backdrop);
 
   if (!drawer) {
     console.error('[openCart] cart-drawer element not found');
@@ -798,7 +780,6 @@ function openCart() {
     backdrop.style.opacity = '1';
     backdrop.style.pointerEvents = 'auto';
   }
-  console.log('[openCart] Cart drawer opened');
   renderCartItems();
 }
 
@@ -830,7 +811,6 @@ if (!window.scriptClickListenersAttached) {
     const id = t.getAttribute('data-id');
     const cartItemId = t.getAttribute('data-cart-item-id');
 
-    console.log(
       '[Click Handler] Action:',
       action,
       'ID:',
@@ -844,7 +824,6 @@ if (!window.scriptClickListenersAttached) {
       // Get quantity from modal input
       const qtyInput = document.getElementById(`modal-qty-${id}`);
       const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-      console.log('[Add from Modal] Product ID:', id, 'Quantity:', qty);
       addToCart(id, qty);
       closeProductDetail();
     }
@@ -852,7 +831,6 @@ if (!window.scriptClickListenersAttached) {
     if (action === 'dec' && cartItemId) changeCartQty(cartItemId, -1);
     if (action === 'rem' && cartItemId) removeFromCart(cartItemId);
     if (action === 'view') {
-      console.log('[View Button Clicked] Product ID:', id);
       openProductDetail(id);
     }
   });
@@ -938,11 +916,8 @@ if (!window.scriptChangeListenersAttached) {
 // ========================================
 
 function openProductDetail(productId) {
-  console.log('[openProductDetail] Looking for product ID:', productId);
-  console.log('[openProductDetail] PRODUCTS array:', window.PRODUCTS);
 
   const product = window.PRODUCTS.find((p) => p.id === productId);
-  console.log('[openProductDetail] Found product:', product);
 
   if (!product) {
     console.error('[openProductDetail] Product not found with ID:', productId);
@@ -953,7 +928,6 @@ function openProductDetail(productId) {
   const backdrop = document.getElementById('product-modal-backdrop');
   const content = document.getElementById('product-modal-content');
 
-  console.log(
     '[openProductDetail] Modal elements - modal:',
     modal,
     'backdrop:',
@@ -1016,10 +990,8 @@ function openProductDetail(productId) {
     </div>
   `;
 
-  console.log("[openProductDetail] Adding 'open' class to modal and backdrop");
   modal.classList.add('open');
   backdrop.classList.add('open');
-  console.log('[openProductDetail] Modal opened successfully');
 
   // Update cart visibility for modal buttons
   updateCartVisibility();
@@ -1036,7 +1008,6 @@ async function loadSingleProduct() {
   const id = window.CURRENT_PRODUCT_ID;
   if (!id) return;
 
-  console.log('[loadSingleProduct] Loading product:', id);
 
   try {
     const response = await fetch(
@@ -1182,7 +1153,6 @@ async function loadSingleProduct() {
 // ========================================
 
 async function initializePageScript() {
-  console.log('[initializePageScript] Starting page initialization');
 
   // Check user session
   await checkUserSession();
@@ -1195,7 +1165,6 @@ async function initializePageScript() {
   // Check if this is admin/employee/superadmin page
   // Note: router.js handles loading and initializing these scripts with proper onload callbacks
   if (document.getElementById('superadmin-welcome')) {
-    console.log('[initializePageScript] Detected superadmin page');
     // The superadmin script is loaded by router.js with onload callback
     // Only call if already loaded (e.g., on page refresh)
     if (typeof window.initializeSuperAdmin === 'function') {
@@ -1204,14 +1173,12 @@ async function initializePageScript() {
     return;
   }
   if (document.getElementById('admin-welcome')) {
-    console.log('[initializePageScript] Detected admin page');
     if (typeof window.initializeAdmin === 'function') {
       window.initializeAdmin();
     }
     return;
   }
   if (document.getElementById('employee-welcome')) {
-    console.log('[initializePageScript] Detected employee page');
     if (typeof window.initializeEmployee === 'function') {
       window.initializeEmployee();
     };
@@ -1220,10 +1187,8 @@ async function initializePageScript() {
 
   // Load products if on shop page
   if (document.getElementById('product-grid')) {
-    console.log('[initializePageScript] Detected shop page, loading products');
     await loadCategories(); // Load categories for filter dropdown
     await renderProducts();
-    console.log(
       '[initializePageScript] Products loaded, window.PRODUCTS:',
       window.PRODUCTS
     );
@@ -1235,15 +1200,12 @@ async function initializePageScript() {
   }
 
   // Setup cart
-  console.log('[initializePageScript] Setting up cart');
   await loadCartFromBackend();
   updateCartCount();
 
   // Setup event listeners
-  console.log('[initializePageScript] Setting up event listeners');
   const cartToggle = document.getElementById('cart-toggle');
   if (cartToggle) {
-    console.log(
       '[initializePageScript] Found cart-toggle, attaching click listener'
     );
     cartToggle.addEventListener('click', openCart);
@@ -1276,10 +1238,8 @@ async function initializePageScript() {
     });
 
   // Product modal
-  console.log('[initializePageScript] Setting up product modal listeners');
   const productModalClose = document.getElementById('product-modal-close');
   if (productModalClose) {
-    console.log('[initializePageScript] Found product-modal-close button');
     productModalClose.addEventListener('click', closeProductDetail);
   }
 
@@ -1287,11 +1247,9 @@ async function initializePageScript() {
     'product-modal-backdrop'
   );
   if (productModalBackdrop) {
-    console.log('[initializePageScript] Found product-modal-backdrop');
     productModalBackdrop.addEventListener('click', closeProductDetail);
   }
 
-  console.log('[initializePageScript] Page initialization complete');
 
   // Add global quantity input validation and price update
   if (!window.qtyValidationAttached) {
@@ -1346,7 +1304,6 @@ async function initializePageScript() {
   const search = document.getElementById('search-input');
   if (search) {
     const debouncedSearch = debounce(async (query) => {
-      console.log('[Search] Triggered with query:', query);
       STATE.query = query;
       STATE.page = 1;
 

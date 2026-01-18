@@ -123,7 +123,6 @@ function updateAuthNav() {
     const isAdmin = currentUser && currentUser.isAdmin;
 
     // Debug logging
-    console.log(
       "[updateAuthNav] User:",
       user,
       "isSuperAdmin:",
