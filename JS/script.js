@@ -263,9 +263,6 @@ async function loadProducts(filters = {}) {
         dbId: p.id, // Store database ID for cart operations
       }));
 
-        '[loadProducts] Transformed PRODUCTS array:',
-        window.PRODUCTS
-      );
       return data;
     }
   } catch (error) {
@@ -416,11 +413,6 @@ async function renderProducts() {
         </button>
       </div>
     `;
-      '[renderProducts] Rendering product:',
-      p.id,
-      p.title,
-      'with data-id on buttons'
-    );
     fragment.appendChild(el);
   });
 
@@ -811,14 +803,6 @@ if (!window.scriptClickListenersAttached) {
     const id = t.getAttribute('data-id');
     const cartItemId = t.getAttribute('data-cart-item-id');
 
-      '[Click Handler] Action:',
-      action,
-      'ID:',
-      id,
-      'CartItemID:',
-      cartItemId
-    );
-
     if (action === 'add') addToCart(id, 1);
     if (action === 'add-from-modal') {
       // Get quantity from modal input
@@ -928,13 +912,6 @@ function openProductDetail(productId) {
   const backdrop = document.getElementById('product-modal-backdrop');
   const content = document.getElementById('product-modal-content');
 
-    '[openProductDetail] Modal elements - modal:',
-    modal,
-    'backdrop:',
-    backdrop,
-    'content:',
-    content
-  );
 
   if (!modal || !backdrop || !content) {
     console.error('[openProductDetail] Missing modal elements');
@@ -1206,8 +1183,6 @@ async function initializePageScript() {
   // Setup event listeners
   const cartToggle = document.getElementById('cart-toggle');
   if (cartToggle) {
-      '[initializePageScript] Found cart-toggle, attaching click listener'
-    );
     cartToggle.addEventListener('click', openCart);
   }
 
