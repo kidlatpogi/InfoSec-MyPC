@@ -108,8 +108,7 @@ function logAuditEvent($action, $entityType, $entityId, $userId, $details = null
             [$action, $entityType, $entityId, $userId, $details ? json_encode($details) : null]
         );
     } catch (Exception $e) {
-        // Silently fail - don't break main operation
-        error_log("Audit logging failed: " . $e->getMessage());
+        error_log("Audit logging skipped: " . $e->getMessage());
     }
 }
 

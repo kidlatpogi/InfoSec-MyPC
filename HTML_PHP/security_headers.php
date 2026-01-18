@@ -168,7 +168,6 @@ class SecurityHeaders {
     public static function applyWithNonce($options = []) {
         $nonce = self::generateNonce();
         
-        // Store nonce for later use in script tags
         $GLOBALS['csp_nonce'] = $nonce;
         
         // Apply standard headers first

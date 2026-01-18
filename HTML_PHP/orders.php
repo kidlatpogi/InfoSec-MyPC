@@ -197,7 +197,6 @@ try {
             ], 'Order created successfully');
 
         } catch (Exception $e) {
-            // Rollback on error
             $db->rollback();
             throw $e;
         }
@@ -445,7 +444,6 @@ try {
 
             sendSuccess([], 'Order cancelled successfully and stock has been restored');
         } catch (Exception $e) {
-            // Rollback on error
             $db->rollback();
             throw $e;
         }
@@ -505,7 +503,6 @@ try {
             
             sendSuccess([], 'Order deleted successfully');
         } catch (Exception $e) {
-            // Rollback on error
             $db->rollback();
             throw $e;
         }
@@ -658,9 +655,8 @@ try {
     }
 
 } catch (Exception $e) {
-    error_log("Orders API Error: " . $e->getMessage());
-    error_log("Orders API Error Stack: " . $e->getTraceAsString());
-    // Return detailed error in development mode
-    sendError('An error occurred: ' . $e->getMessage(), 500);
+    error_log("Orders API Exception: " . $e->getMessage());
+    error_log("Orders API Stack: " . $e->getTraceAsString());
+    sendError('An exception occurred: ' . $e->getMessage(), 500);
 }
 ?>

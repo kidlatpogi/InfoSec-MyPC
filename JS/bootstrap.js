@@ -25,7 +25,6 @@
                 link.setAttribute('href', href + '?v=' + Date.now());
             });
         } catch (e) {
-            // Silently fail if cache busting doesn't work
         }
     }
     

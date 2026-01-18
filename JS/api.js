@@ -56,7 +56,6 @@ async function apiCall(endpoint, options = {}) {
 
         return data;
     } catch (error) {
-        // Only log as error if it's not a 401 (which is expected for non-logged-in users)
         if (error.status !== 401) {
             console.error(`API Error (${endpoint}):`, error);
         }
