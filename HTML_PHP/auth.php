@@ -6,8 +6,8 @@
 
 // Secure session configuration - MUST be set before session_start()
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
-ini_set('session.cookie_samesite', 'Lax'); // Changed from None to Lax for security
+ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
+ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
 

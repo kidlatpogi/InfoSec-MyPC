@@ -63,15 +63,12 @@ class SecurityHeaders {
         header_remove('X-Powered-By');
         header_remove('Server');
         
-        // For API endpoints, we rely on .htaccess for most security headers
-        // PHP handles only API-specific concerns:
-        // 1. CORS (dynamic origin checking)
-        // 2. API-specific CSP (more restrictive)
+        // For API endpoints, we rely on .htaccess for ALL security headers
+        // including CSP. PHP handles only CORS (dynamic origin checking)
+        // Note: Do NOT set CSP here - Apache sends .htaccess headers AFTER PHP,
+        // causing duplicate CSP headers which ZAP flags as misconfiguration
         
-        // Set API-specific CSP (minimal for JSON responses)
         if ($isApi) {
-            // Override the .htaccess CSP with a more restrictive one for APIs
-            header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'", true);
             // Handle CORS for API
             self::handleCORS();
         }

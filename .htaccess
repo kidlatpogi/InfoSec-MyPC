@@ -293,6 +293,11 @@ ErrorDocument 500 /index.html
 # =============================================================================
 # 8. ADDITIONAL SECURITY MEASURES
 # =============================================================================
+# Block access to .git directory and other version control directories
+RedirectMatch 404 /\.git(/.*)?$
+RedirectMatch 404 /\.svn(/.*)?$
+RedirectMatch 404 /\.hg(/.*)?$
+
 # Prevent access to hidden files (starting with .)
 <FilesMatch "^\.">
     Require all denied
