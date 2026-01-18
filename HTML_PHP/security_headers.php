@@ -63,99 +63,28 @@ class SecurityHeaders {
         header_remove('X-Powered-By');
         header_remove('Server');
         
-        // 1. Content Security Policy (CSP)
-        // Strict CSP - adjust based on your application needs
-        self::setCSP($isApi);
+        // For API endpoints, we rely on .htaccess for most security headers
+        // PHP handles only API-specific concerns:
+        // 1. CORS (dynamic origin checking)
+        // 2. API-specific CSP (more restrictive)
         
-        // 2. Anti-Clickjacking: X-Frame-Options
-        header('X-Frame-Options: ' . $frameOption);
-        
-        // 3. X-Content-Type-Options - Prevent MIME type sniffing
-        header('X-Content-Type-Options: nosniff');
-        
-        // 4. X-XSS-Protection - Legacy but still useful for older browsers
-        header('X-XSS-Protection: 1; mode=block');
-        
-        // 5. Referrer Policy - Control referrer information
-        header('Referrer-Policy: strict-origin-when-cross-origin');
-        
-        // 6. Permissions Policy (formerly Feature-Policy)
-        header("Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()");
-        
-        // 7. Cache Control - Prevent caching of sensitive data
-        if (!$allowCache) {
-            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-            header('Pragma: no-cache');
-            header('Expires: 0');
-        }
-        
-        // 8. HSTS - Only apply if using HTTPS
-        // WARNING: Do NOT enable this on localhost without valid SSL
-        // Uncomment the following for production HTTPS:
-        if (self::isHTTPS()) {
-            header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
-        }
-        
-        // 9. CORS Headers - Only for API endpoints
+        // Set API-specific CSP (minimal for JSON responses)
         if ($isApi) {
+            // Override the .htaccess CSP with a more restrictive one for APIs
+            header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'", true);
+            // Handle CORS for API
             self::handleCORS();
         }
-    }
-    
-    /**
-     * Set Content Security Policy header
-     * Generates a strict but functional CSP
-     */
-    private static function setCSP($isApi = false) {
-        // For API responses, use a minimal CSP
-        if ($isApi) {
-            header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'");
-            return;
-        }
         
-        // For HTML pages, use a comprehensive CSP
-        // NOTE: Removing 'unsafe-inline' requires refactoring inline scripts/styles to external files
-        // This is a balanced CSP that works with most applications
-        $csp = [
-            // Default fallback - deny everything not explicitly allowed
-            "default-src 'self'",
-            
-            // Scripts - ideally remove unsafe-inline and use nonces or hashes
-            // For now, allowing self only. Add 'unsafe-inline' temporarily if needed
-            // To use nonces: "script-src 'self' 'nonce-{random}'"
-            "script-src 'self'",
-            
-            // Styles - Google Fonts requires external access
-            // unsafe-inline needed for dynamic inline styles applied by JavaScript
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "style-src-elem 'self' https://fonts.googleapis.com",
-            
-            // Images - allow self, data URIs, blob, and HTTPS sources
-            "img-src 'self' data: https: blob:",
-            
-            // Fonts - Google Fonts
-            "font-src 'self' https://fonts.gstatic.com",
-            
-            // Connect - API calls to self only
-            "connect-src 'self'",
-            
-            // Forms - only allow submission to self
-            "form-action 'self'",
-            
-            // Frame ancestors - prevent clickjacking (replaces X-Frame-Options)
-            "frame-ancestors 'none'",
-            
-            // Base URI - prevent base tag hijacking
-            "base-uri 'self'",
-            
-            // Object/Embed - block plugins
-            "object-src 'none'",
-            
-            // Upgrade insecure requests (for production HTTPS)
-            // "upgrade-insecure-requests",
-        ];
-        
-        header("Content-Security-Policy: " . implode('; ', $csp));
+        // Note: The following headers are already set by .htaccess
+        // We don't duplicate them to avoid double headers:
+        // - X-Frame-Options
+        // - X-Content-Type-Options
+        // - X-XSS-Protection
+        // - Referrer-Policy
+        // - Permissions-Policy
+        // - Cache-Control
+        // - HSTS
     }
     
     /**

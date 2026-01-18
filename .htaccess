@@ -123,14 +123,9 @@ object-src 'none'"
     # -------------------------------------------------------------------------
     # STRICT-TRANSPORT-SECURITY (HSTS)
     # -------------------------------------------------------------------------
-    # WARNING: Only enable HSTS when you have HTTPS configured!
-    # On localhost without SSL, this can lock you out of your site.
-    # 
-    # Uncomment for production HTTPS:
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    #
-    # For HTTPS localhost testing with self-signed cert (shorter duration):
-    # Header always set Strict-Transport-Security "max-age=86400"
+    # Enable HSTS for HTTPS connections (will be ignored on HTTP)
+    # This header instructs browsers to only use HTTPS for future requests
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
     
     # -------------------------------------------------------------------------
     # CACHE CONTROL
@@ -236,6 +231,11 @@ object-src 'none'"
 
 # Protect sensitive configuration files
 <FilesMatch "^(db_config\.php|Database\.php|security_headers\.php|\.env|\.htaccess|\.htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+# Block utility/setup scripts that should not be web accessible
+<FilesMatch "^(create_superadmin\.php|update_images_to_local\.php|setup_stock_and_admin\.php)$">
     Require all denied
 </FilesMatch>
 
