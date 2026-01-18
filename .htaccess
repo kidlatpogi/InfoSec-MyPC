@@ -86,12 +86,12 @@ RewriteRule .* - [F,L]
     # For APIs, a more restrictive CSP is set via PHP
     Header always set Content-Security-Policy "\
 default-src 'self'; \
-script-src 'self' 'wasm-unsafe-eval'; \
+script-src 'self'; \
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
 style-src-elem 'self' https://fonts.googleapis.com; \
 img-src 'self' data: https: blob:; \
 font-src 'self' https://fonts.gstatic.com; \
-connect-src 'self' http://localhost/HTML_PHP http://127.0.0.1/HTML_PHP; \
+connect-src 'self'; \
 form-action 'self'; \
 frame-ancestors 'none'; \
 base-uri 'self'; \
