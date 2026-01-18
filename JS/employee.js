@@ -216,7 +216,7 @@ function showConfirmDialog(message, onConfirm) {
 }
 
 // ========================================
-// PASSWORD VERIFICATION
+// VERIFICATION
 // ========================================
 
 async function verifyPassword() {
