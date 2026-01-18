@@ -87,16 +87,15 @@ RewriteRule .* - [F,L]
     Header always set Content-Security-Policy "\
 default-src 'self'; \
 script-src 'self'; \
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
-style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; \
-img-src 'self' data: https:; \
+style-src 'self' https://fonts.googleapis.com; \
+style-src-elem 'self' https://fonts.googleapis.com; \
+img-src 'self' data: https: blob:; \
 font-src 'self' https://fonts.gstatic.com; \
 connect-src 'self'; \
 form-action 'self'; \
 frame-ancestors 'none'; \
 base-uri 'self'; \
-object-src 'none'; \
-upgrade-insecure-requests"
+object-src 'none'"
     
     # -------------------------------------------------------------------------
     # X-CONTENT-TYPE-OPTIONS
