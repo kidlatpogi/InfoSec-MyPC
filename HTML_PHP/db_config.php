@@ -123,29 +123,29 @@ function sanitizeResponseData($data) {
     }
     
     // Fields to remove from responses to prevent timestamp disclosure
-    $sensitiveFields = ['created_at', 'updated_at', 'deleted_at', 'last_login', 'timestamp'];
+    $sensitiveFields = ['created_at', 'updated_at', 'deleted_at', 'last_login', 'timestamp', 'placed_at', 'archived_at'];
     
-    // Recursively sanitize arrays
+    // Recursively process all arrays
     array_walk_recursive($data, function(&$value, $key) use ($sensitiveFields) {
-        if (in_array(strtolower($key), $sensitiveFields)) {
+        if (in_array(strtolower($key), array_map('strtolower', $sensitiveFields))) {
             $value = null;
         }
     });
     
-    // Remove null values to clean up response
-    $removeNulls = function(&$arr) use (&$removeNulls) {
+    // Remove null values and clean up response
+    function removeNulls(&$arr) {
         if (is_array($arr)) {
             foreach ($arr as $key => &$value) {
                 if ($value === null) {
                     unset($arr[$key]);
                 } elseif (is_array($value)) {
-                    $removeNulls($value);
+                    removeNulls($value);
                 }
             }
         }
-    };
-    $removeNulls($data);
+    }
     
+    removeNulls($data);
     return $data;
 }
 ?>
