@@ -1,37 +1,248 @@
+# =============================================================================
+# SECURITY-HARDENED .HTACCESS CONFIGURATION
+# =============================================================================
+# This configuration addresses OWASP ZAP vulnerabilities:
+# - Cloud Metadata Protection (169.254.169.254 blocking)
+# - Content Security Policy (CSP)
+# - CORS Misconfiguration fixes
+# - Anti-Clickjacking (X-Frame-Options / frame-ancestors)
+# - Information Leakage (X-Powered-By, Server header removal)
+# - Security Headers (X-Content-Type-Options, HSTS, etc.)
+# - Cache Control
+# =============================================================================
+
 # Enable rewrite engine
 RewriteEngine On
 
 # Prevent directory listing
 Options -Indexes
 
+# Disable server signature
+ServerSignature Off
+
 # Set default charset
 AddDefaultCharset UTF-8
 
-# Allow access to API files
+# =============================================================================
+# 1. CLOUD METADATA PROTECTION (HIGH PRIORITY)
+# =============================================================================
+# Block requests to cloud metadata endpoints (AWS, GCP, Azure)
+# This prevents SSRF attacks that could expose cloud credentials
+
+# Block requests containing cloud metadata IPs in the URI
+RewriteCond %{REQUEST_URI} (169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com) [NC]
+RewriteRule .* - [F,L]
+
+# Block requests with cloud metadata in query strings
+RewriteCond %{QUERY_STRING} (169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com) [NC]
+RewriteRule .* - [F,L]
+
+# Block requests with cloud metadata in HTTP Host header
+RewriteCond %{HTTP_HOST} (169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com) [NC]
+RewriteRule .* - [F,L]
+
+# Block X-Forwarded-Host header with metadata addresses
+RewriteCond %{HTTP:X-Forwarded-Host} (169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com) [NC]
+RewriteRule .* - [F,L]
+
+# Block X-Forwarded-For header with metadata addresses
+RewriteCond %{HTTP:X-Forwarded-For} (169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com) [NC]
+RewriteRule .* - [F,L]
+
+# =============================================================================
+# 2. SECURITY HEADERS (mod_headers required)
+# =============================================================================
+<IfModule mod_headers.c>
+    # -------------------------------------------------------------------------
+    # INFORMATION LEAKAGE PREVENTION
+    # -------------------------------------------------------------------------
+    # Remove X-Powered-By header (exposes PHP version)
+    Header unset X-Powered-By
+    Header always unset X-Powered-By
+    
+    # Remove Server header where possible
+    # Note: Full removal requires ServerTokens Prod in httpd.conf
+    Header unset Server
+    Header always unset Server
+    
+    # Remove other potentially leaky headers
+    Header unset X-AspNet-Version
+    Header always unset X-AspNet-Version
+    Header unset X-AspNetMvc-Version
+    Header always unset X-AspNetMvc-Version
+    
+    # -------------------------------------------------------------------------
+    # ANTI-CLICKJACKING (X-Frame-Options)
+    # -------------------------------------------------------------------------
+    # Prevent your site from being embedded in iframes on other domains
+    # Use DENY to block all framing, or SAMEORIGIN to allow same-origin only
+    Header always set X-Frame-Options "DENY"
+    
+    # -------------------------------------------------------------------------
+    # CONTENT SECURITY POLICY (CSP)
+    # -------------------------------------------------------------------------
+    # Strict CSP for HTML responses
+    # Note: 'unsafe-inline' is included for compatibility - remove when possible
+    # For APIs, a more restrictive CSP is set via PHP
+    Header always set Content-Security-Policy "\
+default-src 'self'; \
+script-src 'self'; \
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+img-src 'self' data: https:; \
+font-src 'self' https://fonts.gstatic.com; \
+connect-src 'self'; \
+form-action 'self'; \
+frame-ancestors 'none'; \
+base-uri 'self'; \
+object-src 'none'; \
+upgrade-insecure-requests"
+    
+    # -------------------------------------------------------------------------
+    # X-CONTENT-TYPE-OPTIONS
+    # -------------------------------------------------------------------------
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # -------------------------------------------------------------------------
+    # X-XSS-PROTECTION (Legacy but still useful)
+    # -------------------------------------------------------------------------
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # -------------------------------------------------------------------------
+    # REFERRER POLICY
+    # -------------------------------------------------------------------------
+    # Control how much referrer information is sent
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # -------------------------------------------------------------------------
+    # PERMISSIONS POLICY (formerly Feature-Policy)
+    # -------------------------------------------------------------------------
+    # Disable dangerous browser features
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+    
+    # -------------------------------------------------------------------------
+    # STRICT-TRANSPORT-SECURITY (HSTS)
+    # -------------------------------------------------------------------------
+    # WARNING: Only enable HSTS when you have HTTPS configured!
+    # On localhost without SSL, this can lock you out of your site.
+    # 
+    # Uncomment for production HTTPS:
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    #
+    # For HTTPS localhost testing with self-signed cert (shorter duration):
+    # Header always set Strict-Transport-Security "max-age=86400"
+    
+    # -------------------------------------------------------------------------
+    # CACHE CONTROL
+    # -------------------------------------------------------------------------
+    # Prevent caching of sensitive pages/data
+    # This applies to all responses - override for static assets below
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+    
+    # -------------------------------------------------------------------------
+    # CORS CONFIGURATION (Restrictive)
+    # -------------------------------------------------------------------------
+    # Remove wildcard CORS - it's too permissive
+    # CORS is now handled per-request in PHP for better control
+    # Only set basic headers here for non-PHP resources
+    
+    # For local development only - remove or restrict in production
+    <FilesMatch "\.(php)$">
+        # CORS headers handled in PHP for dynamic origin checking
+        Header unset Access-Control-Allow-Origin
+    </FilesMatch>
+    
+    # Static assets can have relaxed CORS
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+        Header set Access-Control-Allow-Origin "*"
+        # Allow caching for static assets (override cache-control above)
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# =============================================================================
+# 3. FILE ACCESS PROTECTION
+# =============================================================================
+# Allow access to PHP files
 <FilesMatch "\.(php)$">
-    Order allow,deny
-    Allow from all
+    Require all granted
 </FilesMatch>
 
-# Protect sensitive files
-<FilesMatch "^(db_config|\.env)">
-    Order deny,allow
-    Deny from all
+# Protect sensitive configuration files
+<FilesMatch "^(db_config\.php|Database\.php|security_headers\.php|\.env|\.htaccess|\.htpasswd)$">
+    Require all denied
 </FilesMatch>
 
+# Block access to backup files and other sensitive files
+<FilesMatch "\.(bak|backup|sql|log|ini|config|conf|dist|fla|inc|sh|bash|git|svn)$">
+    Require all denied
+</FilesMatch>
+
+# =============================================================================
+# 4. URL ROUTING
+# =============================================================================
 # Handle API routing
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^api/(.+)$ api/$1 [L]
 
-# Custom error pages
+# =============================================================================
+# 5. CUSTOM ERROR PAGES
+# =============================================================================
+# Use custom error pages that don't leak information
+ErrorDocument 400 /index.html
+ErrorDocument 401 /index.html
+ErrorDocument 403 /index.html
 ErrorDocument 404 /index.html
 ErrorDocument 500 /index.html
 
-# Enable CORS for API
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+# =============================================================================
+# 6. REQUEST METHOD RESTRICTIONS
+# =============================================================================
+# Only allow necessary HTTP methods (adjust based on your API needs)
+<LimitExcept GET POST PUT DELETE OPTIONS HEAD>
+    Require all denied
+</LimitExcept>
+
+# =============================================================================
+# 7. PHP SECURITY SETTINGS (if mod_php is used)
+# =============================================================================
+<IfModule mod_php.c>
+    # Disable PHP version exposure
+    php_flag expose_php off
+    
+    # Disable dangerous functions (uncomment if needed)
+    # php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 </IfModule>
+
+<IfModule mod_php7.c>
+    php_flag expose_php off
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_flag expose_php off
+</IfModule>
+
+# =============================================================================
+# 8. ADDITIONAL SECURITY MEASURES
+# =============================================================================
+# Prevent access to hidden files (starting with .)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block suspicious request patterns (common attack vectors)
+RewriteCond %{REQUEST_URI} (\.\./) [NC,OR]
+RewriteCond %{REQUEST_URI} (boot\.ini|etc/passwd|self/environ) [NC,OR]
+RewriteCond %{QUERY_STRING} (base64_encode|base64_decode).*\( [NC,OR]
+RewriteCond %{QUERY_STRING} (<script.*>) [NC,OR]
+RewriteCond %{QUERY_STRING} (GLOBALS|REQUEST)(=|\[|%) [NC,OR]
+RewriteCond %{QUERY_STRING} (<|%3C).*iframe.*(<|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|%3D) [NC,OR]
+RewriteCond %{QUERY_STRING} union.*select.*\( [NC,OR]
+RewriteCond %{QUERY_STRING} (eval|chr|base64|exec|file_get_contents|passthru|system|shell_exec|popen)\s*\( [NC]
+RewriteRule .* - [F,L]
