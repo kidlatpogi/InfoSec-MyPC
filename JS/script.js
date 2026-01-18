@@ -1166,9 +1166,6 @@ async function initializePageScript() {
   if (document.getElementById('product-grid')) {
     await loadCategories(); // Load categories for filter dropdown
     await renderProducts();
-      '[initializePageScript] Products loaded, window.PRODUCTS:',
-      window.PRODUCTS
-    );
   }
 
   // Load single product if on product page
