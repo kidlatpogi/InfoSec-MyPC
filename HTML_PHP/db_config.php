@@ -123,7 +123,17 @@ function sanitizeResponseData($data) {
     }
     
     // Fields to remove from responses to prevent timestamp disclosure
-    $sensitiveFields = ['created_at', 'updated_at', 'deleted_at', 'last_login', 'timestamp', 'placed_at', 'archived_at'];
+    // Includes common variations and field names
+    $sensitiveFields = [
+        'created_at', 'updated_at', 'deleted_at', 
+        'last_login', 'timestamp', 'placed_at', 'archived_at',
+        'created_date', 'updated_date', 'modified_date', 'modified_at',
+        'date_created', 'date_updated', 'date_modified',
+        'creation_date', 'modification_date',
+        'last_modified', 'last_updated',
+        'time', 'created_on', 'updated_on', 'expires_at',
+        'expires', 'expiry_date', 'expiration_date'
+    ];
     
     // Recursively process all arrays
     array_walk_recursive($data, function(&$value, $key) use ($sensitiveFields) {
