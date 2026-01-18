@@ -171,6 +171,11 @@ upgrade-insecure-requests"
     Require all granted
 </FilesMatch>
 
+# Explicitly allow serve-image.php - needed for product images
+<FilesMatch "^serve-image\.php$">
+    Require all granted
+</FilesMatch>
+
 # Protect sensitive configuration files
 <FilesMatch "^(db_config\.php|Database\.php|security_headers\.php|\.env|\.htaccess|\.htpasswd)$">
     Require all denied

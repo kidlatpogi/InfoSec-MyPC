@@ -214,7 +214,12 @@ function ensureImageUrl(url) {
 
   // If it's an /assets/ URL that wasn't wrapped, wrap it now
   if (url.startsWith('/assets/')) {
-    return '/serve-image.php?path=' + encodeURIComponent(url);
+    // Get the base path from window.router if available
+    const basePath = (typeof window !== 'undefined' && window.router && window.router.baseRoot) ? 
+      window.router.baseRoot : 
+      window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    
+    return basePath + 'HTML_PHP/serve-image.php?path=' + encodeURIComponent(url);
   }
 
   // Otherwise return as-is (could be a data URI or external URL)
