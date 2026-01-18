@@ -4,15 +4,26 @@
  * Handles user registration, login, and session management
  */
 
-require_once 'db_config.php';
-
-// Secure session configuration
+// Secure session configuration - MUST be set before session_start()
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
-ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.cookie_samesite', 'Lax'); // Changed from None to Lax for security
 ini_set('session.use_only_cookies', 1);
+ini_set('session.use_strict_mode', 1);
+
+// Set session cookie parameters explicitly
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, // Set to true for HTTPS
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 
 session_start();
+
+require_once 'db_config.php';
 
 // Force JSON response for all API calls
 header('Content-Type: application/json');
