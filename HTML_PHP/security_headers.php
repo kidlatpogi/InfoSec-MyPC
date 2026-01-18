@@ -169,12 +169,9 @@ class SecurityHeaders {
             header('Access-Control-Allow-Origin: ' . $origin);
             header('Access-Control-Allow-Credentials: true');
             header('Vary: Origin');
-        } else if (empty($origin) && self::isLocalRequest()) {
-            // Allow same-origin requests (no Origin header sent)
-            // This handles requests from the same domain
-            header('Access-Control-Allow-Origin: *');
         }
-        // If origin is not allowed, don't set CORS headers at all
+        // If origin is not allowed or empty, don't set wildcard CORS headers
+        // This prevents Cross-Domain Misconfiguration
         
         header('Access-Control-Allow-Methods: ' . self::$allowedMethods);
         header('Access-Control-Allow-Headers: ' . self::$allowedHeaders);

@@ -154,10 +154,10 @@ object-src 'none'"
         Header unset Access-Control-Allow-Origin
     </FilesMatch>
     
-    # Static assets can have relaxed CORS
+    # Static assets - restrict CORS to localhost
     <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
-        Header set Access-Control-Allow-Origin "*"
-        # Allow caching for static assets (override cache-control above)
+        # CORS only for same-origin (no wildcard)
+        # Allow caching for static assets
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
