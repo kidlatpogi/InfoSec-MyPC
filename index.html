@@ -11,7 +11,8 @@
         - frame-ancestors 'none' prevents clickjacking
     -->
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-elem 'self' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'">
+    <!-- X-Frame-Options set via HTTP headers (meta tag version is ineffective for frame-ancestors) -->
     <meta http-equiv="X-Frame-Options" content="DENY">
     <title>MyPC - Premium PC Components Store</title>
     <link rel="stylesheet" href="CSS/styles.css?v=1">
