@@ -3,7 +3,13 @@
  * Image Serving Script
  * Safely serves product images from the assets directory
  * Prevents directory traversal attacks and handles image requests
+ * 
+ * Note: Security headers (CSP, X-Frame-Options, etc.) are set by .htaccess
+ * to avoid duplicate headers
  */
+
+// Remove potentially leaky headers
+header_remove('X-Powered-By');
 
 // Disable output buffering for direct image streaming
 if (ob_get_level()) {

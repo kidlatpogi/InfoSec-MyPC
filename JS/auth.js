@@ -183,7 +183,7 @@ function initSignupPage() {
 }
 
 // ========================================
-// PASSWORD VISIBILITY TOGGLE
+// VISIBILITY TOGGLE
 // ========================================
 
 function togglePassword(fieldId) {

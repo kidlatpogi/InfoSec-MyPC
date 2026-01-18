@@ -10,7 +10,6 @@
 async function loadProfileData() {
     try {
         const user = getUserData();
-        console.log('[loadProfileData] Current user data:', user);
         
         if (!user) {
             // Not logged in, redirect to login
@@ -22,14 +21,12 @@ async function loadProfileData() {
         const welcomeHeading = document.querySelector('#overview h1');
         if (welcomeHeading) {
             welcomeHeading.textContent = `Welcome back, ${user.first_name}!`;
-            console.log('[loadProfileData] Updated welcome heading');
         }
 
         // Populate account information
         const nameInfo = document.querySelector('#overview .info-item:nth-child(1) p');
         if (nameInfo) {
             nameInfo.textContent = `${user.first_name} ${user.last_name}`;
-            console.log('[loadProfileData] Updated name info to:', nameInfo.textContent);
         } else {
             console.warn('[loadProfileData] Name info element not found');
         }
@@ -37,7 +34,6 @@ async function loadProfileData() {
         const emailInfo = document.querySelector('#overview .info-item:nth-child(2) p');
         if (emailInfo) {
             emailInfo.textContent = user.email;
-            console.log('[loadProfileData] Updated email info to:', emailInfo.textContent);
         } else {
             console.warn('[loadProfileData] Email info element not found');
         }
@@ -45,7 +41,6 @@ async function loadProfileData() {
         const phoneInfo = document.querySelector('#overview .info-item:nth-child(3) p');
         if (phoneInfo) {
             phoneInfo.textContent = user.phone || 'Not provided';
-            console.log('[loadProfileData] Updated phone info to:', phoneInfo.textContent);
         } else {
             console.warn('[loadProfileData] Phone info element not found');
         }
@@ -75,7 +70,6 @@ async function loadProfileData() {
         // Load orders
         await loadUserOrders();
         
-        console.log('[loadProfileData] Profile data reload complete');
 
     } catch (error) {
         console.error('Failed to load profile data:', error);
@@ -110,14 +104,12 @@ async function loadUserOrders() {
         const totalOrdersStat = document.querySelector('.stat-box:nth-child(1) .stat-number');
         if (totalOrdersStat) {
             totalOrdersStat.textContent = data.orders.length;
-            console.log('[loadUserOrders] Updated total orders to:', data.orders.length);
         }
 
         const totalSpent = data.orders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
         const totalSpentStat = document.querySelector('.stat-box:nth-child(2) .stat-number');
         if (totalSpentStat) {
             totalSpentStat.textContent = formatPHP(totalSpent);
-            console.log('[loadUserOrders] Updated total spent to:', formatPHP(totalSpent));
         }
 
         // Render orders
@@ -181,7 +173,6 @@ async function loadUserOrders() {
 async function viewOrderDetails(orderId) {
     try {
         const data = await OrdersAPI.getOrder(orderId);
-        console.log('Order data:', data);
         
         if (data && data.order) {
             const order = data.order;
@@ -322,7 +313,6 @@ function switchSection(sectionId) {
         targetSection.classList.add('active');
     }
     
-    console.log('[switchSection] Switched to:', sectionId);
 }
 
 function initProfileNavigation() {
@@ -362,7 +352,6 @@ function initProfileEditForm() {
         const newPassword = document.getElementById('new-password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
 
-        console.log('Form data:', { fullName, email, phone, hasCurrentPassword: !!currentPassword, hasNewPassword: !!newPassword });
 
         if (!fullName) {
             alert('Full name is required');
@@ -385,7 +374,6 @@ function initProfileEditForm() {
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        console.log('Name split:', { firstName, lastName });
 
         // If changing password, validate
         if (newPassword || confirmPassword) {
@@ -417,8 +405,6 @@ function initProfileEditForm() {
                 new_password: newPassword || ''
             });
             
-            console.log('Sending request to /HTML_PHP/auth.php?action=updateProfile');
-            console.log('Request body:', requestBody.toString());
             
             const response = await fetch('/HTML_PHP/auth.php?action=updateProfile', {
                 method: 'POST',
@@ -428,11 +414,8 @@ function initProfileEditForm() {
                 body: requestBody
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
             
             const responseText = await response.text();
-            console.log('Response text:', responseText);
             
             let data;
             try {
@@ -443,7 +426,6 @@ function initProfileEditForm() {
                 return;
             }
             
-            console.log('Update response:', data);
 
             if (data.success) {
                 // Update localStorage with server response data
@@ -458,7 +440,6 @@ function initProfileEditForm() {
                         phone: data.user.phone
                     };
                     localStorage.setItem('user_data', JSON.stringify(updatedUser));
-                    console.log('Updated user data in localStorage:', updatedUser);
                 } else {
                     // Fallback: update with the values we sent
                     const user = getUserData();
@@ -467,7 +448,6 @@ function initProfileEditForm() {
                     user.email = email;
                     user.phone = phone;
                     localStorage.setItem('user_data', JSON.stringify(user));
-                    console.log('Updated user data (fallback):', user);
                 }
 
                 // Clear password fields immediately
@@ -503,12 +483,10 @@ function initProfileEditForm() {
                     phoneInfo.textContent = phone || 'Not provided';
                 }
                 
-                console.log('Updated UI directly with:', { fullNameDisplay, email, phone });
                 
                 // Update the auth navigation to reflect name changes
                 if (typeof window.updateAuthNav === 'function') {
                     window.updateAuthNav();
-                    console.log('Auth nav updated');
                 }
                 
                 // Show success message

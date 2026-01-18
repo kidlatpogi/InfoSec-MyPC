@@ -4,31 +4,25 @@
  * Separate endpoint for sales analytics that handles authentication gracefully
  */
 
-// CORS headers for same-origin requests
-header('Access-Control-Allow-Credentials: true');
+// Session configuration must be set before session_start()
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 
 require_once 'db_config.php';
-
-// Secure session configuration (must match auth.php)
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
-ini_set('session.cookie_samesite', 'Strict');
-ini_set('session.use_only_cookies', 1);
-
 session_start();
 
 $db = getDB();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Debug: Log session info
-error_log("Sales Analytics - Session ID: " . session_id());
-error_log("Sales Analytics - User ID: " . ($_SESSION['user_id'] ?? 'NOT SET'));
-error_log("Sales Analytics - Cookies received: " . print_r($_COOKIE, true));
-
 // Check authentication
 if (!isset($_SESSION['user_id'])) {
-    error_log("Sales Analytics - Auth failed: user_id not in session");
-    sendError('Not authenticated. Please log in again. Session ID: ' . session_id(), 401);
+    sendError('Not authenticated. Please log in again.', 401);
     exit;
 }
 

@@ -8,22 +8,17 @@
 ob_start();
 
 require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/security_headers.php';
 
-// Set headers for API responses
+// Apply security headers for API responses
+SecurityHeaders::apply(['api' => true]);
+
+// Set content type for API responses
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Security headers
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-
-// Handle preflight requests
+// Handle preflight OPTIONS requests
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     ob_end_flush();
     exit();
 }
@@ -61,6 +56,9 @@ function sendError($message, $statusCode = 400) {
  * Send success response
  */
 function sendSuccess($data = [], $message = null) {
+    // Remove sensitive timestamp fields from response
+    $data = sanitizeResponseData($data);
+    
     $response = ['success' => true];
     if ($message) {
         $response['message'] = $message;
@@ -110,8 +108,53 @@ function logAuditEvent($action, $entityType, $entityId, $userId, $details = null
             [$action, $entityType, $entityId, $userId, $details ? json_encode($details) : null]
         );
     } catch (Exception $e) {
-        // Silently fail - don't break main operation
-        error_log("Audit logging failed: " . $e->getMessage());
+        error_log("Audit logging skipped: " . $e->getMessage());
     }
+}
+
+/**
+ * Sanitize response data by removing sensitive timestamp fields
+ * Prevents timestamp disclosure vulnerability
+ */
+function sanitizeResponseData($data) {
+    if (!is_array($data)) {
+        return $data;
+    }
+    
+    // Fields to remove from responses to prevent timestamp disclosure
+    // Includes common variations and field names
+    $sensitiveFields = [
+        'created_at', 'updated_at', 'deleted_at', 
+        'last_login', 'timestamp', 'placed_at', 'archived_at',
+        'created_date', 'updated_date', 'modified_date', 'modified_at',
+        'date_created', 'date_updated', 'date_modified',
+        'creation_date', 'modification_date',
+        'last_modified', 'last_updated',
+        'time', 'created_on', 'updated_on', 'expires_at',
+        'expires', 'expiry_date', 'expiration_date'
+    ];
+    
+    // Recursively process all arrays
+    array_walk_recursive($data, function(&$value, $key) use ($sensitiveFields) {
+        if (in_array(strtolower($key), array_map('strtolower', $sensitiveFields))) {
+            $value = null;
+        }
+    });
+    
+    // Remove null values and clean up response
+    function removeNulls(&$arr) {
+        if (is_array($arr)) {
+            foreach ($arr as $key => &$value) {
+                if ($value === null) {
+                    unset($arr[$key]);
+                } elseif (is_array($value)) {
+                    removeNulls($value);
+                }
+            }
+        }
+    }
+    
+    removeNulls($data);
+    return $data;
 }
 ?>

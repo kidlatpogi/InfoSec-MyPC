@@ -122,16 +122,6 @@ function updateAuthNav() {
     const isSuperAdmin = currentUser && currentUser.isSuperAdmin;
     const isAdmin = currentUser && currentUser.isAdmin;
 
-    // Debug logging
-    console.log(
-      "[updateAuthNav] User:",
-      user,
-      "isSuperAdmin:",
-      isSuperAdmin,
-      "isAdmin:",
-      isAdmin
-    );
-
     // Check if user is employee
     const employees = getAdminEmployees ? getAdminEmployees() : [];
     const isEmployee = employees.some((e) => e.email === user && e.isEmployee);
