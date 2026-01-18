@@ -8,6 +8,10 @@
 // Security headers
 header_remove('X-Powered-By');
 header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: default-src 'none'; img-src 'self'; style-src-elem 'none'");
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: no-referrer');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 
 // Disable output buffering for direct image streaming
 if (ob_get_level()) {

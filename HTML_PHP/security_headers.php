@@ -128,7 +128,7 @@ class SecurityHeaders {
             // Styles - Google Fonts requires external access
             // unsafe-inline needed for dynamic inline styles applied by JavaScript
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "style-src-elem 'self' https://fonts.googleapis.com",
             
             // Images - allow self, data URIs, blob, and HTTPS sources
             "img-src 'self' data: https: blob:",
@@ -254,7 +254,7 @@ class SecurityHeaders {
             "default-src 'self'",
             "script-src 'self' 'nonce-{$nonce}'",
             "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com",
-            "style-src-elem 'self' 'nonce-{$nonce}' https://fonts.googleapis.com",
+            "style-src-elem 'self' https://fonts.googleapis.com",
             "img-src 'self' data: https: blob:",
             "font-src 'self' https://fonts.gstatic.com",
             "connect-src 'self'",
