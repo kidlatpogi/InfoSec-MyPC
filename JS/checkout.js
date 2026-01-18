@@ -136,11 +136,9 @@ async function loadCheckoutItems() {
 
         if (!checkoutItemsEl) return;
 
-        console.log('[loadCheckoutItems] Before loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
         
         await loadCartFromBackend();
         
-        console.log('[loadCheckoutItems] After loadCartFromBackend, window.CART_DATA:', window.CART_DATA);
 
         if (!window.CART_DATA || !window.CART_DATA.items || window.CART_DATA.items.length === 0) {
             console.warn('[loadCheckoutItems] Cart is empty or not loaded');
@@ -157,7 +155,6 @@ async function loadCheckoutItems() {
             return;
         }
 
-        console.log('[loadCheckoutItems] Cart items to render:', window.CART_DATA.items);
 
         // Enable submit button if cart has items
         const submitBtn = document.querySelector('#checkout-form button[type="submit"]');
@@ -171,7 +168,6 @@ async function loadCheckoutItems() {
         window.CART_DATA.items.forEach((item) => {
             // Only show items that were selected in the cart
             if (item.selected === true) {
-                console.log('[loadCheckoutItems] Rendering selected item:', item);
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'summary-row';
                 itemDiv.style.display = 'flex';
@@ -283,11 +279,9 @@ function initializeCheckoutForm() {
             try {
                 // Check if user already has addresses
                 const existingAddresses = await AddressesAPI.getAddresses();
-                console.log('Existing addresses:', existingAddresses);
                 
                 if (!existingAddresses.addresses || existingAddresses.addresses.length === 0) {
                     // First address - save it as default
-                    console.log('No existing addresses, creating new one...');
                     const addressResult = await AddressesAPI.addAddress(
                         fullname,  // recipient name
                         phone,
@@ -298,15 +292,12 @@ function initializeCheckoutForm() {
                         'Home',    // label
                         true       // is default
                     );
-                    console.log('Address created:', addressResult);
                     addressId = addressResult.address_id;
                 } else {
                     // Use the first existing address or create new one
-                    console.log('Using existing address:', existingAddresses.addresses[0]);
                     addressId = existingAddresses.addresses[0].id;
                 }
                 
-                console.log('Address ID to use for order:', addressId);
             } catch (error) {
                 console.error('Error saving address:', error);
                 console.error('Error details:', error.message);
@@ -332,7 +323,6 @@ function initializeCheckoutForm() {
                     selectedCartItemIds // pass selected items
                 );
 
-                console.log('Order creation result:', orderResult);
 
                 // Order created successfully
                 alert('Order placed successfully! Order #' + (orderResult.order_number || orderResult.order_id));
@@ -370,14 +360,12 @@ function initializeCheckoutForm() {
 // ========================================
 
 window.initCheckoutPage = async function() {
-    console.log('[checkout.js] Initializing checkout page');
     await loadCheckoutData();
     initializeCheckoutForm();
 };
 
 // Also support DOMContentLoaded for direct page loads
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[checkout.js] DOMContentLoaded - calling initCheckoutPage');
     if (window.initCheckoutPage) {
         window.initCheckoutPage();
     }

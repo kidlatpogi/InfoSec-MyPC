@@ -498,9 +498,7 @@ async function loadProducts() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
-        console.log('Fetching products...');
         const data = await ProductsAPI.getAllProducts();
-        console.log('Products loaded:', data);
 
         // Store all data in pagination state
         paginationState.products.allData = data.products || [];
@@ -1182,12 +1180,10 @@ let currentVariants = [];
 let variantsModalOpen = false;
 
 function openVariantsEditor() {
-  console.log('Opening variants editor...');
   const variantsJSON = document.getElementById('product-variants').value.trim();
   
   try {
     currentVariants = variantsJSON ? JSON.parse(variantsJSON) : [];
-    console.log('Loaded variants:', currentVariants);
   } catch (e) {
     console.error('Invalid JSON:', e);
     alert('Invalid JSON in variants field. Starting with empty variants.');
@@ -1199,7 +1195,6 @@ function openVariantsEditor() {
   if (modal) {
     modal.classList.add('open');
     variantsModalOpen = true;
-    console.log('Variants modal opened');
   } else {
     console.error('Variants modal not found!');
   }
@@ -1254,7 +1249,6 @@ function renderVariantsEditor() {
 function updateVariant(idx, field, value) {
   if (currentVariants[idx]) {
     currentVariants[idx][field] = value;
-    console.log('Updated variant:', idx, field, value);
     renderVariantsEditor();
   }
 }
@@ -1272,7 +1266,6 @@ function addVariant() {
     price: 0,
     stock: 0
   });
-  console.log('Added new variant');
   renderVariantsEditor();
 }
 
@@ -1286,7 +1279,6 @@ function saveVariants() {
   document.getElementById('product-variants').value = JSON.stringify(currentVariants);
   document.getElementById('variants-modal').classList.remove('open');
   variantsModalOpen = false;
-  console.log('Variants saved');
 }
 
 // ========================================
@@ -1353,15 +1345,12 @@ function initModals() {
     
     if (editVariantsBtn) {
         editVariantsBtn.addEventListener('click', openVariantsEditor);
-        console.log('✓ Edit Variants button listener added');
     }
     if (addVariantBtn) {
         addVariantBtn.addEventListener('click', addVariant);
-        console.log('✓ Add Variant button listener added');
     }
     if (variantsSaveBtn) {
         variantsSaveBtn.addEventListener('click', saveVariants);
-        console.log('✓ Save Variants button listener added');
     }
 }
 
@@ -1372,10 +1361,8 @@ function initModals() {
 async function loadProfileData() {
     // Force refresh from localStorage
     const userDataString = localStorage.getItem('mypc_user_data');
-    console.log('[loadProfileData] Raw localStorage:', userDataString);
     
     const user = userDataString ? JSON.parse(userDataString) : null;
-    console.log('[loadProfileData] Parsed user data:', user);
     
     if (!user) {
         window.location.href = 'login.html';
@@ -1385,12 +1372,10 @@ async function loadProfileData() {
     // Populate form with current user data
     // Combine first_name and last_name into full_name
     const fullName = [user.first_name || '', user.last_name || ''].filter(Boolean).join(' ');
-    console.log('[loadProfileData] Setting full name to:', fullName);
     
     const fullNameInput = document.getElementById('profile-full-name');
     if (fullNameInput) {
         fullNameInput.value = fullName;
-        console.log('[loadProfileData] Full name input updated to:', fullNameInput.value);
     } else {
         console.error('[loadProfileData] Full name input not found!');
     }
@@ -1492,7 +1477,6 @@ async function updateUserProfile(updates) {
         });
 
         const responseText = await response.text();
-        console.log('Response text:', responseText);
         
         let data;
         try {
@@ -1503,7 +1487,6 @@ async function updateUserProfile(updates) {
             return;
         }
         
-        console.log('Response data:', data);
 
         if (data.success) {
             // Update localStorage with fresh data
@@ -1530,7 +1513,6 @@ async function updateUserProfile(updates) {
             document.getElementById('profile-full-name').value = fullNameDisplay;
             document.getElementById('profile-phone').value = updates.phone;
             
-            console.log('Updated employee profile UI with:', fullNameDisplay);
             
             alert('Profile updated successfully!');
         } else {
