@@ -207,27 +207,19 @@ function ensureImageUrl(url) {
     return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%23ddd" width="400" height="400"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999" font-family="Arial" font-size="20"%3ENo Image%3C/text%3E%3C/svg%3E';
   }
 
-  // If already wrapped with serve-image.php, return as-is
+  // If already wrapped with serve-image.php
   if (url.includes('serve-image.php')) {
-    return url;
+    // Check if it already has the base path
+    if (url.startsWith('http') || url.startsWith('/InfoSec-MyPC/')) {
+      return url;
+    }
+    // Add base path if missing
+    return '/InfoSec-MyPC' + url;
   }
 
   // If it's an /assets/ URL that wasn't wrapped, wrap it now
   if (url.startsWith('/assets/')) {
-    // Get the base path - need to include /InfoSec-MyPC/
-    let basePath;
-    if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
-      basePath = window.router.baseRoot + '/';
-    } else {
-      // Fallback: get directory from current URL
-      const pathname = window.location.pathname;
-      // If pathname is like /InfoSec-MyPC/index.html or /InfoSec-MyPC/shop
-      // Extract /InfoSec-MyPC/
-      const parts = pathname.split('/').filter(p => p && !p.includes('.html'));
-      basePath = window.location.origin + '/' + (parts[0] || '') + '/';
-    }
-    
-    return basePath + 'HTML_PHP/serve-image.php?path=' + encodeURIComponent(url);
+    return '/InfoSec-MyPC/HTML_PHP/serve-image.php?path=' + encodeURIComponent(url);
   }
 
   // Otherwise return as-is (could be a data URI or external URL)
