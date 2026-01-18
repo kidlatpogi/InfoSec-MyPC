@@ -142,6 +142,15 @@ object-src 'none'"
     Header always set Expires "0"
     
     # -------------------------------------------------------------------------
+    # ENSURE CSP ON ALL RESPONSES (Catch-all for edge cases)
+    # -------------------------------------------------------------------------
+    # This catch-all ensures CSP is set even on redirects, error pages, and edge cases
+    # The "always" keyword applies to all responses including error responses
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # -------------------------------------------------------------------------
     # CORS CONFIGURATION (Restrictive)
     # -------------------------------------------------------------------------
     # Remove wildcard CORS - it's too permissive
