@@ -5,6 +5,10 @@
  * Prevents directory traversal attacks and handles image requests
  */
 
+// Security headers
+header_remove('X-Powered-By');
+header('X-Content-Type-Options: nosniff');
+
 // Disable output buffering for direct image streaming
 if (ob_get_level()) {
     ob_end_clean();
