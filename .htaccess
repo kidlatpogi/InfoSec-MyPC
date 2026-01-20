@@ -250,22 +250,17 @@ object-src 'none'"
 # =============================================================================
 # 4. URL ROUTING  
 # =============================================================================
-# Allow direct access to real files and directories (don't rewrite them)
+# Skip rewriting for real files and directories
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Prevent rewriting requests that have already been rewritten
-RewriteCond %{ENV:REDIRECT_STATUS} ^$
+# Don't rewrite index.html requests to index.html (infinite loop prevention)
+RewriteCond %{REQUEST_URI} index\.html$ [NC]
+RewriteRule ^ - [L]
 
-# Handle API routing
-RewriteCond %{REQUEST_URI} ^/InfoSec-MyPC/api/ [NC]
-RewriteRule ^api/(.+)$ /InfoSec-MyPC/api/$1 [L]
-
-# Rewrite all non-existent requests to index.html for SPA routing
-# Use absolute path with subdirectory
-RewriteCond %{REQUEST_URI} !^/InfoSec-MyPC/index\.html$ 
-RewriteRule ^ /InfoSec-MyPC/index.html [L]
+# Rewrite all other requests to index.html for SPA routing
+RewriteRule ^(.*)$ index.html [L]
 
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
