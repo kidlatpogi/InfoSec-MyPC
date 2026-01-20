@@ -267,12 +267,12 @@ RewriteRule ^ index.html [L]
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
 # =============================================================================
-# Custom error document that allows API errors to show
-ErrorDocument 400 /index.html
-ErrorDocument 401 /index.html
-ErrorDocument 403 /index.html
-ErrorDocument 404 /index.html
-ErrorDocument 500 /index.html
+# Note: ErrorDocument 404 removed because rewrite rules handle SPA routing
+# Only set error pages for actual errors, not 404s from SPA routing
+ErrorDocument 400 index.html
+ErrorDocument 401 index.html
+ErrorDocument 403 index.html
+ErrorDocument 500 index.html
 
 # =============================================================================
 # 6. REQUEST METHOD RESTRICTIONS
