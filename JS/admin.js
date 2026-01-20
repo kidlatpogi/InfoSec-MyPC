@@ -1986,6 +1986,7 @@ async function loadProfileData() {
   const fullNameInput = document.getElementById('profile-full-name');
   if (fullNameInput) {
     fullNameInput.value = fullName;
+    console.log(
       '[loadProfileData] Full name input updated to:',
       fullNameInput.value
     );
