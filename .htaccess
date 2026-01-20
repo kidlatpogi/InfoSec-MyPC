@@ -265,11 +265,9 @@ RewriteRule ^(.*)$ index.html [L]
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
 # =============================================================================
-# Note: ErrorDocument 404 removed because rewrite rules handle SPA routing
-# Only set error pages for actual errors, not 404s from SPA routing
-ErrorDocument 400 index.html
-ErrorDocument 401 index.html
-ErrorDocument 403 index.html
+# For SPA routing, we don't use ErrorDocument 404 because the rewrite rules
+# handle routing. Other errors are passed through.
+# ErrorDocument 404 - removed, handled by rewrite rules
 ErrorDocument 500 index.html
 
 # =============================================================================
