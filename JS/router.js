@@ -18,17 +18,10 @@ class Router {
     window.addEventListener('popstate', (e) => this.handleRouteChange(e));
     document.addEventListener('click', (e) => this.handleLinkClick(e));
 
-    const originAvailable =
-      window.location &&
-      window.location.origin &&
-      window.location.origin !== 'null';
-    if (originAvailable) {
-      const pathname = window.location.pathname;
-      const directory = pathname.substring(0, pathname.lastIndexOf('/'));
-      this.baseRoot = window.location.origin + directory;
-    } else {
-      this.baseRoot = window.location.href.replace(/\/[^\/]*$/, '');
-    }
+    // Set base root to the InfoSec-MyPC subdirectory
+    // This is hardcoded to ensure correct paths even when internal rewrites change window.location
+    this.baseRoot = window.location.origin + '/InfoSec-MyPC';
+    
     this.init();
   }
 
