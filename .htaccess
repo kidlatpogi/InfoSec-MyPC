@@ -245,18 +245,28 @@ object-src 'none'"
 </FilesMatch>
 
 # =============================================================================
-# 4. URL ROUTING
+# 4. URL ROUTING  
 # =============================================================================
+# Allow direct access to files in HTML_PHP directory (for SPA page loading and API calls)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
 # Handle API routing
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^api/(.+)$ api/$1 [L]
 
+# Rewrite non-existent requests to index.html for SPA routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]
+
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
 # =============================================================================
-# Use custom error pages that don't leak information
+# Custom error document that allows API errors to show
 ErrorDocument 400 /index.html
 ErrorDocument 401 /index.html
 ErrorDocument 403 /index.html

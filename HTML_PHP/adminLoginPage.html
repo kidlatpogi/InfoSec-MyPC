@@ -48,15 +48,7 @@
             </div>
             <div class="form-field">
                 <label for="admin-password">Password</label>
-                <div style="position:relative;">
-                    <input type="password" id="admin-password" placeholder="••••••••" required autocomplete="current-password">
-                    <button type="button" onclick="toggleAdminPassword()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-light);">
-                        <svg id="password-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </button>
-                </div>
+                <input type="password" id="admin-password" placeholder="••••••••" required autocomplete="current-password">
                 <span class="error" id="password-error"></span>
             </div>
             <button class="primary" type="submit" id="admin-login-btn" style="width:100%;padding:0.9rem;font-weight:600;">

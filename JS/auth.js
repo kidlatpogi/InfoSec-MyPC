@@ -234,7 +234,17 @@ function initAdminLoginPage() {
         submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.5rem;">Signing in...</span>';
 
         try {
-            const response = await fetch('/HTML_PHP/admin_auth.php', {
+            // Compute the correct API base path dynamically
+            let apiBase = '/HTML_PHP';
+            if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
+                apiBase = window.router.baseRoot + '/HTML_PHP';
+            } else if (typeof window !== 'undefined') {
+                const pathname = window.location.pathname;
+                const directory = pathname.substring(0, pathname.lastIndexOf('/'));
+                apiBase = directory + '/HTML_PHP';
+            }
+            
+            const response = await fetch(apiBase + '/admin_auth.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

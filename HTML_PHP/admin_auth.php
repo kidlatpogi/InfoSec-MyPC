@@ -165,14 +165,21 @@ function logAdminAuditTrail($db, $adminId, $adminEmail, $adminRole, $actionType,
 try {
     $action = $_POST['action'] ?? $_GET['action'] ?? null;
     
+    // Debug logging
+    error_log("Admin Auth Request: Method=" . $method . ", Action=" . $action);
+    error_log("POST data: " . json_encode($_POST));
+    
     // ========================================
     // ADMIN LOGIN
     // ========================================
     if ($method === 'POST' && $action === 'adminLogin') {
+        error_log("Processing admin login...");
+        
         // Validate required fields
         $required = ['email', 'password'];
         $missing = validateRequired($required, $_POST);
         if (!empty($missing)) {
+            error_log("Missing fields: " . implode(', ', $missing));
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
@@ -211,8 +218,14 @@ try {
             [$email]
         );
         
+        error_log("Database fetch result for email '$email': " . ($admin ? 'FOUND' : 'NOT FOUND'));
+        if ($admin) {
+            error_log("Admin details: ID=" . $admin['id'] . ", Role=" . $admin['role'] . ", Active=" . $admin['is_active']);
+        }
+        
         // Check if admin exists
         if (!$admin) {
+            error_log("Admin not found for email: $email");
             // Record failed attempt
             recordLoginAttempt($db, $email, false, 'Account not found');
             
@@ -243,6 +256,10 @@ try {
         
         // Verify password
         if (!password_verify($password, $admin['password_hash'])) {
+            error_log("Password verification FAILED for: $email");
+            error_log("Expected hash: " . $admin['password_hash']);
+            error_log("Password provided: $password");
+            
             // Record failed attempt
             recordLoginAttempt($db, $email, false, 'Invalid password');
             
