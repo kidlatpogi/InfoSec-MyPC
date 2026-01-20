@@ -1,0 +1,152 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="/">MyPC</a>
+        <nav class="main-nav">
+            <a href="/shop">Shop</a>
+            <div id="auth-nav" style="display:flex;gap:1rem;align-items:center;">
+                <a href="/login" id="login-link">Customer Login</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main class="container" style="min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center">
+    <section class="auth-panel" style="max-width: 420px;">
+        <div class="auth-header">
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                </svg>
+            </div>
+            <h2>Admin Portal</h2>
+            <p style="color:var(--text-light);margin-top:0.5rem;font-size:0.9rem">
+                Secure access for administrators only
+            </p>
+        </div>
+        
+        <!-- Lockout Warning Banner (hidden by default) -->
+        <div id="lockout-warning" class="alert alert-danger" style="display:none;background:#fee2e2;border:1px solid #fecaca;color:#dc2626;padding:1rem;border-radius:8px;margin-bottom:1rem;text-align:center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:0.5rem;">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span id="lockout-message">Account locked. Try again in <span id="lockout-timer">15:00</span></span>
+        </div>
+        
+        <!-- Failed Attempts Warning (hidden by default) -->
+        <div id="attempts-warning" class="alert alert-warning" style="display:none;background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:0.75rem;border-radius:8px;margin-bottom:1rem;text-align:center;font-size:0.9rem;">
+            <span id="attempts-message">Warning: <span id="attempts-count">0</span> failed attempt(s). Account locks after 3 failures.</span>
+        </div>
+        
+        <form id="admin-login-form">
+            <div class="form-field">
+                <label for="admin-email">Admin Email</label>
+                <input type="email" id="admin-email" placeholder="example@mypc.com" required autocomplete="email">
+                <span class="error" id="email-error"></span>
+            </div>
+            <div class="form-field">
+                <label for="admin-password">Password</label>
+                <input type="password" id="admin-password" placeholder="••••••••" required autocomplete="current-password">
+                <span class="error" id="password-error"></span>
+            </div>
+            <button class="primary" type="submit" id="admin-login-btn" style="width:100%;padding:0.9rem;font-weight:600;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:0.5rem;">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Sign In to Admin Portal
+            </button>
+        </form>
+        
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);text-align:center;">
+            <p style="color:var(--text-light);font-size:0.85rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:0.25rem;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                This portal is for authorized administrators only.
+            </p>
+            <p style="margin-top:0.5rem;">
+                <a href="/login" style="color:var(--brand);font-size:0.9rem;">← Back to Customer Login</a>
+            </p>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container">© MyPC — Component Store | Admin Portal</div>
+</footer>
+
+<script>
+// Toggle password visibility
+function toggleAdminPassword() {
+    const passwordField = document.getElementById('admin-password');
+    const icon = document.getElementById('password-toggle-icon');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+        `;
+    } else {
+        passwordField.type = 'password';
+        icon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+        `;
+    }
+}
+
+// Lockout timer
+let lockoutInterval = null;
+
+function startLockoutTimer(seconds) {
+    const timerEl = document.getElementById('lockout-timer');
+    const warningEl = document.getElementById('lockout-warning');
+    const loginBtn = document.getElementById('admin-login-btn');
+    
+    warningEl.style.display = 'block';
+    loginBtn.disabled = true;
+    loginBtn.style.opacity = '0.5';
+    loginBtn.style.cursor = 'not-allowed';
+    
+    if (lockoutInterval) clearInterval(lockoutInterval);
+    
+    let remaining = seconds;
+    
+    function updateTimer() {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        
+        if (remaining <= 0) {
+            clearInterval(lockoutInterval);
+            warningEl.style.display = 'none';
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            loginBtn.style.cursor = 'pointer';
+            document.getElementById('attempts-warning').style.display = 'none';
+        }
+        remaining--;
+    }
+    
+    updateTimer();
+    lockoutInterval = setInterval(updateTimer, 1000);
+}
+
+function showAttemptsWarning(count) {
+    const warningEl = document.getElementById('attempts-warning');
+    const countEl = document.getElementById('attempts-count');
+    
+    if (count > 0 && count < 3) {
+        warningEl.style.display = 'block';
+        countEl.textContent = count;
+    } else {
+        warningEl.style.display = 'none';
+    }
+}
+</script>

@@ -6,6 +6,7 @@ class Router {
       '/': 'landing',
       '/shop': 'home',
       '/login': 'login',
+      '/admin-login': 'adminLogin',
       '/signup': 'signup',
       '/checkout': 'checkout',
       '/profile': 'profile',
@@ -17,17 +18,10 @@ class Router {
     window.addEventListener('popstate', (e) => this.handleRouteChange(e));
     document.addEventListener('click', (e) => this.handleLinkClick(e));
 
-    const originAvailable =
-      window.location &&
-      window.location.origin &&
-      window.location.origin !== 'null';
-    if (originAvailable) {
-      const pathname = window.location.pathname;
-      const directory = pathname.substring(0, pathname.lastIndexOf('/'));
-      this.baseRoot = window.location.origin + directory;
-    } else {
-      this.baseRoot = window.location.href.replace(/\/[^\/]*$/, '');
-    }
+    // Set base root to the InfoSec-MyPC subdirectory
+    // This is hardcoded to ensure correct paths even when internal rewrites change window.location
+    this.baseRoot = window.location.origin + '/InfoSec-MyPC';
+    
     this.init();
   }
 
@@ -198,6 +192,7 @@ class Router {
           admin: 'Admin Dashboard - MyPC',
           employee: 'Employee Dashboard - MyPC',
           superadmin: 'Superadmin Dashboard - MyPC',
+          adminLogin: 'Admin Login - MyPC',
           product: 'Product - MyPC',
         };
         document.title = title[page] || 'MyPC';
@@ -231,7 +226,7 @@ class Router {
     document.body.appendChild(script);
 
     // Load auth script for login/signup pages
-    if (page === 'login' || page === 'signup') {
+    if (page === 'login' || page === 'signup' || page === 'adminLogin') {
       setTimeout(() => {
         const authScript = document.createElement('script');
         authScript.src = this.baseRoot + '/JS/auth.js?v=' + Date.now();

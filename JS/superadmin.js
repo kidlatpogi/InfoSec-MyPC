@@ -266,32 +266,45 @@ function renderOrderRows(orders, tbody) {
 function renderAuditRows(auditLogs, tbody) {
   auditLogs.forEach((log) => {
     const row = document.createElement('tr');
-    const timestamp = new Date(log.created_at).toLocaleString();
-    const actionBadgeColor =
-      log.action === 'CREATE'
-        ? '#10b981'
-        : log.action === 'UPDATE'
-        ? '#3b82f6'
-        : log.action === 'DELETE'
-        ? '#ef4444'
-        : '#6b7280';
-
-    const userDisplay = log.email
-      ? `${log.first_name} ${log.last_name} (${log.email})`
-      : 'System';
-    const details = log.details
-      ? typeof log.details === 'string'
-        ? JSON.parse(log.details)
-        : log.details
-      : {};
-    const detailsDisplay = JSON.stringify(details).substring(0, 100);
+    const timestamp = log.created_at ? new Date(log.created_at).toLocaleString() : 'N/A';
+    
+    // Color code by action type
+    const actionColors = {
+      'LOGIN': '#10b981',
+      'LOGOUT': '#6b7280',
+      'LOGIN_FAILED': '#f59e0b',
+      'ACCOUNT_LOCKED': '#dc2626',
+      'CREATE': '#10b981',
+      'UPDATE': '#3b82f6',
+      'DELETE': '#ef4444',
+      'ARCHIVE': '#f59e0b',
+      'RESTORE': '#22c55e',
+      'VIEW': '#8b5cf6',
+      'SECURITY_EVENT': '#dc2626'
+    };
+    
+    const categoryColors = {
+      'AUTHENTICATION': '#6366f1',
+      'USER_MANAGEMENT': '#3b82f6',
+      'ADMIN_MANAGEMENT': '#8b5cf6',
+      'PRODUCT_MANAGEMENT': '#10b981',
+      'ORDER_MANAGEMENT': '#f59e0b',
+      'SYSTEM': '#6b7280',
+      'SECURITY': '#dc2626'
+    };
+    
+    const actionColor = actionColors[log.action_type] || '#6b7280';
+    const categoryColor = categoryColors[log.action_category] || '#6b7280';
+    const description = log.description ? log.description.substring(0, 80) + (log.description.length > 80 ? '...' : '') : '-';
 
     row.innerHTML = `
-      <td><span class="badge" style="background:${actionBadgeColor}">${log.action}</span></td>
-      <td>${log.entity_type}</td>
-      <td>${userDisplay}</td>
-      <td>${timestamp}</td>
-      <td><code style="font-size:0.85rem; color:#666;">${detailsDisplay}</code></td>
+      <td style="font-size:0.85rem;white-space:nowrap;">${timestamp}</td>
+      <td>${log.actor_email || 'Unknown'}</td>
+      <td><span class="badge" style="background:${log.actor_role === 'superadmin' ? '#8b5cf6' : '#3b82f6'};font-size:0.75rem;">${log.actor_role || '-'}</span></td>
+      <td><span class="badge" style="background:${actionColor};font-size:0.75rem;">${log.action_type || '-'}</span></td>
+      <td><span class="badge" style="background:${categoryColor};font-size:0.75rem;">${log.action_category || '-'}</span></td>
+      <td style="font-size:0.85rem;max-width:300px;overflow:hidden;text-overflow:ellipsis;" title="${log.description || ''}">${description}</td>
+      <td style="font-size:0.85rem;font-family:monospace;">${log.actor_ip || '-'}</td>
     `;
     tbody.appendChild(row);
   });
@@ -2210,35 +2223,200 @@ function initModals() {
 // LOGOUT
 // ========================================
 
-async function loadAuditLogs() {
+// Audit trail pagination state
+const auditPaginationState = {
+  currentPage: 1,
+  perPage: 25,
+  totalPages: 1,
+  totalItems: 0,
+  filters: {}
+};
+
+async function loadAuditLogs(page = 1) {
   const tbody = document.getElementById('audit-tbody');
   if (!tbody) return;
 
+  // Get filter values
+  const searchInput = document.getElementById('audit-search');
+  const actionFilter = document.getElementById('audit-action-filter');
+  const categoryFilter = document.getElementById('audit-category-filter');
+  const dateFrom = document.getElementById('audit-date-from');
+  const dateTo = document.getElementById('audit-date-to');
+  
+  const filters = {
+    actorEmail: searchInput?.value || '',
+    actionType: actionFilter?.value || '',
+    actionCategory: categoryFilter?.value || '',
+    dateFrom: dateFrom?.value || '',
+    dateTo: dateTo?.value || ''
+  };
+  
+  auditPaginationState.filters = filters;
+  auditPaginationState.currentPage = page;
+
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;">Loading audit logs...</td></tr>';
+
   try {
-    const data = await AuditAPI.getAuditLogs(1000);
+    const data = await AuditAPI.getAuditTrail(page, auditPaginationState.perPage, filters);
 
     if (!data.audit_logs || data.audit_logs.length === 0) {
-      paginationState.audit.allData = [];
-      paginationState.audit.totalItems = 0;
-      paginationState.audit.currentPage = 1;
-      tbody.innerHTML =
-        '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
+      updateAuditPagination(0, 0, 1);
       return;
     }
 
-    // Store all data and update pagination state
-    paginationState.audit.allData = data.audit_logs;
-    paginationState.audit.totalItems = data.audit_logs.length;
-    paginationState.audit.currentPage = 1;
+    // Update pagination state
+    auditPaginationState.totalItems = data.pagination.total_items;
+    auditPaginationState.totalPages = data.pagination.total_pages;
+    auditPaginationState.currentPage = data.pagination.current_page;
 
-    // Display first page
-    updatePaginationDisplay('audit');
+    // Render audit logs
+    tbody.innerHTML = '';
+    renderAuditRows(data.audit_logs, tbody);
+    
+    // Update pagination display
+    updateAuditPagination(data.pagination.total_items, data.pagination.current_page, data.pagination.total_pages);
   } catch (error) {
     console.error('Error loading audit logs:', error);
-    tbody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error loading audit logs</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#ef4444;">Error loading audit logs</td></tr>';
   }
 }
+
+function updateAuditPagination(totalItems, currentPage, totalPages) {
+  const pageInfo = document.getElementById('audit-page-info');
+  const prevBtn = document.getElementById('audit-prev-btn');
+  const nextBtn = document.getElementById('audit-next-btn');
+  
+  if (pageInfo) {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} total)`;
+  }
+  
+  if (prevBtn) {
+    prevBtn.disabled = currentPage <= 1;
+    prevBtn.style.opacity = currentPage <= 1 ? '0.5' : '1';
+    prevBtn.style.cursor = currentPage <= 1 ? 'not-allowed' : 'pointer';
+  }
+  
+  if (nextBtn) {
+    nextBtn.disabled = currentPage >= totalPages;
+    nextBtn.style.opacity = currentPage >= totalPages ? '0.5' : '1';
+    nextBtn.style.cursor = currentPage >= totalPages ? 'not-allowed' : 'pointer';
+  }
+}
+
+function prevAuditPage() {
+  if (auditPaginationState.currentPage > 1) {
+    loadAuditLogs(auditPaginationState.currentPage - 1);
+  }
+}
+
+function nextAuditPage() {
+  if (auditPaginationState.currentPage < auditPaginationState.totalPages) {
+    loadAuditLogs(auditPaginationState.currentPage + 1);
+  }
+}
+
+// Login history modal functions
+async function showLoginHistory() {
+  const modal = document.getElementById('login-history-modal');
+  const tbody = document.getElementById('login-history-tbody');
+  
+  if (!modal || !tbody) return;
+  
+  modal.classList.add('open');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Loading...</td></tr>';
+  
+  try {
+    const typeFilter = document.getElementById('login-history-type-filter')?.value || '';
+    const data = await AuditAPI.getLoginHistory(1, 50, typeFilter || null);
+    
+    if (!data.login_history || data.login_history.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No login history found</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = '';
+    data.login_history.forEach(log => {
+      const row = document.createElement('tr');
+      const timestamp = new Date(log.attempt_time).toLocaleString();
+      const statusColor = log.success == 1 ? '#10b981' : '#ef4444';
+      const statusText = log.success == 1 ? 'Success' : 'Failed';
+      
+      row.innerHTML = `
+        <td style="font-size:0.85rem;">${timestamp}</td>
+        <td>${log.email}</td>
+        <td><span class="badge" style="background:${log.account_type === 'admin' ? '#6366f1' : '#3b82f6'};font-size:0.75rem;">${log.account_type}</span></td>
+        <td style="font-family:monospace;font-size:0.85rem;">${log.ip_address}</td>
+        <td><span class="badge" style="background:${statusColor};font-size:0.75rem;">${statusText}</span></td>
+        <td style="font-size:0.85rem;color:#666;">${log.failure_reason || '-'}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error loading login history:', error);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444;">Error loading data</td></tr>';
+  }
+}
+
+// Locked accounts modal functions
+async function showLockedAccounts() {
+  const modal = document.getElementById('locked-accounts-modal');
+  const tbody = document.getElementById('locked-accounts-tbody');
+  
+  if (!modal || !tbody) return;
+  
+  modal.classList.add('open');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;">Loading...</td></tr>';
+  
+  try {
+    const data = await AuditAPI.getLockedAccounts();
+    
+    if (!data.locked_accounts || data.locked_accounts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#22c55e;">No locked accounts</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = '';
+    data.locked_accounts.forEach(account => {
+      const row = document.createElement('tr');
+      const lockedUntil = new Date(account.locked_until).toLocaleString();
+      
+      row.innerHTML = `
+        <td>${account.email}</td>
+        <td><span class="badge" style="background:${account.account_type === 'admin' ? '#6366f1' : '#3b82f6'};font-size:0.75rem;">${account.account_type}</span></td>
+        <td style="color:#dc2626;font-weight:600;">${account.failed_attempts}</td>
+        <td style="font-size:0.85rem;">${lockedUntil}</td>
+        <td><button class="btn btn-sm" style="background:#f59e0b;color:white;" onclick="unlockAccount('${account.email}', '${account.account_type}')">Unlock</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error loading locked accounts:', error);
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error loading data</td></tr>';
+  }
+}
+
+async function unlockAccount(email, accountType) {
+  if (!confirm(`Are you sure you want to unlock the account: ${email}?`)) {
+    return;
+  }
+  
+  try {
+    await AuditAPI.unlockAccount(email, accountType);
+    alert(`Account ${email} has been unlocked.`);
+    showLockedAccounts(); // Refresh the list
+  } catch (error) {
+    console.error('Error unlocking account:', error);
+    alert('Failed to unlock account: ' + error.message);
+  }
+}
+
+// Make functions globally available
+window.prevAuditPage = prevAuditPage;
+window.nextAuditPage = nextAuditPage;
+window.showLoginHistory = showLoginHistory;
+window.showLockedAccounts = showLockedAccounts;
+window.unlockAccount = unlockAccount;
 
 async function loadProfileData() {
   // Force refresh from localStorage
@@ -2247,7 +2425,12 @@ async function loadProfileData() {
   const user = userDataString ? JSON.parse(userDataString) : null;
 
   if (!user) {
-    window.location.href = 'login.html';
+    // Redirect to login page using router if available
+    if (window.router) {
+      window.router.navigateTo('/login');
+    } else {
+      window.location.href = '/login';
+    }
     return;
   }
 
@@ -2260,6 +2443,7 @@ async function loadProfileData() {
   const fullNameInput = document.getElementById('profile-full-name');
   if (fullNameInput) {
     fullNameInput.value = fullName;
+    console.log(
       '[loadProfileData] Full name input updated to:',
       fullNameInput.value
     );
@@ -3191,7 +3375,80 @@ function initProfileHandlers() {
   const refreshAuditBtn = document.getElementById('refresh-audit-btn');
   if (refreshAuditBtn) {
     refreshAuditBtn.addEventListener('click', () => {
-      loadAuditLogs();
+      loadAuditLogs(1);
+    });
+  }
+  
+  // Audit trail filter listeners
+  const auditSearch = document.getElementById('audit-search');
+  const auditActionFilter = document.getElementById('audit-action-filter');
+  const auditCategoryFilter = document.getElementById('audit-category-filter');
+  const auditDateFrom = document.getElementById('audit-date-from');
+  const auditDateTo = document.getElementById('audit-date-to');
+  
+  if (auditSearch) {
+    let searchTimeout;
+    auditSearch.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => loadAuditLogs(1), 500);
+    });
+  }
+  
+  if (auditActionFilter) {
+    auditActionFilter.addEventListener('change', () => loadAuditLogs(1));
+  }
+  
+  if (auditCategoryFilter) {
+    auditCategoryFilter.addEventListener('change', () => loadAuditLogs(1));
+  }
+  
+  if (auditDateFrom) {
+    auditDateFrom.addEventListener('change', () => loadAuditLogs(1));
+  }
+  
+  if (auditDateTo) {
+    auditDateTo.addEventListener('change', () => loadAuditLogs(1));
+  }
+  
+  // Login history button
+  const loginHistoryBtn = document.getElementById('view-login-history-btn');
+  if (loginHistoryBtn) {
+    loginHistoryBtn.addEventListener('click', showLoginHistory);
+  }
+  
+  // Locked accounts button
+  const lockedAccountsBtn = document.getElementById('view-locked-accounts-btn');
+  if (lockedAccountsBtn) {
+    lockedAccountsBtn.addEventListener('click', showLockedAccounts);
+  }
+  
+  // Login history type filter
+  const loginHistoryTypeFilter = document.getElementById('login-history-type-filter');
+  if (loginHistoryTypeFilter) {
+    loginHistoryTypeFilter.addEventListener('change', showLoginHistory);
+  }
+  
+  // Modal close handlers for new modals
+  const loginHistoryModal = document.getElementById('login-history-modal');
+  const lockedAccountsModal = document.getElementById('locked-accounts-modal');
+  
+  if (loginHistoryModal) {
+    const closeBtn = loginHistoryModal.querySelector('.modal-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => loginHistoryModal.classList.remove('open'));
+    }
+    loginHistoryModal.addEventListener('click', (e) => {
+      if (e.target === loginHistoryModal) loginHistoryModal.classList.remove('open');
+    });
+  }
+  
+  if (lockedAccountsModal) {
+    const closeBtn = lockedAccountsModal.querySelector('.modal-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => lockedAccountsModal.classList.remove('open'));
+    }
+    lockedAccountsModal.addEventListener('click', (e) => {
+      if (e.target === lockedAccountsModal) lockedAccountsModal.classList.remove('open');
     });
   }
 }

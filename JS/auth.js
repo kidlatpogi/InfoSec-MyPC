@@ -42,6 +42,12 @@ function initLoginPage() {
                 localStorage.setItem('mypc_user_data', JSON.stringify(data.user));
                 window.CURRENT_USER = data.user;
 
+                // Hide any warnings
+                const lockoutWarning = document.getElementById('lockout-warning');
+                const attemptsWarning = document.getElementById('attempts-warning');
+                if (lockoutWarning) lockoutWarning.style.display = 'none';
+                if (attemptsWarning) attemptsWarning.style.display = 'none';
+
                 // Show success message
                 alert('Login successful! Welcome back.');
 
@@ -58,6 +64,21 @@ function initLoginPage() {
             }
         } catch (error) {
             console.error('Login error:', error);
+            
+            // Check if response has lockout information
+            if (error.response) {
+                try {
+                    const errorData = await error.response.json();
+                    if (errorData.locked && typeof window.startUserLockoutTimer === 'function') {
+                        window.startUserLockoutTimer(errorData.remaining_seconds);
+                    } else if (errorData.failed_attempts > 0 && typeof window.showUserAttemptsWarning === 'function') {
+                        window.showUserAttemptsWarning(errorData.failed_attempts);
+                    }
+                } catch (parseError) {
+                    // Ignore parse errors
+                }
+            }
+            
             document.getElementById('password-error').textContent = error.message || 'Invalid email or password';
         } finally {
             submitBtn.disabled = false;
@@ -183,6 +204,103 @@ function initSignupPage() {
 }
 
 // ========================================
+// ADMIN LOGIN HANDLER
+// ========================================
+
+function initAdminLoginPage() {
+    const form = document.getElementById('admin-login-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Clear previous errors
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-password').value;
+
+        // Basic validation
+        if (!email || !password) {
+            if (!email) document.getElementById('email-error').textContent = 'Email is required';
+            if (!password) document.getElementById('password-error').textContent = 'Password is required';
+            return;
+        }
+
+        // Disable submit button
+        const submitBtn = document.getElementById('admin-login-btn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.5rem;">Signing in...</span>';
+
+        try {
+            // Compute the correct API base path dynamically
+            let apiBase = '/HTML_PHP';
+            if (typeof window !== 'undefined' && window.router && window.router.baseRoot) {
+                apiBase = window.router.baseRoot + '/HTML_PHP';
+            } else if (typeof window !== 'undefined') {
+                const pathname = window.location.pathname;
+                const directory = pathname.substring(0, pathname.lastIndexOf('/'));
+                apiBase = directory + '/HTML_PHP';
+            }
+            
+            const response = await fetch(apiBase + '/admin_auth.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'adminLogin',
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.user) {
+                // Store user data
+                localStorage.setItem('mypc_user', data.user.email);
+                localStorage.setItem('mypc_user_data', JSON.stringify(data.user));
+                localStorage.setItem('mypc_admin_session', 'true');
+                window.CURRENT_USER = data.user;
+
+                // Hide any warnings
+                document.getElementById('lockout-warning').style.display = 'none';
+                document.getElementById('attempts-warning').style.display = 'none';
+
+                // Show success message
+                alert('Admin login successful! Welcome back.');
+
+                // Redirect based on role
+                if (data.user.role === 'superadmin') {
+                    window.router?.navigateTo('/superadmin');
+                } else if (data.user.role === 'admin') {
+                    window.router?.navigateTo('/admin');
+                }
+            } else {
+                // Handle failed login
+                const errorMsg = data.error || 'Invalid email or password';
+                document.getElementById('password-error').textContent = errorMsg;
+
+                // Handle lockout
+                if (data.locked) {
+                    startLockoutTimer(data.remaining_seconds);
+                } else if (data.failed_attempts > 0) {
+                    showAttemptsWarning(data.failed_attempts);
+                }
+            }
+        } catch (error) {
+            console.error('Admin login error:', error);
+            document.getElementById('password-error').textContent = 'Login failed. Please try again.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+}
+
+// ========================================
 // VISIBILITY TOGGLE
 // ========================================
 
@@ -221,13 +339,16 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initLoginPage();
         initSignupPage();
+        initAdminLoginPage();
     });
 } else {
     initLoginPage();
     initSignupPage();
+    initAdminLoginPage();
 }
 
 // Make functions globally available
 window.togglePassword = togglePassword;
 window.initLoginPage = initLoginPage;
 window.initSignupPage = initSignupPage;
+window.initAdminLoginPage = initAdminLoginPage;

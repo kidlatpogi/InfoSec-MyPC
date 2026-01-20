@@ -439,12 +439,53 @@
   <!-- Audit Logs Tab -->
   <div id="audit-tab" class="tab-content">
     <div class="tab-header">
-      <h2>Audit Logs</h2>
-      <button id="refresh-audit-btn" class="primary">Refresh</button>
+      <h2>Audit Trail</h2>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="view-login-history-btn" class="btn btn-sm" style="background:#6366f1;color:white;">Login History</button>
+        <button id="view-locked-accounts-btn" class="btn btn-sm" style="background:#f59e0b;color:white;">Locked Accounts</button>
+        <button id="refresh-audit-btn" class="primary">Refresh</button>
+      </div>
+    </div>
+    
+    <!-- Audit Info Banner -->
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1rem;margin:1rem;display:flex;align-items:center;gap:0.75rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <span style="color:#166534;font-size:0.9rem;">
+        <strong>Read-Only Audit Trail:</strong> This log is tamper-proof and cannot be modified. All admin and superadmin actions are automatically recorded.
+      </span>
     </div>
 
-    <div class="search-filter" style="margin-left: 1rem;">
-      <input type="text" id="audit-search" placeholder="Search audit logs..." />
+    <!-- Filters -->
+    <div class="search-filter" style="margin:1rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">
+      <input type="text" id="audit-search" placeholder="Search by email..." style="flex:1;min-width:200px;"/>
+      <select id="audit-action-filter" style="padding:0.5rem;border-radius:4px;border:1px solid #ddd;">
+        <option value="">All Actions</option>
+        <option value="LOGIN">Login</option>
+        <option value="LOGOUT">Logout</option>
+        <option value="LOGIN_FAILED">Login Failed</option>
+        <option value="ACCOUNT_LOCKED">Account Locked</option>
+        <option value="CREATE">Create</option>
+        <option value="UPDATE">Update</option>
+        <option value="DELETE">Delete</option>
+        <option value="ARCHIVE">Archive</option>
+        <option value="VIEW">View</option>
+        <option value="SECURITY_EVENT">Security Event</option>
+      </select>
+      <select id="audit-category-filter" style="padding:0.5rem;border-radius:4px;border:1px solid #ddd;">
+        <option value="">All Categories</option>
+        <option value="AUTHENTICATION">Authentication</option>
+        <option value="USER_MANAGEMENT">User Management</option>
+        <option value="ADMIN_MANAGEMENT">Admin Management</option>
+        <option value="PRODUCT_MANAGEMENT">Product Management</option>
+        <option value="ORDER_MANAGEMENT">Order Management</option>
+        <option value="SYSTEM">System</option>
+        <option value="SECURITY">Security</option>
+      </select>
+      <input type="date" id="audit-date-from" style="padding:0.5rem;border-radius:4px;border:1px solid #ddd;" placeholder="From Date"/>
+      <input type="date" id="audit-date-to" style="padding:0.5rem;border-radius:4px;border:1px solid #ddd;" placeholder="To Date"/>
     </div>
 
     <div class="table-wrapper">
@@ -452,16 +493,17 @@
         <thead>
           <tr>
             <th>Timestamp</th>
+            <th>Actor</th>
+            <th>Role</th>
             <th>Action</th>
-            <th>Entity</th>
-            <th>Entity ID</th>
-            <th>User</th>
-            <th>Details</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>IP Address</th>
           </tr>
         </thead>
         <tbody id="audit-tbody">
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2rem">
+            <td colspan="7" style="text-align: center; padding: 2rem">
               Loading audit logs...
             </td>
           </tr>
@@ -475,8 +517,73 @@
         <span id="audit-page-info">Page 1</span>
       </div>
       <div style="display: flex; gap: 0.5rem;">
-        <button id="audit-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevPage('audit')">Previous</button>
-        <button id="audit-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextPage('audit')">Next</button>
+        <button id="audit-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="prevAuditPage()">Previous</button>
+        <button id="audit-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;" onclick="nextAuditPage()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login History Modal -->
+  <div id="login-history-modal" class="modal">
+    <div class="modal-content" style="max-width:900px;">
+      <div class="modal-header">
+        <h2>Login History</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:500px;overflow-y:auto;">
+        <div style="margin-bottom:1rem;">
+          <select id="login-history-type-filter" style="padding:0.5rem;border-radius:4px;border:1px solid #ddd;">
+            <option value="">All Account Types</option>
+            <option value="admin">Admin Only</option>
+            <option value="user">User Only</option>
+          </select>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Email</th>
+              <th>Type</th>
+              <th>IP Address</th>
+              <th>Status</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="login-history-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Locked Accounts Modal -->
+  <div id="locked-accounts-modal" class="modal">
+    <div class="modal-content" style="max-width:700px;">
+      <div class="modal-header">
+        <h2>Currently Locked Accounts</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:1rem;margin-bottom:1rem;">
+          <p style="margin:0;color:#92400e;font-size:0.9rem;">
+            <strong>Note:</strong> Accounts are automatically locked for 15 minutes after 3 failed login attempts.
+          </p>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Account Type</th>
+              <th>Failed Attempts</th>
+              <th>Locked Until</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="locked-accounts-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:2rem;">Loading...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

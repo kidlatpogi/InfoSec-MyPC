@@ -109,8 +109,14 @@ async function doLogout(ask = true) {
     }
 
     // Navigate after API call
-    // Force navigation to landing page
-    window.location.href = '/index.html';
+    // Force navigation to landing page using router if available
+    if (window.router) {
+      window.router.navigateTo('/');
+    } else {
+      // Fallback: use relative path based on application structure
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+      window.location.href = basePath + '/';
+    }
 
     return true;
   } catch (error) {
@@ -455,6 +461,14 @@ async function loadCartFromBackend() {
     const user = getUserData();
     if (!user) {
       console.warn('[loadCartFromBackend] No user logged in');
+      window.CART_DATA = { items: [], subtotal: 0 };
+      updateCartCount();
+      return;
+    }
+    
+    // Skip cart loading for admin users - they don't have carts
+    if (user.role === 'admin' || user.role === 'superadmin') {
+      console.log('[loadCartFromBackend] Skipping cart for admin user');
       window.CART_DATA = { items: [], subtotal: 0 };
       updateCartCount();
       return;

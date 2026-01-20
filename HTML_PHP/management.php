@@ -27,13 +27,31 @@ try {
     }
     
     $user_id = $_SESSION['user_id'];
-    $current_user = $db->fetchOne(
-        "SELECT id, email, role, is_admin FROM users WHERE id = ?",
-        [$user_id]
-    );
     
-    if (!$current_user) {
-        sendError('User not found', 404);
+    // Check if this is an admin session (from admin_accounts table)
+    if (isset($_SESSION['is_admin_session']) && $_SESSION['is_admin_session']) {
+        // Fetch from admin_accounts table
+        $current_user = $db->fetchOne(
+            "SELECT id, email, first_name, last_name, role FROM admin_accounts WHERE id = ?",
+            [$user_id]
+        );
+        
+        if (!$current_user) {
+            sendError('Admin account not found', 404);
+        }
+        
+        // Admin accounts don't have is_admin field, they always have admin/superadmin role
+        $current_user['is_admin'] = 1;
+    } else {
+        // Fetch from users table (regular user or legacy admin)
+        $current_user = $db->fetchOne(
+            "SELECT id, email, role, is_admin FROM users WHERE id = ?",
+            [$user_id]
+        );
+        
+        if (!$current_user) {
+            sendError('User not found', 404);
+        }
     }
     
     // Determine role for logic
@@ -965,6 +983,233 @@ try {
         sendSuccess(['message' => 'Product deleted']);
     }
     
+    // ========================================
+    // AUDIT TRAIL MANAGEMENT (Admin & Superadmin - READ ONLY)
+    // ========================================
+    
+    // Get audit trail logs (paginated, read-only)
+    elseif ($action === 'getAuditTrail') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        // Pagination parameters
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $perPage = isset($_GET['per_page']) ? min(100, max(10, intval($_GET['per_page']))) : 25;
+        $offset = ($page - 1) * $perPage;
+        
+        // Filter parameters
+        $actorEmail = isset($_GET['actor_email']) ? sanitizeInput($_GET['actor_email']) : null;
+        $actionType = isset($_GET['action_type']) ? sanitizeInput($_GET['action_type']) : null;
+        $actionCategory = isset($_GET['action_category']) ? sanitizeInput($_GET['action_category']) : null;
+        $dateFrom = isset($_GET['date_from']) ? sanitizeInput($_GET['date_from']) : null;
+        $dateTo = isset($_GET['date_to']) ? sanitizeInput($_GET['date_to']) : null;
+        
+        // Build query with filters
+        $whereConditions = [];
+        $params = [];
+        
+        if ($actorEmail) {
+            $whereConditions[] = "actor_email LIKE ?";
+            $params[] = "%$actorEmail%";
+        }
+        if ($actionType) {
+            $whereConditions[] = "action_type = ?";
+            $params[] = $actionType;
+        }
+        if ($actionCategory) {
+            $whereConditions[] = "action_category = ?";
+            $params[] = $actionCategory;
+        }
+        if ($dateFrom) {
+            $whereConditions[] = "created_at >= ?";
+            $params[] = $dateFrom . ' 00:00:00';
+        }
+        if ($dateTo) {
+            $whereConditions[] = "created_at <= ?";
+            $params[] = $dateTo . ' 23:59:59';
+        }
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        // Get total count
+        $countSql = "SELECT COUNT(*) as total FROM audit_trail $whereClause";
+        $countResult = $db->fetchOne($countSql, $params);
+        $totalItems = $countResult['total'] ?? 0;
+        
+        // Get paginated results
+        $sql = "SELECT 
+                    id, actor_id, actor_email, actor_role, actor_ip,
+                    action_type, action_category,
+                    target_type, target_id, target_identifier,
+                    description, created_at
+                FROM audit_trail 
+                $whereClause 
+                ORDER BY created_at DESC 
+                LIMIT ? OFFSET ?";
+        
+        $params[] = $perPage;
+        $params[] = $offset;
+        
+        $logs = $db->fetchAll($sql, $params);
+        
+        // Log this view action
+        logAuditTrailView($db, $current_user['id'], $current_user['email'], $current_user['role']);
+        
+        sendSuccess([
+            'audit_logs' => $logs,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total_items' => $totalItems,
+                'total_pages' => ceil($totalItems / $perPage)
+            ]
+        ]);
+    }
+    
+    // Get audit trail statistics
+    elseif ($action === 'getAuditStats') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        // Get action type counts
+        $actionTypeCounts = $db->fetchAll(
+            "SELECT action_type, COUNT(*) as count 
+             FROM audit_trail 
+             WHERE created_at > DATE_SUB(NOW(), INTERVAL 30 DAY)
+             GROUP BY action_type 
+             ORDER BY count DESC"
+        );
+        
+        // Get daily activity for last 7 days
+        $dailyActivity = $db->fetchAll(
+            "SELECT DATE(created_at) as date, COUNT(*) as count 
+             FROM audit_trail 
+             WHERE created_at > DATE_SUB(NOW(), INTERVAL 7 DAY)
+             GROUP BY DATE(created_at) 
+             ORDER BY date DESC"
+        );
+        
+        // Get top actors
+        $topActors = $db->fetchAll(
+            "SELECT actor_email, actor_role, COUNT(*) as action_count 
+             FROM audit_trail 
+             WHERE created_at > DATE_SUB(NOW(), INTERVAL 30 DAY)
+             GROUP BY actor_email, actor_role 
+             ORDER BY action_count DESC 
+             LIMIT 10"
+        );
+        
+        sendSuccess([
+            'action_type_counts' => $actionTypeCounts,
+            'daily_activity' => $dailyActivity,
+            'top_actors' => $topActors
+        ]);
+    }
+    
+    // Get login history (paginated, read-only)
+    elseif ($action === 'getLoginHistory') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        // Pagination parameters
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $perPage = isset($_GET['per_page']) ? min(100, max(10, intval($_GET['per_page']))) : 25;
+        $offset = ($page - 1) * $perPage;
+        
+        // Filter by account type
+        $accountType = isset($_GET['account_type']) ? sanitizeInput($_GET['account_type']) : null;
+        
+        $whereClause = $accountType ? "WHERE account_type = ?" : "";
+        $params = $accountType ? [$accountType] : [];
+        
+        // Get total count
+        $countSql = "SELECT COUNT(*) as total FROM login_attempts $whereClause";
+        $countResult = $db->fetchOne($countSql, $params);
+        $totalItems = $countResult['total'] ?? 0;
+        
+        // Get paginated results
+        $sql = "SELECT id, email, account_type, ip_address, attempt_time, success, failure_reason 
+                FROM login_attempts 
+                $whereClause 
+                ORDER BY attempt_time DESC 
+                LIMIT ? OFFSET ?";
+        
+        $params[] = $perPage;
+        $params[] = $offset;
+        
+        $logs = $db->fetchAll($sql, $params);
+        
+        sendSuccess([
+            'login_history' => $logs,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total_items' => $totalItems,
+                'total_pages' => ceil($totalItems / $perPage)
+            ]
+        ]);
+    }
+    
+    // Get currently locked accounts
+    elseif ($action === 'getLockedAccounts') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized - Admin access required', 403);
+        }
+        
+        $lockedAccounts = $db->fetchAll(
+            "SELECT 
+                email,
+                account_type,
+                COUNT(*) as failed_attempts,
+                MAX(attempt_time) as last_attempt,
+                DATE_ADD(MAX(attempt_time), INTERVAL 15 MINUTE) as locked_until
+             FROM login_attempts
+             WHERE success = 0
+               AND attempt_time > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+             GROUP BY email, account_type
+             HAVING COUNT(*) >= 3"
+        );
+        
+        sendSuccess(['locked_accounts' => $lockedAccounts]);
+    }
+    
+    // Unlock an account (superadmin only)
+    elseif ($action === 'unlockAccount') {
+        if ($current_user['role'] !== 'superadmin') {
+            sendError('Unauthorized - Superadmin access required', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : null;
+        $accountType = isset($_POST['account_type']) ? sanitizeInput($_POST['account_type']) : 'admin';
+        
+        if (!$email) {
+            sendError('Email is required');
+        }
+        
+        // Delete failed login attempts to unlock
+        $db->query(
+            "DELETE FROM login_attempts 
+             WHERE email = ? AND account_type = ? AND success = 0",
+            [$email, $accountType]
+        );
+        
+        // Log this action to audit trail
+        logAuditTrailEntry($db, $current_user['id'], $current_user['email'], $current_user['role'],
+            'SECURITY_EVENT', 'SECURITY',
+            "Manually unlocked account: $email ($accountType)",
+            'account', null, $email
+        );
+        
+        sendSuccess(['message' => "Account $email has been unlocked"]);
+    }
+    
     else {
         sendError('Unknown action', 400);
     }
@@ -972,5 +1217,43 @@ try {
 } catch (Exception $e) {
     error_log("Management API Error: " . $e->getMessage());
     sendError('An error occurred: ' . $e->getMessage(), 500);
+}
+
+// Helper function to log audit trail view
+function logAuditTrailView($db, $userId, $email, $role) {
+    try {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 500);
+        
+        $db->insert(
+            "INSERT INTO audit_trail (
+                actor_id, actor_email, actor_role, actor_ip, actor_user_agent,
+                action_type, action_category, description, session_id, request_uri
+            ) VALUES (?, ?, ?, ?, ?, 'VIEW', 'SYSTEM', 'Viewed audit trail logs', ?, ?)",
+            [$userId, $email, $role, $ip, $ua, session_id(), $_SERVER['REQUEST_URI'] ?? '']
+        );
+    } catch (Exception $e) {
+        // Silently fail - don't break the main request
+        error_log("Failed to log audit view: " . $e->getMessage());
+    }
+}
+
+// Helper function to log audit trail entry
+function logAuditTrailEntry($db, $userId, $email, $role, $actionType, $category, $description, $targetType = null, $targetId = null, $targetIdentifier = null) {
+    try {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 500);
+        
+        $db->insert(
+            "INSERT INTO audit_trail (
+                actor_id, actor_email, actor_role, actor_ip, actor_user_agent,
+                action_type, action_category, target_type, target_id, target_identifier,
+                description, session_id, request_uri
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [$userId, $email, $role, $ip, $ua, $actionType, $category, $targetType, $targetId, $targetIdentifier, $description, session_id(), $_SERVER['REQUEST_URI'] ?? '']
+        );
+    } catch (Exception $e) {
+        error_log("Failed to log audit entry: " . $e->getMessage());
+    }
 }
 ?>
