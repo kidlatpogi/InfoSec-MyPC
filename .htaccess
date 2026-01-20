@@ -259,9 +259,10 @@ RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^api/(.+)$ api/$1 [L]
 
 # Rewrite non-existent requests to index.html for SPA routing
+# Use relative path (not /index.html) to work in subdirectories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ /index.html [L]
+RewriteRule ^ index.html [L]
 
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
