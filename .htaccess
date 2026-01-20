@@ -255,17 +255,17 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Handle API routing
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} ^/api/
-RewriteRule ^api/(.+)$ api/$1 [L]
+# Prevent rewriting requests that have already been rewritten
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
 
-# Rewrite non-existent requests to index.html for SPA routing
-# Use relative path (not /index.html) to work in subdirectories
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [L]
+# Handle API routing
+RewriteCond %{REQUEST_URI} ^/InfoSec-MyPC/api/ [NC]
+RewriteRule ^api/(.+)$ /InfoSec-MyPC/api/$1 [L]
+
+# Rewrite all non-existent requests to index.html for SPA routing
+# Use absolute path with subdirectory
+RewriteCond %{REQUEST_URI} !^/InfoSec-MyPC/index\.html$ 
+RewriteRule ^ /InfoSec-MyPC/index.html [L]
 
 # =============================================================================
 # 5. CUSTOM ERROR PAGES
