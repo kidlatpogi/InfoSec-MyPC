@@ -459,6 +459,14 @@ async function loadCartFromBackend() {
       updateCartCount();
       return;
     }
+    
+    // Skip cart loading for admin users - they don't have carts
+    if (user.role === 'admin' || user.role === 'superadmin') {
+      console.log('[loadCartFromBackend] Skipping cart for admin user');
+      window.CART_DATA = { items: [], subtotal: 0 };
+      updateCartCount();
+      return;
+    }
 
     const data = await CartAPI.getCart();
 

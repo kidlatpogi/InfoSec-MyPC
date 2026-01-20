@@ -233,17 +233,33 @@ try {
         }
         
         $user_id = $_SESSION['user_id'];
-        $user = $db->fetchOne(
-            "SELECT id, email, first_name, last_name, role, is_admin, phone 
-             FROM users WHERE id = ?",
-            [$user_id]
-        );
         
-        if (!$user) {
-            sendError('User not found', 404);
+        // Check if this is an admin session
+        if (isset($_SESSION['is_admin_session']) && $_SESSION['is_admin_session']) {
+            // Fetch from admin_accounts table
+            $user = $db->fetchOne(
+                "SELECT id, email, first_name, last_name, role, 'admin' as account_type
+                 FROM admin_accounts WHERE id = ?",
+                [$user_id]
+            );
+            
+            if (!$user) {
+                sendError('Admin account not found', 404);
+            }
+        } else {
+            // Fetch from users table (regular user)
+            $user = $db->fetchOne(
+                "SELECT id, email, first_name, last_name, role, is_admin, phone 
+                 FROM users WHERE id = ?",
+                [$user_id]
+            );
+            
+            if (!$user) {
+                sendError('User not found', 404);
+            }
+            
+            $user['role'] = $user['role'] ?? ($user['is_admin'] ? 'admin' : 'user');
         }
-        
-        $user['role'] = $user['role'] ?? ($user['is_admin'] ? 'admin' : 'user');
         
         sendSuccess(['user' => $user]);
     }
