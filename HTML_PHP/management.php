@@ -27,13 +27,31 @@ try {
     }
     
     $user_id = $_SESSION['user_id'];
-    $current_user = $db->fetchOne(
-        "SELECT id, email, role, is_admin FROM users WHERE id = ?",
-        [$user_id]
-    );
     
-    if (!$current_user) {
-        sendError('User not found', 404);
+    // Check if this is an admin session (from admin_accounts table)
+    if (isset($_SESSION['is_admin_session']) && $_SESSION['is_admin_session']) {
+        // Fetch from admin_accounts table
+        $current_user = $db->fetchOne(
+            "SELECT id, email, first_name, last_name, role FROM admin_accounts WHERE id = ?",
+            [$user_id]
+        );
+        
+        if (!$current_user) {
+            sendError('Admin account not found', 404);
+        }
+        
+        // Admin accounts don't have is_admin field, they always have admin/superadmin role
+        $current_user['is_admin'] = 1;
+    } else {
+        // Fetch from users table (regular user or legacy admin)
+        $current_user = $db->fetchOne(
+            "SELECT id, email, role, is_admin FROM users WHERE id = ?",
+            [$user_id]
+        );
+        
+        if (!$current_user) {
+            sendError('User not found', 404);
+        }
     }
     
     // Determine role for logic

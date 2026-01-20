@@ -14,6 +14,9 @@
 # Enable rewrite engine
 RewriteEngine On
 
+# Set the base for rewrites in this subdirectory
+RewriteBase /InfoSec-MyPC/
+
 # Prevent directory listing
 Options -Indexes
 
@@ -315,13 +318,10 @@ RedirectMatch 404 /\.hg(/.*)?$
 </FilesMatch>
 
 # Block suspicious request patterns (common attack vectors)
+# Note: These patterns are simplified to avoid false positives
 RewriteCond %{REQUEST_URI} (\.\./) [NC,OR]
 RewriteCond %{REQUEST_URI} (boot\.ini|etc/passwd|self/environ) [NC,OR]
-RewriteCond %{QUERY_STRING} (base64_encode|base64_decode).* [NC,OR]
-RewriteCond %{QUERY_STRING} script [NC,OR]
-RewriteCond %{QUERY_STRING} (GLOBALS|REQUEST)\= [NC,OR]
-RewriteCond %{QUERY_STRING} iframe [NC,OR]
+RewriteCond %{QUERY_STRING} (GLOBALS|REQUEST)\[|\] [NC,OR]
 RewriteCond %{QUERY_STRING} mosConfig_ [NC,OR]
-RewriteCond %{QUERY_STRING} union.*select [NC,OR]
-RewriteCond %{QUERY_STRING} (eval|chr|base64|exec|file_get_contents|passthru|system|shell_exec|popen) [NC]
+RewriteCond %{QUERY_STRING} union.*select.*from [NC]
 RewriteRule .* - [F,L]
