@@ -21,7 +21,7 @@ function formatPHP(n) {
 // Get user data from localStorage
 function getUserData() {
   try {
-    return JSON.parse(localStorage.getItem('user')) || null;
+    return JSON.parse(localStorage.getItem('mypc_user_data')) || null;
   } catch (e) {
     return null;
   }
@@ -1968,7 +1968,12 @@ async function loadProfileData() {
   const user = userDataString ? JSON.parse(userDataString) : null;
 
   if (!user) {
-    window.location.href = 'login.html';
+    // Redirect to login page using router if available
+    if (window.router) {
+      window.router.navigateTo('/login');
+    } else {
+      window.location.href = '/login';
+    }
     return;
   }
 
