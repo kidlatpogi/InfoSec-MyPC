@@ -2425,7 +2425,12 @@ async function loadProfileData() {
   const user = userDataString ? JSON.parse(userDataString) : null;
 
   if (!user) {
-    window.location.href = 'login.html';
+    // Redirect to login page using router if available
+    if (window.router) {
+      window.router.navigateTo('/login');
+    } else {
+      window.location.href = '/login';
+    }
     return;
   }
 

@@ -109,8 +109,14 @@ async function doLogout(ask = true) {
     }
 
     // Navigate after API call
-    // Force navigation to landing page
-    window.location.href = '/index.html';
+    // Force navigation to landing page using router if available
+    if (window.router) {
+      window.router.navigateTo('/');
+    } else {
+      // Fallback: use relative path based on application structure
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+      window.location.href = basePath + '/';
+    }
 
     return true;
   } catch (error) {
