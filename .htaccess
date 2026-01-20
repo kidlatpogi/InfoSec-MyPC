@@ -250,7 +250,7 @@ object-src 'none'"
 # =============================================================================
 # 4. URL ROUTING  
 # =============================================================================
-# Allow direct access to files in HTML_PHP directory (for SPA page loading and API calls)
+# Allow direct access to real files and directories (don't rewrite them)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
