@@ -28,6 +28,17 @@ require_once 'db_config.php';
 // Force JSON response for all API calls
 header('Content-Type: application/json');
 
+// Parse JSON input if Content-Type is application/json
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
+    $rawInput = file_get_contents('php://input');
+    $jsonData = json_decode($rawInput, true);
+    
+    if (is_array($jsonData)) {
+        // Merge JSON data into $_POST so it works with existing code
+        $_POST = array_merge($_POST, $jsonData);
+    }
+}
+
 // Regenerate session ID on login to prevent session fixation
 if (isset($_POST['action']) && $_POST['action'] === 'login' && !isset($_SESSION['user_id'])) {
     session_regenerate_id(true);
@@ -159,7 +170,7 @@ try {
         // Get user from database (exclude archived users) - uses prepared statement (SQL injection safe)
         $user = $db->fetchOne(
             "SELECT id, email, password_hash, first_name, last_name, role, is_admin, is_archived 
-             FROM users WHERE email = ? AND role = 'user'",
+             FROM users WHERE email = ? AND role IN ('user', 'employee')",
             [$email]
         );
         
