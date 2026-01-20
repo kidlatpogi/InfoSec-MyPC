@@ -627,12 +627,68 @@ window.ManagementAPI = ManagementAPI;
 window.AddressesAPI = AddressesAPI;
 
 // ========================================
-// AUDIT API (Superadmin only)
+// AUDIT API (Admin & Superadmin only)
 // ========================================
 
 const AuditAPI = {
+    // Get paginated audit trail logs
+    async getAuditTrail(page = 1, perPage = 25, filters = {}) {
+        const params = new URLSearchParams({
+            action: 'getAuditTrail',
+            page: page,
+            per_page: perPage
+        });
+        
+        if (filters.actorEmail) params.append('actor_email', filters.actorEmail);
+        if (filters.actionType) params.append('action_type', filters.actionType);
+        if (filters.actionCategory) params.append('action_category', filters.actionCategory);
+        if (filters.dateFrom) params.append('date_from', filters.dateFrom);
+        if (filters.dateTo) params.append('date_to', filters.dateTo);
+        
+        return await apiCall(`management.php?${params.toString()}`);
+    },
+    
+    // Get audit statistics
+    async getAuditStats() {
+        return await apiCall('management.php?action=getAuditStats');
+    },
+    
+    // Get login history
+    async getLoginHistory(page = 1, perPage = 25, accountType = null) {
+        const params = new URLSearchParams({
+            action: 'getLoginHistory',
+            page: page,
+            per_page: perPage
+        });
+        
+        if (accountType) params.append('account_type', accountType);
+        
+        return await apiCall(`management.php?${params.toString()}`);
+    },
+    
+    // Get locked accounts
+    async getLockedAccounts() {
+        return await apiCall('management.php?action=getLockedAccounts');
+    },
+    
+    // Unlock an account (superadmin only)
+    async unlockAccount(email, accountType = 'admin') {
+        const body = toFormData({
+            action: 'unlockAccount',
+            email: email,
+            account_type: accountType
+        });
+        
+        return await apiCall('management.php', {
+            method: 'POST',
+            body
+        });
+    },
+    
+    // Legacy method for backward compatibility
     async getAuditLogs(limit = 100, offset = 0) {
-        return await apiCall(`management.php?action=getAuditLogs&limit=${limit}&offset=${offset}`);
+        const page = Math.floor(offset / limit) + 1;
+        return await this.getAuditTrail(page, limit);
     }
 };
 

@@ -6,6 +6,7 @@ class Router {
       '/': 'landing',
       '/shop': 'home',
       '/login': 'login',
+      '/admin-login': 'adminLogin',
       '/signup': 'signup',
       '/checkout': 'checkout',
       '/profile': 'profile',
@@ -198,6 +199,7 @@ class Router {
           admin: 'Admin Dashboard - MyPC',
           employee: 'Employee Dashboard - MyPC',
           superadmin: 'Superadmin Dashboard - MyPC',
+          adminLogin: 'Admin Login - MyPC',
           product: 'Product - MyPC',
         };
         document.title = title[page] || 'MyPC';
@@ -231,7 +233,7 @@ class Router {
     document.body.appendChild(script);
 
     // Load auth script for login/signup pages
-    if (page === 'login' || page === 'signup') {
+    if (page === 'login' || page === 'signup' || page === 'adminLogin') {
       setTimeout(() => {
         const authScript = document.createElement('script');
         authScript.src = this.baseRoot + '/JS/auth.js?v=' + Date.now();

@@ -135,6 +135,7 @@ try {
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
+        // Sanitize email - prepared statements prevent SQL injection
         $email = sanitizeInput($_POST['email']);
         $password = $_POST['password'];
         
@@ -143,31 +144,63 @@ try {
             sendError('Invalid email format');
         }
         
-        // Get user from database (exclude archived users)
+        // Check login lockout (3 failed attempts = 15 min lockout)
+        $lockoutStatus = checkUserLoginLockout($db, $email);
+        if ($lockoutStatus['locked']) {
+            sendResponse([
+                'success' => false,
+                'error' => 'Account is temporarily locked due to multiple failed login attempts',
+                'locked' => true,
+                'remaining_seconds' => $lockoutStatus['remaining_seconds'],
+                'failed_attempts' => $lockoutStatus['failed_attempts']
+            ], 429);
+        }
+        
+        // Get user from database (exclude archived users) - uses prepared statement (SQL injection safe)
         $user = $db->fetchOne(
             "SELECT id, email, password_hash, first_name, last_name, role, is_admin, is_archived 
-             FROM users WHERE email = ?",
+             FROM users WHERE email = ? AND role = 'user'",
             [$email]
         );
         
         if (!$user) {
-            // Rate limit failed login attempts
-            checkRateLimit('login', $email, 5, 300);
-            sendError('Invalid email or password', 401);
+            // Record failed login attempt
+            recordUserLoginAttempt($db, $email, false, 'Account not found');
+            $newLockoutStatus = checkUserLoginLockout($db, $email);
+            
+            sendResponse([
+                'success' => false,
+                'error' => 'Invalid email or password',
+                'failed_attempts' => $newLockoutStatus['failed_attempts'],
+                'locked' => $newLockoutStatus['locked'],
+                'remaining_seconds' => $newLockoutStatus['remaining_seconds']
+            ], 401);
         }
         
         // Check if account is archived/deactivated
         if ($user['is_archived']) {
+            recordUserLoginAttempt($db, $email, false, 'Account deactivated');
             sendError('This account has been deactivated. Please contact support if you believe this is an error.', 403);
         }
         
         // Verify password
         if (!password_verify($password, $user['password_hash'])) {
-            // Rate limit failed login attempts
-            checkRateLimit('login', $email, 5, 300);
-            sendError('Invalid email or password', 401);
+            // Record failed login attempt
+            recordUserLoginAttempt($db, $email, false, 'Invalid password');
+            $newLockoutStatus = checkUserLoginLockout($db, $email);
+            
+            sendResponse([
+                'success' => false,
+                'error' => 'Invalid email or password',
+                'failed_attempts' => $newLockoutStatus['failed_attempts'],
+                'locked' => $newLockoutStatus['locked'],
+                'remaining_seconds' => $newLockoutStatus['remaining_seconds']
+            ], 401);
         }
         
+        // SUCCESS - Record successful login
+        recordUserLoginAttempt($db, $email, true);
+
         // Determine role from database
         $role = $user['role'] ?? ($user['is_admin'] ? 'admin' : 'user');
         
@@ -399,5 +432,78 @@ try {
     error_log("Auth API Error: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());
     sendError('An error occurred: ' . $e->getMessage(), 500);
+}
+
+/**
+ * Check if user account is locked due to failed login attempts
+ * Returns: ['locked' => bool, 'remaining_seconds' => int, 'failed_attempts' => int]
+ */
+function checkUserLoginLockout($db, $email) {
+    try {
+        // Count failed attempts in last 15 minutes
+        $result = $db->fetchOne(
+            "SELECT COUNT(*) as attempts, MAX(attempt_time) as last_attempt 
+             FROM login_attempts 
+             WHERE email = ? AND account_type = 'user' AND success = 0 
+             AND attempt_time > DATE_SUB(NOW(), INTERVAL 15 MINUTE)",
+            [$email]
+        );
+        
+        $attempts = (int)($result['attempts'] ?? 0);
+        $lastAttempt = $result['last_attempt'] ?? null;
+        
+        if ($attempts >= 3 && $lastAttempt) {
+            // Calculate lock expiry (15 minutes from last failed attempt)
+            $lockExpiry = strtotime($lastAttempt) + (15 * 60);
+            $now = time();
+            
+            if ($now < $lockExpiry) {
+                return [
+                    'locked' => true,
+                    'remaining_seconds' => $lockExpiry - $now,
+                    'failed_attempts' => $attempts
+                ];
+            }
+        }
+        
+        return [
+            'locked' => false,
+            'remaining_seconds' => 0,
+            'failed_attempts' => $attempts
+        ];
+    } catch (Exception $e) {
+        // If table doesn't exist yet, don't block login
+        error_log("Login lockout check failed: " . $e->getMessage());
+        return ['locked' => false, 'remaining_seconds' => 0, 'failed_attempts' => 0];
+    }
+}
+
+/**
+ * Record user login attempt
+ */
+function recordUserLoginAttempt($db, $email, $success, $failureReason = null) {
+    try {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 500);
+        
+        $db->insert(
+            "INSERT INTO login_attempts (email, account_type, ip_address, user_agent, success, failure_reason) 
+             VALUES (?, 'user', ?, ?, ?, ?)",
+            [$email, $ip, $userAgent, $success ? 1 : 0, $failureReason]
+        );
+        
+        // If successful, clean up old failed attempts
+        if ($success) {
+            $db->query(
+                "DELETE FROM login_attempts 
+                 WHERE email = ? AND account_type = 'user' AND success = 0 
+                 AND attempt_time < DATE_SUB(NOW(), INTERVAL 15 MINUTE)",
+                [$email]
+            );
+        }
+    } catch (Exception $e) {
+        // Don't fail login if audit logging fails
+        error_log("Failed to record login attempt: " . $e->getMessage());
+    }
 }
 ?>
