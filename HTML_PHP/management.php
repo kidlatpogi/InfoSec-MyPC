@@ -1043,42 +1043,42 @@ try {
         $params = [];
         
         if ($actorEmail) {
-            $whereConditions[] = "actor_email LIKE ?";
+            $whereConditions[] = "email LIKE ?";
             $params[] = "%$actorEmail%";
         }
         if ($actionType) {
-            $whereConditions[] = "action_type = ?";
+            $whereConditions[] = "event_type = ?";
             $params[] = $actionType;
         }
         if ($actionCategory) {
-            $whereConditions[] = "action_category = ?";
+            $whereConditions[] = "account_type = ?";
             $params[] = $actionCategory;
         }
         if ($dateFrom) {
-            $whereConditions[] = "created_at >= ?";
+            $whereConditions[] = "event_time >= ?";
             $params[] = $dateFrom . ' 00:00:00';
         }
         if ($dateTo) {
-            $whereConditions[] = "created_at <= ?";
+            $whereConditions[] = "event_time <= ?";
             $params[] = $dateTo . ' 23:59:59';
         }
         
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
-        // Get total count
-        $countSql = "SELECT COUNT(*) as total FROM audit_trail $whereClause";
+        // Get total count from the combined authentication activity view
+        $countSql = "SELECT COUNT(*) as total FROM v_authentication_activity $whereClause";
         $countResult = $db->fetchOne($countSql, $params);
         $totalItems = $countResult['total'] ?? 0;
         
-        // Get paginated results
+        // Get paginated results from the view (includes both audit_trail and login_attempts)
         $sql = "SELECT 
-                    id, actor_id, actor_email, actor_role, actor_ip,
-                    action_type, action_category,
-                    target_type, target_id, target_identifier,
-                    description, created_at
-                FROM audit_trail 
+                    id, email as actor_email, account_type, role as actor_role,
+                    event_type as action_type, event_description as description,
+                    ip_address as actor_ip, event_time as created_at,
+                    source
+                FROM v_authentication_activity 
                 $whereClause 
-                ORDER BY created_at DESC 
+                ORDER BY event_time DESC 
                 LIMIT ? OFFSET ?";
         
         $params[] = $perPage;
