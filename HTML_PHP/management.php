@@ -1072,9 +1072,15 @@ try {
         
         // Get paginated results from the view (includes both audit_trail and login_attempts)
         $sql = "SELECT 
-                    id, email as actor_email, account_type, role as actor_role,
-                    event_type as action_type, event_description as description,
-                    ip_address as actor_ip, event_time as created_at,
+                    id, 
+                    email as actor_email, 
+                    account_type, 
+                    role as actor_role,
+                    event_type as action_type, 
+                    'AUTHENTICATION' as action_category,
+                    event_description as description,
+                    ip_address as actor_ip, 
+                    event_time as created_at,
                     source
                 FROM v_authentication_activity 
                 $whereClause 
