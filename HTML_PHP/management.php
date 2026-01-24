@@ -375,6 +375,39 @@ try {
         sendSuccess([], 'User reactivated successfully');
     }
     
+    // Unlock user account (clear failed login attempts)
+    elseif ($action === 'unlockAccount') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : null;
+        $account_type = isset($_POST['account_type']) ? $_POST['account_type'] : 'user';
+        
+        if (!$email) {
+            sendError('Email required');
+        }
+        
+        // Validate account_type
+        if (!in_array($account_type, ['user', 'admin'])) {
+            sendError('Invalid account type');
+        }
+        
+        // Delete all failed login attempts for this email and account type
+        $db->query(
+            "DELETE FROM login_attempts 
+             WHERE email = ? AND account_type = ? AND success = 0",
+            [$email, $account_type]
+        );
+        
+        logAuditEvent('UNLOCK', 'account', 0, $user_id, ['email' => $email, 'account_type' => $account_type]);
+        sendSuccess([], 'Account unlocked successfully');
+    }
+    
     // ========================================
     // EMPLOYEES MANAGEMENT (Admin & Superadmin)
     // ========================================
@@ -1010,42 +1043,48 @@ try {
         $params = [];
         
         if ($actorEmail) {
-            $whereConditions[] = "actor_email LIKE ?";
+            $whereConditions[] = "email LIKE ?";
             $params[] = "%$actorEmail%";
         }
         if ($actionType) {
-            $whereConditions[] = "action_type = ?";
+            $whereConditions[] = "event_type = ?";
             $params[] = $actionType;
         }
         if ($actionCategory) {
-            $whereConditions[] = "action_category = ?";
+            $whereConditions[] = "account_type = ?";
             $params[] = $actionCategory;
         }
         if ($dateFrom) {
-            $whereConditions[] = "created_at >= ?";
+            $whereConditions[] = "event_time >= ?";
             $params[] = $dateFrom . ' 00:00:00';
         }
         if ($dateTo) {
-            $whereConditions[] = "created_at <= ?";
+            $whereConditions[] = "event_time <= ?";
             $params[] = $dateTo . ' 23:59:59';
         }
         
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
-        // Get total count
-        $countSql = "SELECT COUNT(*) as total FROM audit_trail $whereClause";
+        // Get total count from the combined authentication activity view
+        $countSql = "SELECT COUNT(*) as total FROM v_authentication_activity $whereClause";
         $countResult = $db->fetchOne($countSql, $params);
         $totalItems = $countResult['total'] ?? 0;
         
-        // Get paginated results
+        // Get paginated results from the view (includes both audit_trail and login_attempts)
         $sql = "SELECT 
-                    id, actor_id, actor_email, actor_role, actor_ip,
-                    action_type, action_category,
-                    target_type, target_id, target_identifier,
-                    description, created_at
-                FROM audit_trail 
+                    id, 
+                    email as actor_email, 
+                    account_type, 
+                    role as actor_role,
+                    event_type as action_type, 
+                    'AUTHENTICATION' as action_category,
+                    event_description as description,
+                    ip_address as actor_ip, 
+                    event_time as created_at,
+                    source
+                FROM v_authentication_activity 
                 $whereClause 
-                ORDER BY created_at DESC 
+                ORDER BY event_time DESC 
                 LIMIT ? OFFSET ?";
         
         $params[] = $perPage;
@@ -1056,6 +1095,7 @@ try {
         // Log this view action
         logAuditTrailView($db, $current_user['id'], $current_user['email'], $current_user['role']);
         
+        // Send response with timestamps preserved (audit logs NEED timestamps!)
         sendSuccess([
             'audit_logs' => $logs,
             'pagination' => [
@@ -1064,7 +1104,7 @@ try {
                 'total_items' => $totalItems,
                 'total_pages' => ceil($totalItems / $perPage)
             ]
-        ]);
+        ], null, true); // true = preserve timestamps for audit logs
     }
     
     // Get audit trail statistics

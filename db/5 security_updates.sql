@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `admin_accounts` (
 -- 2. LOGIN ATTEMPTS TABLE (For lockout tracking)
 -- =====================================================
 -- Tracks failed login attempts for both users and admins
--- After 3 failed attempts, account is locked for 15 minutes
+-- After 2 failed attempts (3 total including initial), account is locked for 15 minutes
 
 CREATE TABLE IF NOT EXISTS `login_attempts` (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -134,7 +134,7 @@ SELECT
 FROM `users` 
 WHERE role IN ('admin', 'superadmin');
 
--- =====================================================
+-- =====================================================4
 -- 5. DEFAULT ADMIN ACCOUNTS (if not migrated)
 -- =====================================================
 -- Ensure we have at least one superadmin account
@@ -317,9 +317,80 @@ GROUP BY email, account_type
 HAVING COUNT(*) >= 3;
 
 -- =====================================================
+-- 8. COMPREHENSIVE AUTHENTICATION ACTIVITY VIEW
+-- =====================================================
+-- This view combines both login_attempts and audit_trail data
+-- to provide a complete picture of all authentication activities
+
+CREATE OR REPLACE VIEW `v_authentication_activity` AS
+SELECT * FROM (
+    -- Admin authentication events from audit_trail
+    SELECT 
+        at.id,
+        at.actor_email as email,
+        'admin' as account_type,
+        at.actor_role as role,
+        at.action_type as event_type,
+        CASE 
+            WHEN at.action_type = 'LOGIN' THEN 'Login Success'
+            WHEN at.action_type = 'LOGOUT' THEN 'Logout'
+            WHEN at.action_type = 'LOGIN_FAILED' THEN 'Login Failed'
+            WHEN at.action_type = 'ACCOUNT_LOCKED' THEN 'Account Locked'
+            ELSE at.action_type
+        END as event_description,
+        at.actor_ip as ip_address,
+        at.created_at as event_time,
+        'audit_trail' as source
+    FROM audit_trail at
+    WHERE at.action_category = 'AUTHENTICATION'
+
+    UNION ALL
+
+    -- All login attempts from login_attempts table (both user and admin)
+    SELECT 
+        la.id,
+        la.email,
+        la.account_type,
+        CASE 
+            WHEN la.account_type = 'admin' THEN 'admin'
+            ELSE 'user'
+        END as role,
+        CASE 
+            WHEN la.success = 1 AND la.failure_reason = 'Logout' THEN 'LOGOUT'
+            WHEN la.success = 1 THEN 'LOGIN'
+            WHEN la.failure_reason LIKE '%locked%' THEN 'ACCOUNT_LOCKED'
+            ELSE 'LOGIN_FAILED'
+        END as event_type,
+        CASE 
+            WHEN la.success = 1 AND la.failure_reason = 'Logout' THEN 'Logout'
+            WHEN la.success = 1 THEN 'Login Success'
+            WHEN la.failure_reason LIKE '%locked%' THEN CONCAT('Account Locked - ', la.failure_reason)
+            ELSE CONCAT('Login Failed - ', COALESCE(la.failure_reason, 'Unknown reason'))
+        END as event_description,
+        la.ip_address,
+        la.attempt_time as event_time,
+        'login_attempts' as source
+    FROM login_attempts la
+) combined_auth
+ORDER BY event_time DESC;
+
+-- View for recent authentication activity (last 7 days)
+CREATE OR REPLACE VIEW `v_recent_auth_activity` AS
+SELECT * FROM v_authentication_activity
+WHERE event_time > DATE_SUB(NOW(), INTERVAL 7 DAY)
+ORDER BY event_time DESC;
+
+-- View for failed authentication attempts only
+CREATE OR REPLACE VIEW `v_failed_auth_attempts` AS
+SELECT * FROM v_authentication_activity
+WHERE event_type IN ('LOGIN_FAILED', 'ACCOUNT_LOCKED')
+ORDER BY event_time DESC;
+
+-- =====================================================
 -- COMPLETION MESSAGE
 -- =====================================================
 
 SELECT 'Security updates applied successfully!' as message,
        'Tables created: admin_accounts, login_attempts, audit_trail' as tables_added,
+       'Views created: v_authentication_activity, v_recent_auth_activity, v_failed_auth_attempts' as views_added,
        'Existing admins migrated to new table' as migration_status;

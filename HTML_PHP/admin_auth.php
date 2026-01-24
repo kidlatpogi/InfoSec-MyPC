@@ -81,7 +81,7 @@ function checkLoginLockout($db, $email) {
     $attempts = (int)($result['attempts'] ?? 0);
     $lastAttempt = $result['last_attempt'] ?? null;
     
-    if ($attempts >= 3 && $lastAttempt) {
+    if ($attempts >= 2 && $lastAttempt) {
         // Calculate lock expiry (15 minutes from last failed attempt)
         $lockExpiry = strtotime($lastAttempt) + (15 * 60);
         $now = time();

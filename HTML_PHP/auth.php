@@ -47,6 +47,30 @@ if (isset($_POST['action']) && $_POST['action'] === 'login' && !isset($_SESSION[
 $db = getDB();
 $method = $_SERVER['REQUEST_METHOD'];
 
+/**
+ * Get client IP address
+ */
+function getClientIP() {
+    $ip = '';
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    }
+    // Sanitize IP address
+    return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : 'unknown';
+}
+
+/**
+ * Get user agent (sanitized)
+ */
+function getUserAgent() {
+    $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    return substr(htmlspecialchars($ua, ENT_QUOTES, 'UTF-8'), 0, 500);
+}
+
 try {
     // Rate limiting function
     function checkRateLimit($action, $identifier, $maxAttempts = 5, $timeWindow = 300) {
@@ -158,6 +182,9 @@ try {
         // Check login lockout (3 failed attempts = 15 min lockout)
         $lockoutStatus = checkUserLoginLockout($db, $email);
         if ($lockoutStatus['locked']) {
+            // Record locked account attempt in login_attempts
+            recordUserLoginAttempt($db, $email, false, 'Account locked - too many failed attempts');
+            
             sendResponse([
                 'success' => false,
                 'error' => 'Account is temporarily locked due to multiple failed login attempts',
@@ -233,6 +260,21 @@ try {
     
     // Logout user
     elseif ($method === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+        // Record logout in login_attempts for tracking
+        if (isset($_SESSION['user_email'])) {
+            try {
+                $ip = getClientIP();
+                $userAgent = getUserAgent();
+                $db->insert(
+                    "INSERT INTO login_attempts (email, account_type, ip_address, user_agent, success, failure_reason) 
+                     VALUES (?, 'user', ?, ?, 1, 'Logout')",
+                    [$_SESSION['user_email'], $ip, $userAgent]
+                );
+            } catch (Exception $e) {
+                error_log("Failed to record logout: " . $e->getMessage());
+            }
+        }
+        
         session_destroy();
         sendSuccess([], 'Logout successful');
     }
@@ -479,7 +521,7 @@ function checkUserLoginLockout($db, $email) {
         $attempts = (int)($result['attempts'] ?? 0);
         $lastAttempt = $result['last_attempt'] ?? null;
         
-        if ($attempts >= 3 && $lastAttempt) {
+        if ($attempts >= 2 && $lastAttempt) {
             // Calculate lock expiry (15 minutes from last failed attempt)
             $lockExpiry = strtotime($lastAttempt) + (15 * 60);
             $now = time();
@@ -510,8 +552,8 @@ function checkUserLoginLockout($db, $email) {
  */
 function recordUserLoginAttempt($db, $email, $success, $failureReason = null) {
     try {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 500);
+        $ip = getClientIP();
+        $userAgent = getUserAgent();
         
         $db->insert(
             "INSERT INTO login_attempts (email, account_type, ip_address, user_agent, success, failure_reason) 
