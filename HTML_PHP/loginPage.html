@@ -1,109 +1,167 @@
 <header class="site-header">
-    <div class="container header-inner">
-        <a class="logo" href="/">MyPC</a>
-        <nav class="main-nav">
-            <a href="/shop">Shop</a>
-            <div id="auth-nav" style="display:flex;gap:1rem;align-items:center;">
-                <a href="/login" id="login-link">Login</a>
-            </div>
-        </nav>
-    </div>
+  <div class="container header-inner">
+    <a class="logo" href="/">MyPC</a>
+    <nav class="main-nav">
+      <a href="/shop">Shop</a>
+      <div id="auth-nav" style="display: flex; gap: 1rem; align-items: center">
+        <a href="/login" id="login-link">Login</a>
+      </div>
+    </nav>
+  </div>
 </header>
 
-<main class="container" style="min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center">
-    <section class="auth-panel">
-        <div class="auth-header">
-            <h2>Welcome Back</h2>
-            <p style="color:var(--text-light);margin-top:0.5rem;font-size:0.9rem">Sign in to your account to continue
-            </p>
-        </div>
-        
-        <!-- Lockout Warning Banner (hidden by default) -->
-        <div id="lockout-warning" class="alert alert-danger" style="display:none;background:#fee2e2;border:1px solid #fecaca;color:#dc2626;padding:1rem;border-radius:8px;margin-bottom:1rem;text-align:center;">
-            <span id="lockout-message">Account locked. Try again in <span id="lockout-timer">15:00</span></span>
-        </div>
-        
-        <!-- Failed Attempts Warning (hidden by default) -->
-        <div id="attempts-warning" class="alert alert-warning" style="display:none;background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:0.75rem;border-radius:8px;margin-bottom:1rem;text-align:center;font-size:0.9rem;">
-            <span id="attempts-message">Warning: <span id="attempts-count">0</span> failed attempt(s). Account locks after 3 failures.</span>
-        </div>
-        
-        <form id="login-form">
-            <div class="form-field">
-                <label for="email">Email address</label>
-                <input type="text" id="email" placeholder="your@email.com" required autocomplete="email">
-                <span class="error" id="email-error"></span>
-            </div>
-            <div class="form-field">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required
-                    autocomplete="current-password">
-                <span class="error" id="password-error"></span>
-            </div>
-            <button class="primary" type="submit">Sign In</button>
-        </form>
-        <p>Don't have an account? <a href="/signup">Create Account</a></p>
-    </section>
+<main
+  class="container"
+  style="
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <section class="auth-panel">
+    <div class="auth-header">
+      <h2>Welcome Back</h2>
+      <p
+        style="color: var(--text-light); margin-top: 0.5rem; font-size: 0.9rem"
+      >
+        Sign in to your account to continue
+      </p>
+    </div>
+
+    <!-- Lockout Warning Banner (hidden by default) -->
+    <div
+      id="lockout-warning"
+      class="alert alert-danger"
+      style="
+        display: none;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        text-align: center;
+      "
+    >
+      <span id="lockout-message"
+        >Account locked. Try again in
+        <span id="lockout-timer">15:00</span></span
+      >
+    </div>
+
+    <!-- Failed Attempts Warning (hidden by default) -->
+    <div
+      id="attempts-warning"
+      class="alert alert-warning"
+      style="
+        display: none;
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        color: #92400e;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.9rem;
+      "
+    >
+      <span id="attempts-message"
+        >Warning: <span id="attempts-count">0</span> failed attempt(s). Account
+        locks after 3 failures.</span
+      >
+    </div>
+
+    <form id="login-form">
+      <div class="form-field">
+        <label for="email">Email address</label>
+        <input
+          type="text"
+          id="email"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+        />
+        <span class="error" id="email-error"></span>
+      </div>
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+        />
+        <span class="error" id="password-error"></span>
+      </div>
+      <button class="primary" type="submit">Sign In</button>
+    </form>
+    <p>Don't have an account? <a href="/signup">Create Account</a></p>
+  </section>
 </main>
 
 <footer class="site-footer">
-    <div class="container">© MyPC — Component Store</div>
+  <div class="container">© MyPC — Component Store</div>
 </footer>
 
 <script>
-// Lockout timer for user login
-let userLockoutInterval = null;
+  // Lockout timer for user login
+  let userLockoutInterval = null;
 
-function startUserLockoutTimer(seconds) {
-    const timerEl = document.getElementById('lockout-timer');
-    const warningEl = document.getElementById('lockout-warning');
-    const loginBtn = document.querySelector('#login-form button[type="submit"]');
-    
+  function startUserLockoutTimer(seconds) {
+    const timerEl = document.getElementById("lockout-timer");
+    const warningEl = document.getElementById("lockout-warning");
+    const loginBtn = document.querySelector(
+      '#login-form button[type="submit"]',
+    );
+
     if (!warningEl || !loginBtn) return;
-    
-    warningEl.style.display = 'block';
+
+    warningEl.style.display = "block";
     loginBtn.disabled = true;
-    loginBtn.style.opacity = '0.5';
-    loginBtn.style.cursor = 'not-allowed';
-    
+    loginBtn.style.opacity = "0.5";
+    loginBtn.style.cursor = "not-allowed";
+
     if (userLockoutInterval) clearInterval(userLockoutInterval);
-    
+
     let remaining = seconds;
-    
+
     function updateTimer() {
-        const mins = Math.floor(remaining / 60);
-        const secs = remaining % 60;
-        if (timerEl) timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-        
-        if (remaining <= 0) {
-            clearInterval(userLockoutInterval);
-            warningEl.style.display = 'none';
-            loginBtn.disabled = false;
-            loginBtn.style.opacity = '1';
-            loginBtn.style.cursor = 'pointer';
-            const attemptsWarning = document.getElementById('attempts-warning');
-            if (attemptsWarning) attemptsWarning.style.display = 'none';
-        }
-        remaining--;
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      if (timerEl)
+        timerEl.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+
+      if (remaining <= 0) {
+        clearInterval(userLockoutInterval);
+        warningEl.style.display = "none";
+        loginBtn.disabled = false;
+        loginBtn.style.opacity = "1";
+        loginBtn.style.cursor = "pointer";
+        const attemptsWarning = document.getElementById("attempts-warning");
+        if (attemptsWarning) attemptsWarning.style.display = "none";
+      }
+      remaining--;
     }
-    
+
     updateTimer();
     userLockoutInterval = setInterval(updateTimer, 1000);
-}
+  }
 
-function showUserAttemptsWarning(count) {
-    const warningEl = document.getElementById('attempts-warning');
-    const countEl = document.getElementById('attempts-count');
-    
+  function showUserAttemptsWarning(count) {
+    const warningEl = document.getElementById("attempts-warning");
+    const countEl = document.getElementById("attempts-count");
+
     if (warningEl && count > 0 && count < 3) {
-        warningEl.style.display = 'block';
-        if (countEl) countEl.textContent = count;
+      warningEl.style.display = "block";
+      if (countEl) countEl.textContent = count;
     } else if (warningEl) {
-        warningEl.style.display = 'none';
+      warningEl.style.display = "none";
     }
-}
+  }
 
-// Make functions available globally
-window.startUserLockoutTimer = startUserLockoutTimer;
-window.showUserAttemptsWarning = showUserAttemptsWarning;
+  // Make functions available globally
+  window.startUserLockoutTimer = startUserLockoutTimer;
+  window.showUserAttemptsWarning = showUserAttemptsWarning;
 </script>

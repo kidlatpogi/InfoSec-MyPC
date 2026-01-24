@@ -27,6 +27,12 @@ class Router {
 
   init() {
     let path = window.location.pathname;
+    
+    // Strip the base path (/InfoSec-MyPC) from the pathname
+    if (path.startsWith('/InfoSec-MyPC')) {
+      path = path.replace('/InfoSec-MyPC', '') || '/';
+    }
+    
     if (path.endsWith('/index.html')) {
       path = path.replace('/index.html', '') || '/';
     }
@@ -131,6 +137,11 @@ class Router {
   }
 
   route(path, pushState = true) {
+    // Strip the base path (/InfoSec-MyPC) from the pathname
+    if (path.startsWith('/InfoSec-MyPC')) {
+      path = path.replace('/InfoSec-MyPC', '') || '/';
+    }
+    
     if (path.endsWith('/index.html')) {
       path = path.replace('/index.html', '') || '/';
     }
