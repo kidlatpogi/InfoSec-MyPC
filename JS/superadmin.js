@@ -558,8 +558,8 @@ function initSuperadminTabs() {
 function initEventDelegation() {
   console.log("Initializing event delegation for CSP compliance (superadmin)");
 
-  // Use event delegation on the main superadmin container
-  const superadminContainer = document.querySelector(".superadmin-container");
+  // Use event delegation on the main admin container (superadmin uses admin-container class)
+  const superadminContainer = document.querySelector(".admin-container");
   if (!superadminContainer) {
     console.error("Superadmin container not found");
     return;
