@@ -1095,6 +1095,7 @@ try {
         // Log this view action
         logAuditTrailView($db, $current_user['id'], $current_user['email'], $current_user['role']);
         
+        // Send response with timestamps preserved (audit logs NEED timestamps!)
         sendSuccess([
             'audit_logs' => $logs,
             'pagination' => [
@@ -1103,7 +1104,7 @@ try {
                 'total_items' => $totalItems,
                 'total_pages' => ceil($totalItems / $perPage)
             ]
-        ]);
+        ], null, true); // true = preserve timestamps for audit logs
     }
     
     // Get audit trail statistics

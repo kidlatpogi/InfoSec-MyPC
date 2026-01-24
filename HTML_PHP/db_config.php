@@ -55,9 +55,11 @@ function sendError($message, $statusCode = 400) {
 /**
  * Send success response
  */
-function sendSuccess($data = [], $message = null) {
-    // Remove sensitive timestamp fields from response
-    $data = sanitizeResponseData($data);
+function sendSuccess($data = [], $message = null, $preserveTimestamps = false) {
+    // Remove sensitive timestamp fields from response (unless explicitly preserved)
+    if (!$preserveTimestamps) {
+        $data = sanitizeResponseData($data);
+    }
     
     $response = ['success' => true];
     if ($message) {

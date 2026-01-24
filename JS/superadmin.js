@@ -2529,6 +2529,12 @@ async function loadAuditLogs(page = 1) {
       filters,
     );
 
+    console.log("API Response data:", data);
+    console.log(
+      "First audit log from API (full JSON):",
+      JSON.stringify(data.audit_logs?.[0], null, 2),
+    );
+
     if (!data.audit_logs || data.audit_logs.length === 0) {
       tbody.innerHTML =
         '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No audit logs found</td></tr>';
