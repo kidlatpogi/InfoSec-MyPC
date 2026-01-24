@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `admin_accounts` (
 -- 2. LOGIN ATTEMPTS TABLE (For lockout tracking)
 -- =====================================================
 -- Tracks failed login attempts for both users and admins
--- After 3 failed attempts, account is locked for 15 minutes
+-- After 2 failed attempts (3 total including initial), account is locked for 15 minutes
 
 CREATE TABLE IF NOT EXISTS `login_attempts` (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -134,7 +134,7 @@ SELECT
 FROM `users` 
 WHERE role IN ('admin', 'superadmin');
 
--- =====================================================
+-- =====================================================4
 -- 5. DEFAULT ADMIN ACCOUNTS (if not migrated)
 -- =====================================================
 -- Ensure we have at least one superadmin account
