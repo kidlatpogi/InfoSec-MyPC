@@ -375,6 +375,39 @@ try {
         sendSuccess([], 'User reactivated successfully');
     }
     
+    // Unlock user account (clear failed login attempts)
+    elseif ($action === 'unlockAccount') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
+            sendError('Unauthorized', 403);
+        }
+        
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+        
+        $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : null;
+        $account_type = isset($_POST['account_type']) ? $_POST['account_type'] : 'user';
+        
+        if (!$email) {
+            sendError('Email required');
+        }
+        
+        // Validate account_type
+        if (!in_array($account_type, ['user', 'admin'])) {
+            sendError('Invalid account type');
+        }
+        
+        // Delete all failed login attempts for this email and account type
+        $db->query(
+            "DELETE FROM login_attempts 
+             WHERE email = ? AND account_type = ? AND success = 0",
+            [$email, $account_type]
+        );
+        
+        logAuditEvent('UNLOCK', 'account', 0, $user_id, ['email' => $email, 'account_type' => $account_type]);
+        sendSuccess([], 'Account unlocked successfully');
+    }
+    
     // ========================================
     // EMPLOYEES MANAGEMENT (Admin & Superadmin)
     // ========================================
