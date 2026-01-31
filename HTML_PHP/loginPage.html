@@ -10,30 +10,22 @@
   </div>
 </header>
 
-<main
-  class="container"
-  style="
+<main class="container" style="
     min-height: calc(100vh - 200px);
     display: flex;
     align-items: center;
     justify-content: center;
-  "
->
+  ">
   <section class="auth-panel">
     <div class="auth-header">
       <h2>Welcome Back</h2>
-      <p
-        style="color: var(--text-light); margin-top: 0.5rem; font-size: 0.9rem"
-      >
+      <p style="color: var(--text-light); margin-top: 0.5rem; font-size: 0.9rem">
         Sign in to your account to continue
       </p>
     </div>
 
     <!-- Lockout Warning Banner (hidden by default) -->
-    <div
-      id="lockout-warning"
-      class="alert alert-danger"
-      style="
+    <div id="lockout-warning" class="alert alert-danger" style="
         display: none;
         background: #fee2e2;
         border: 1px solid #fecaca;
@@ -42,19 +34,13 @@
         border-radius: 8px;
         margin-bottom: 1rem;
         text-align: center;
-      "
-    >
-      <span id="lockout-message"
-        >Account locked. Try again in
-        <span id="lockout-timer">15:00</span></span
-      >
+      ">
+      <span id="lockout-message">Account locked. Try again in
+        <span id="lockout-timer">15:00</span></span>
     </div>
 
     <!-- Failed Attempts Warning (hidden by default) -->
-    <div
-      id="attempts-warning"
-      class="alert alert-warning"
-      style="
+    <div id="attempts-warning" class="alert alert-warning" style="
         display: none;
         background: #fef3c7;
         border: 1px solid #fde68a;
@@ -64,35 +50,20 @@
         margin-bottom: 1rem;
         text-align: center;
         font-size: 0.9rem;
-      "
-    >
-      <span id="attempts-message"
-        >Warning: <span id="attempts-count">0</span> failed attempt(s). Account
-        locks after 3 failures.</span
-      >
+      ">
+      <span id="attempts-message">Warning: <span id="attempts-count">0</span> failed attempt(s). Account
+        locks after 3 failures.</span>
     </div>
 
     <form id="login-form">
       <div class="form-field">
         <label for="email">Email address</label>
-        <input
-          type="text"
-          id="email"
-          placeholder="your@email.com"
-          required
-          autocomplete="email"
-        />
+        <input type="email" id="email" placeholder="your@email.com" required autocomplete="email" maxlength="100" />
         <span class="error" id="email-error"></span>
       </div>
       <div class="form-field">
         <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="••••••••"
-          required
-          autocomplete="current-password"
-        />
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
         <span class="error" id="password-error"></span>
       </div>
       <button class="primary" type="submit">Sign In</button>
