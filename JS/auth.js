@@ -136,6 +136,9 @@ function initSignupPage() {
         } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
             document.getElementById('email-error').textContent = 'Invalid email format';
             hasError = true;
+        } else if (email.length > 100) {
+            document.getElementById('email-error').textContent = 'Email must not exceed 100 characters';
+            hasError = true;
         }
 
         // 4. Validate Phone (Must be exactly 11 digits)
@@ -144,13 +147,13 @@ function initSignupPage() {
             hasError = true;
         }
 
-        // 5. Validate Password (Min 6 chars, 1 upper, 1 lower, 1 special)
+        // 5. Validate Password (Min 8 chars, 1 upper, 1 lower, 1 special)
         if (!password) {
             document.getElementById('password-error').textContent = 'Password is required';
             hasError = true;
         } else {
-            if (password.length < 6) {
-                document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
+            if (password.length < 8) {
+                document.getElementById('password-error').textContent = 'Password must be at least 8 characters';
                 hasError = true;
             } else if (!/[A-Z]/.test(password)) {
                 document.getElementById('password-error').textContent = 'Password must contain at least one uppercase letter';

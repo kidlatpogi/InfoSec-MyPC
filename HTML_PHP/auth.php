@@ -124,9 +124,14 @@ try {
             sendError('Invalid email format');
         }
         
-        // Validate password strength (minimum 6 characters)
-        if (strlen($password) < 6) {
-            sendError('Password must be at least 6 characters long');
+        // Validate email length (maximum 100 characters)
+        if (strlen($email) > 100) {
+            sendError('Email must not exceed 100 characters');
+        }
+        
+        // Validate password strength (minimum 8 characters)
+        if (strlen($password) < 8) {
+            sendError('Password must be at least 8 characters long');
         }
         
         // Check if email already exists
@@ -357,8 +362,8 @@ try {
                 sendError('Current password is incorrect');
             }
             
-            if (strlen($new_password) < 6) {
-                sendError('Password must be at least 6 characters long');
+            if (strlen($new_password) < 8) {
+                sendError('Password must be at least 8 characters long');
             }
             
             $password_hash = password_hash($new_password, PASSWORD_BCRYPT);

@@ -312,7 +312,7 @@ function renderAuditRows(auditLogs, tbody) {
     const categoryColor = categoryColors[log.action_category] || "#6b7280";
     const description = log.description
       ? log.description.substring(0, 80) +
-        (log.description.length > 80 ? "..." : "")
+      (log.description.length > 80 ? "..." : "")
       : "-";
 
     row.innerHTML = `
@@ -1250,26 +1250,25 @@ function viewProduct(productId) {
       const variantsHTML =
         variants.length > 0
           ? variants
-              .map(
-                (v) => `
+            .map(
+              (v) => `
                     <div style="padding: 0.75rem; background: var(--surface); border-radius: 6px; margin-bottom: 0.5rem;">
                         <strong>${v.title}</strong> - ${formatPHP(
-                          v.price,
-                        )} (Stock: ${v.stock})
+                v.price,
+              )} (Stock: ${v.stock})
                     </div>
                 `,
-              )
-              .join("")
+            )
+            .join("")
           : '<p style="color: var(--text-light);">No variants</p>';
 
       viewContent.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                     <div>
-                        ${
-                          product.image_url
-                            ? `<img src="${product.image_url}" alt="${product.name}" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">`
-                            : '<div style="background: #f0f0f0; padding: 3rem; text-align: center; border-radius: 8px; margin-bottom: 1rem;">No Image</div>'
-                        }
+                        ${product.image_url
+          ? `<img src="${product.image_url}" alt="${product.name}" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">`
+          : '<div style="background: #f0f0f0; padding: 3rem; text-align: center; border-radius: 8px; margin-bottom: 1rem;">No Image</div>'
+        }
                         <h3 style="margin-top: 0;">Product Information</h3>
                         <div style="margin-bottom: 1rem;">
                             <strong>ID:</strong> ${product.id}
@@ -1278,30 +1277,27 @@ function viewProduct(productId) {
                             <strong>Name:</strong> ${product.name || "N/A"}
                         </div>
                         <div style="margin-bottom: 1rem;">
-                            <strong>Category:</strong> ${
-                              product.category_name || "N/A"
-                            }
+                            <strong>Category:</strong> ${product.category_name || "N/A"
+        }
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <strong>Base Price:</strong> ${formatPHP(
-                              product.base_price || 0,
-                            )}
+          product.base_price || 0,
+        )}
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <strong>SKU:</strong> ${product.sku || "N/A"}
                         </div>
                         <div>
-                            <strong>Created:</strong> ${
-                              new Date(
-                                product.created_at,
-                              ).toLocaleDateString() || "N/A"
-                            }
+                            <strong>Created:</strong> ${new Date(
+          product.created_at,
+        ).toLocaleDateString() || "N/A"
+        }
                         </div>
                     </div>
                     <div>
-                        <h3 style="margin-top: 0;">Variants (${
-                          variants.length
-                        })</h3>
+                        <h3 style="margin-top: 0;">Variants (${variants.length
+        })</h3>
                         ${variantsHTML}
                     </div>
                 </div>
@@ -1895,15 +1891,15 @@ async function viewOrder(orderId) {
     const statusDropdown = `
       <select id="order-status-select" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: ${currentStatus.color}; color: white; font-weight: 500; cursor: pointer;">
         ${statusOptions
-          .map(
-            (status) => `
+        .map(
+          (status) => `
           <option value="${status.value}" ${status.value === order.status ? "selected" : ""} 
                   style="background: ${status.color}; color: white;">
             ${status.label}
           </option>
         `,
-          )
-          .join("")}
+        )
+        .join("")}
       </select>
       <button id="update-status-btn" style="margin-left: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
         Update Status
@@ -1925,9 +1921,8 @@ async function viewOrder(orderId) {
 
         return `
         <div style="display: grid; grid-template-columns: 80px 1fr auto auto auto; gap: 1rem; padding: 1rem; border-bottom: 1px solid #e5e7eb; align-items: center;">
-          ${
-            imageUrl
-              ? `
+          ${imageUrl
+            ? `
             <img src="${imageUrl}" alt="${item.product_name}" 
                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -1935,7 +1930,7 @@ async function viewOrder(orderId) {
               No Image
             </div>
           `
-              : `
+            : `
             <div style="width: 80px; height: 80px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 0.75rem; text-align: center; border: 1px solid #e5e7eb;">
               No Image
             </div>
@@ -1990,16 +1985,15 @@ async function viewOrder(orderId) {
           <div style="margin-bottom: 0.75rem;">
             <strong>Phone:</strong> ${order.customer_phone || "N/A"}
           </div>
-          ${
-            order.shipping_address
-              ? `
+          ${order.shipping_address
+        ? `
             <div style="margin-top: 1rem;">
               <strong>Shipping Address:</strong><br>
               <div style="color: #6b7280; margin-top: 0.25rem;">${order.shipping_address}</div>
             </div>
           `
-              : ""
-          }
+        : ""
+      }
         </div>
       </div>
       
@@ -2297,8 +2291,8 @@ function initModals() {
         return;
       }
 
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters");
+      if (password.length < 8) {
+        alert("Password must be at least 8 characters");
         return;
       }
 
@@ -2341,8 +2335,8 @@ function initModals() {
         return;
       }
 
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters");
+      if (password.length < 8) {
+        alert("Password must be at least 8 characters");
         return;
       }
 
@@ -2385,8 +2379,8 @@ function initModals() {
         return;
       }
 
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters");
+      if (password.length < 8) {
+        alert("Password must be at least 8 characters");
         return;
       }
 
