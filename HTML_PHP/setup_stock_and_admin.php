@@ -41,9 +41,9 @@ try {
     if ($existingSuperadmin) {
         echo "   ! Superadmin already exists with ID: {$existingSuperadmin['id']}\n";
     } else {
-        // Hash the password
+        // Hash the password — Ref: Slide 89 (ARGON2ID / BCRYPT cost 12)
         $password = '@dm1n123';
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $hashedPassword = securePasswordHash($password);
         
         // Create superadmin
         $superadminId = $db->insert(

@@ -5,13 +5,14 @@
  */
 
 // Session configuration must be set before session_start()
+// Ref: Secure Coding Practices - Slides 99-107
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => false,
+    'secure' => true,     // Strict HTTPS (Slide 106)
     'httponly' => true,
-    'samesite' => 'Lax'
+    'samesite' => 'Strict' // CSRF protection (Slide 106)
 ]);
 
 require_once 'db_config.php';
@@ -121,7 +122,7 @@ try {
             sendError('Email already exists');
         }
 
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $password_hash = securePasswordHash($password);
 
         $admin_id = $db->insert(
             "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
@@ -165,7 +166,7 @@ try {
         }
         if (isset($_POST['password']) && trim($_POST['password']) !== '') {
             $updates[] = "password_hash = ?";
-            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            $params[] = securePasswordHash($_POST['password']);
         }
 
         if (empty($updates)) {
@@ -278,7 +279,7 @@ try {
             sendError('Email already exists');
         }
 
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $password_hash = securePasswordHash($password);
 
         $user_id_new = $db->insert(
             "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
@@ -321,7 +322,7 @@ try {
         }
         if (isset($_POST['password']) && trim($_POST['password']) !== '') {
             $updates[] = "password_hash = ?";
-            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            $params[] = securePasswordHash($_POST['password']);
         }
 
         if (empty($updates)) {
@@ -492,7 +493,7 @@ try {
             sendError('Email already exists');
         }
 
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $password_hash = securePasswordHash($password);
 
         $employee_id = $db->insert(
             "INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_admin) 
@@ -535,7 +536,7 @@ try {
         }
         if (isset($_POST['password']) && trim($_POST['password']) !== '') {
             $updates[] = "password_hash = ?";
-            $params[] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            $params[] = securePasswordHash($_POST['password']);
         }
 
         if (empty($updates)) {
@@ -821,7 +822,7 @@ try {
 
             // Convert image URLs to use image serving script
             foreach ($images as &$img) {
-                $img['url'] = '/serve-image.php?path=' . urlencode($img['url']);
+                $img['url'] = '/HTML_PHP/serve-image.php?path=' . urlencode($img['url']);
             }
             unset($img);
 

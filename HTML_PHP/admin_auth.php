@@ -9,9 +9,10 @@
  */
 
 // Secure session configuration - MUST be set before session_start()
+// Ref: Secure Coding Practices - Slides 99-107
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
-ini_set('session.cookie_samesite', 'Strict'); // Stricter for admin
+ini_set('session.cookie_secure', 1);       // Enforce HTTPS-only cookies
+ini_set('session.cookie_samesite', 'Strict'); // Stricter for admin (Slide 106)
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
 
@@ -20,9 +21,9 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => false, // Set to true for HTTPS
+    'secure' => true,     // Strict HTTPS (Slide 106)
     'httponly' => true,
-    'samesite' => 'Strict'
+    'samesite' => 'Strict' // CSRF protection (Slide 106)
 ]);
 
 session_start();
@@ -183,12 +184,12 @@ try {
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
-        // Sanitize email (SQL injection prevention via prepared statements)
-        $email = sanitizeInput($_POST['email']);
+        // Ref: Slide 15 — use filter_input for email validation
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
         
-        // Validate email format
-        if (!validateEmail($email)) {
+        // Validate email format (Slide 15)
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             sendError('Invalid email format');
         }
         
@@ -311,6 +312,9 @@ try {
             'LOGIN', 'AUTHENTICATION',
             "Successful admin login. IP: " . getClientIP()
         );
+
+        // Centralised audit log — Ref: Slide 151
+        logAction($admin['id'], $admin['role'], 'LOGIN', 'Admin login successful: ' . $admin['email']);
         
         sendSuccess([
             'user' => [
@@ -336,6 +340,14 @@ try {
                 $_SESSION['admin_role'] ?? 'admin',
                 'LOGOUT', 'AUTHENTICATION',
                 "Admin logout. IP: " . getClientIP()
+            );
+
+            // Centralised audit log — Ref: Slide 151
+            logAction(
+                $_SESSION['admin_id'],
+                $_SESSION['admin_role'] ?? 'admin',
+                'LOGOUT',
+                'Admin logout: ' . ($_SESSION['admin_email'] ?? 'unknown')
             );
         }
         

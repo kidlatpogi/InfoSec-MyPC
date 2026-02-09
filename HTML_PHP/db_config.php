@@ -93,9 +93,66 @@ function validateRequired($fields, $data) {
 
 /**
  * Sanitize input string
+ * Ref: Secure Coding Practices - Slide 24
+ * Uses htmlspecialchars with ENT_QUOTES and UTF-8 encoding to prevent XSS.
+ * strip_tags() removed — htmlspecialchars already neutralises every HTML entity.
  */
 function sanitizeInput($input) {
-    return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Secure password hashing
+ * Ref: Secure Coding Practices - Slide 89
+ * Uses ARGON2ID (preferred) with recommended parameters,
+ * falls back to BCRYPT cost 12 if ARGON2ID is unavailable.
+ */
+function securePasswordHash($password) {
+    if (defined('PASSWORD_ARGON2ID')) {
+        return password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536, // 64 MB
+            'time_cost'   => 4,
+            'threads'     => 2,
+        ]);
+    }
+    // Fallback: BCRYPT with cost 12
+    return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+}
+
+/**
+ * Centralised security / audit logging
+ * Ref: Secure Coding Practices - Slide 140
+ * Logs every critical action (login, logout, CRUD, etc.) into the
+ * `security_logs` table so User AND Admin activity is tracked in one place.
+ *
+ * @param int|null  $user_id  Actor's user ID (null for unauthenticated events)
+ * @param string    $role     Actor's role (user / admin / superadmin / employee / guest)
+ * @param string    $action   Short action label, e.g. 'LOGIN', 'LOGOUT', 'CREATE_USER'
+ * @param string|null $details  Optional human-readable description or JSON context
+ */
+function logAction($user_id, $role, $action, $details = null) {
+    try {
+        $db = getDB();
+        $ip = filter_var(
+            $_SERVER['HTTP_CLIENT_IP']
+                ?? $_SERVER['HTTP_X_FORWARDED_FOR']
+                ?? $_SERVER['REMOTE_ADDR']
+                ?? 'unknown',
+            FILTER_VALIDATE_IP
+        ) ?: 'unknown';
+        $userAgent = substr(
+            htmlspecialchars($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', ENT_QUOTES, 'UTF-8'),
+            0, 500
+        );
+
+        $db->insert(
+            "INSERT INTO security_logs (user_id, role, action, ip_address, user_agent, details)
+             VALUES (?, ?, ?, ?, ?, ?)",
+            [$user_id, $role, $action, $ip, $userAgent, $details]
+        );
+    } catch (Exception $e) {
+        error_log("Security log failed: " . $e->getMessage());
+    }
 }
 
 /**

@@ -5,13 +5,14 @@
  */
 
 // Session configuration must be set before session_start()
+// Ref: Secure Coding Practices - Slides 99-107
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => false,
+    'secure' => true,     // Strict HTTPS (Slide 106)
     'httponly' => true,
-    'samesite' => 'Lax'
+    'samesite' => 'Strict' // CSRF protection (Slide 106)
 ]);
 
 require_once 'db_config.php';

@@ -5,9 +5,10 @@
  */
 
 // Secure session configuration - MUST be set before session_start()
+// Ref: Secure Coding Practices - Slides 99-107
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
-ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.cookie_secure', 1);       // Enforce HTTPS-only cookies
+ini_set('session.cookie_samesite', 'Strict'); // Prevent CSRF (Slide 106)
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
 
@@ -16,9 +17,9 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => false, // Set to true for HTTPS
+    'secure' => true,     // Strict HTTPS (Slide 106)
     'httponly' => true,
-    'samesite' => 'Lax'
+    'samesite' => 'Strict' // CSRF protection (Slide 106)
 ]);
 
 session_start();
@@ -109,7 +110,8 @@ try {
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
-        $email = sanitizeInput($_POST['email']);
+        // Ref: Slide 15 — use filter_input for email validation
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
         $first_name = sanitizeInput($_POST['first_name']);
         $last_name = sanitizeInput($_POST['last_name']);
@@ -119,8 +121,8 @@ try {
         // Rate limit registration attempts by IP
         checkRateLimit('register', $_SERVER['REMOTE_ADDR'], 3, 600);
         
-        // Validate email format
-        if (!validateEmail($email)) {
+        // Validate email format (Slide 15)
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             sendError('Invalid email format');
         }
         
@@ -140,8 +142,8 @@ try {
             sendError('Email already registered');
         }
         
-        // Hash password
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        // Hash password — Ref: Slide 89 (ARGON2ID preferred, BCRYPT cost 12 fallback)
+        $password_hash = securePasswordHash($password);
         
         // Insert user
         $user_id = $db->insert(
@@ -154,6 +156,9 @@ try {
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_email'] = $email;
         $_SESSION['user_role'] = 'user';
+
+        // Centralised audit log — Ref: Slide 151
+        logAction($user_id, 'user', 'REGISTER', 'New user registration: ' . $email);
         
         sendSuccess([
             'user' => [
@@ -175,12 +180,12 @@ try {
             sendError('Missing required fields: ' . implode(', ', $missing));
         }
         
-        // Sanitize email - prepared statements prevent SQL injection
-        $email = sanitizeInput($_POST['email']);
+        // Ref: Slide 15 — use filter_input for email validation
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
         
-        // Validate email format
-        if (!validateEmail($email)) {
+        // Validate email format (Slide 15)
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             sendError('Invalid email format');
         }
         
@@ -251,6 +256,9 @@ try {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_role'] = $role;
+
+        // Centralised audit log — Ref: Slide 151
+        logAction($user['id'], $role, 'LOGIN', 'User login successful: ' . $email);
         
         sendSuccess([
             'user' => [
@@ -265,6 +273,16 @@ try {
     
     // Logout user
     elseif ($method === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+        // Centralised audit log — Ref: Slide 151
+        if (isset($_SESSION['user_id'])) {
+            logAction(
+                $_SESSION['user_id'],
+                $_SESSION['user_role'] ?? 'user',
+                'LOGOUT',
+                'User logout: ' . ($_SESSION['user_email'] ?? 'unknown')
+            );
+        }
+
         // Record logout in login_attempts for tracking
         if (isset($_SESSION['user_email'])) {
             try {
@@ -366,7 +384,7 @@ try {
                 sendError('Password must be at least 8 characters long');
             }
             
-            $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
+            $password_hash = securePasswordHash($new_password);
         } else {
             $password_hash = null;
         }
