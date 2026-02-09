@@ -9,7 +9,16 @@ try {
 
     $email = 'zeus@superadmin.com';
     $password = '10101831B';
-    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+    // Ref: Slide 89 — ARGON2ID preferred, BCRYPT cost 12 fallback
+    if (defined('PASSWORD_ARGON2ID')) {
+        $passwordHash = password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost'   => 4,
+            'threads'     => 2,
+        ]);
+    } else {
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+    }
 
     echo "Creating superadmin account...\n";
     echo "Email: {$email}\n";
