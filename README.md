@@ -14,27 +14,29 @@
 ### 3. Clone the Repository
 - Open File Explorer and go to `C:\xampp\htdocs`
 - Right-click → **Open in Terminal**
-- Run:
-  ```bash
+
+- Run git bash:
+
   git clone https://github.com/kidlatpogi/InfoSec-MyPC.git
   cd InfoSec-MyPC
-  ```
+  code .
 
 ### 4. Create Database
-- Open browser and go to: `http://localhost/phpmyadmin`
-- Click **New** → Create database named `mypc_db`
+- Open **MySQL Workbench**
+- Connect to local MySQL server (root user, no password)
+- Create new schema: `mypc_db`
 - Collation: `utf8mb4_unicode_ci`
 
 ### 5. Import Database Files
-- In phpMyAdmin, select `mypc_db` database
-- Click **Import** tab
+- In MySQL Workbench, select `mypc_db` schema
+- Go to **File** → **Open SQL Script**
 - Import these files **in order**:
-  1. `db/1 mypc_complete.sql`
-  2. `db/2 products_inserts.sql`
-  3. `db/3 users_insert.sql`
-  4. `db/4 sales_insert.sql`
-  5. `db/5 security_updates.sql`
-  6. `db/6 security_logs.sql`
+  1. `db/1 mypc_complete.sql` → Execute (⚡)
+  2. `db/2 products_inserts.sql` → Execute (⚡)
+  3. `db/3 users_insert.sql` → Execute (⚡)
+  4. `db/4 sales_insert.sql` → Execute (⚡)
+  5. `db/5 security_updates.sql` → Execute (⚡)
+  6. `db/6 security_logs.sql` → Execute (⚡)
 
 ### 6. Access the Website
 - Open browser
