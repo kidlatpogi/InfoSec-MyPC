@@ -95,7 +95,7 @@ try {
             );
         }
 
-        sendSuccess(['admins' => $admins]);
+        sendSuccess(['admins' => $admins], null, true);
     }
 
     // Create new admin (superadmin only)
@@ -280,7 +280,7 @@ try {
             );
         }
 
-        sendSuccess(['users' => $users]);
+        sendSuccess(['users' => $users], null, true);
     }
 
     // Create new user (for admin)
@@ -494,7 +494,7 @@ try {
             );
         }
 
-        sendSuccess(['employees' => $employees]);
+        sendSuccess(['employees' => $employees], null, true);
     }
 
     // Create new employee

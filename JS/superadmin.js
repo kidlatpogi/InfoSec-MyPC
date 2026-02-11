@@ -142,7 +142,15 @@ function renderTableRows(tableType, pageData, tbody) {
 function renderAdminRows(admins, tbody) {
   admins.forEach((admin) => {
     const row = document.createElement("tr");
-    const createdDate = new Date(admin.created_at).toLocaleDateString();
+
+    let createdDate = "N/A";
+    if (admin.created_at) {
+      const date = new Date(admin.created_at.replace(' ', 'T'));
+      if (!isNaN(date.getTime())) {
+        createdDate = date.toLocaleDateString();
+      }
+    }
+
     const roleColor = admin.role === "superadmin" ? "#8b5cf6" : "#3b82f6";
     const isArchived = admin.is_archived == 1;
 
@@ -177,7 +185,15 @@ function renderAdminRows(admins, tbody) {
 function renderUserRows(users, tbody) {
   users.forEach((user) => {
     const row = document.createElement("tr");
-    const createdDate = new Date(user.created_at).toLocaleDateString();
+
+    let createdDate = "N/A";
+    if (user.created_at) {
+      const date = new Date(user.created_at.replace(' ', 'T'));
+      if (!isNaN(date.getTime())) {
+        createdDate = date.toLocaleDateString();
+      }
+    }
+
     const isArchived = user.is_archived == 1;
 
     // Add visual indicator for archived users
@@ -211,7 +227,15 @@ function renderUserRows(users, tbody) {
 function renderEmployeeRows(employees, tbody) {
   employees.forEach((emp) => {
     const row = document.createElement("tr");
-    const createdDate = new Date(emp.created_at).toLocaleDateString();
+
+    let createdDate = "N/A";
+    if (emp.created_at) {
+      const date = new Date(emp.created_at.replace(' ', 'T'));
+      if (!isNaN(date.getTime())) {
+        createdDate = date.toLocaleDateString();
+      }
+    }
+
     const isArchived = emp.is_archived == 1;
 
     // Add visual indicator for archived employees

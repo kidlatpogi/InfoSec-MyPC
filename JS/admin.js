@@ -138,7 +138,7 @@ function renderUserRows(users, tbody) {
     // Fix invalid date issue
     let createdDate = "N/A";
     if (user.created_at) {
-      const date = new Date(user.created_at);
+      const date = new Date(user.created_at.replace(' ', 'T'));
       if (!isNaN(date.getTime())) {
         createdDate = date.toLocaleDateString();
       }
@@ -188,7 +188,7 @@ function renderEmployeeRows(employees, tbody) {
     // Fix invalid date issue
     let createdDate = "N/A";
     if (emp.created_at) {
-      const date = new Date(emp.created_at);
+      const date = new Date(emp.created_at.replace(' ', 'T'));
       if (!isNaN(date.getTime())) {
         createdDate = date.toLocaleDateString();
       }
