@@ -385,8 +385,8 @@
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="address-phone" required pattern="[0-9]{11}" maxlength="11" minlength="11"
-                        placeholder="09123456789" title="Phone number must be exactly 11 digits" />
+                    <input type="tel" id="address-phone" required pattern="^09[0-9]{9}$" maxlength="11" minlength="11"
+                        placeholder="09123456789" title="Phone number must start with 09 and be exactly 11 digits" />
                 </div>
                 <div class="form-group">
                     <label>Address Line 1</label>
@@ -398,11 +398,13 @@
                 </div>
                 <div class="form-group">
                     <label>City</label>
-                    <input type="text" id="address-city" required />
+                    <input type="text" id="address-city" required pattern="[A-Za-z\s]+"
+                        title="City must contain only letters" placeholder="e.g., Calamba" />
                 </div>
                 <div class="form-group">
                     <label>Postal Code</label>
-                    <input type="text" id="address-postal" required />
+                    <input type="text" id="address-postal" required maxlength="4" minlength="4" pattern="[0-9]{4}"
+                        title="Postal code must be exactly 4 digits" placeholder="e.g., 4118" />
                 </div>
                 <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
                     <input type="checkbox" id="address-default" />

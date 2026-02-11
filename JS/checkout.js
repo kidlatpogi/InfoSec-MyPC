@@ -88,6 +88,42 @@ async function loadCheckoutData() {
         try {
             const addressesData = await AddressesAPI.getAddresses();
             if (addressesData.addresses && addressesData.addresses.length > 0) {
+                // Populate the saved address dropdown
+                const savedAddressSelect = document.getElementById('saved-address-select');
+                if (savedAddressSelect) {
+                    // Store addresses for later use
+                    window._savedAddresses = addressesData.addresses;
+
+                    addressesData.addresses.forEach(addr => {
+                        const option = document.createElement('option');
+                        option.value = addr.id;
+                        option.textContent = `${addr.label || 'Address'} - ${addr.line1}, ${addr.city} ${addr.postal_code}`;
+                        if (addr.is_default) {
+                            option.selected = true;
+                        }
+                        savedAddressSelect.appendChild(option);
+                    });
+
+                    // Handle address selection change
+                    savedAddressSelect.addEventListener('change', () => {
+                        const selectedId = savedAddressSelect.value;
+                        if (selectedId && window._savedAddresses) {
+                            const addr = window._savedAddresses.find(a => a.id == selectedId);
+                            if (addr) {
+                                const addressEl = document.getElementById('address');
+                                const cityEl = document.getElementById('city');
+                                const postalEl = document.getElementById('postal');
+                                const phoneEl = document.getElementById('phone');
+
+                                if (addressEl) addressEl.value = `${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}`;
+                                if (cityEl) cityEl.value = addr.city || '';
+                                if (postalEl) postalEl.value = addr.postal_code || '';
+                                if (phoneEl && addr.phone) phoneEl.value = addr.phone;
+                            }
+                        }
+                    });
+                }
+
                 // Get the default address or first address
                 let defaultAddress = addressesData.addresses.find(addr => addr.is_default === 1) || addressesData.addresses[0];
                 
@@ -251,9 +287,28 @@ function initializeCheckoutForm() {
                 return;
             }
 
-            // Validate phone number (must be exactly 11 digits)
-            if (!/^\d{11}$/.test(phone)) {
-                alert('Phone number must be exactly 11 digits');
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Validate phone number (must start with "09" and be exactly 11 digits)
+            if (!/^09\d{9}$/.test(phone)) {
+                alert('Phone number must start with "09" and be exactly 11 digits (e.g., 09123456789)');
+                return;
+            }
+
+            // Validate city (letters and spaces only)
+            if (!/^[A-Za-z\s]+$/.test(city)) {
+                alert('City must contain only letters');
+                return;
+            }
+
+            // Validate postal code (exactly 4 digits)
+            if (!/^\d{4}$/.test(postal)) {
+                alert('Postal code must be exactly 4 digits (e.g., 4118)');
                 return;
             }
 

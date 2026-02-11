@@ -192,6 +192,13 @@ function displayOrderModal(order) {
     const titleEl = document.getElementById('order-modal-title');
     const contentEl = document.getElementById('order-modal-content');
     
+    // Check if elements exist
+    if (!modal || !backdrop || !titleEl || !contentEl) {
+        console.error('Order modal elements not found');
+        alert('Error: Order modal could not be opened. Please refresh the page and try again.');
+        return;
+    }
+    
     // Set title
     titleEl.textContent = `Order #${order.order_number || order.id}`;
     
@@ -363,9 +370,9 @@ function initProfileEditForm() {
             return;
         }
 
-        // Validate phone number (must be exactly 11 digits)
-        if (phone && !/^\d{11}$/.test(phone)) {
-            alert('Phone number must be exactly 11 digits');
+        // Validate phone number (must start with "09" and be exactly 11 digits)
+        if (phone && !/^09\d{9}$/.test(phone)) {
+            alert('Phone number must start with "09" and be exactly 11 digits (e.g., 09123456789)');
             return;
         }
 
@@ -406,11 +413,12 @@ function initProfileEditForm() {
             });
             
             
-            const response = await fetch('/HTML_PHP/auth.php?action=updateProfile', {
+            const response = await fetch(getAPIBase() + '/auth.php?action=updateProfile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
+                credentials: 'include',
                 body: requestBody
             });
 
@@ -530,11 +538,12 @@ async function loadAddresses() {
                         <p>${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}</p>
                         <p>${addr.city} ${addr.postal_code}</p>
                         <p>📞 ${addr.phone}</p>
-                        ${addr.is_default ? '<span class="badge" style="background:#10b981;color:white">Default</span>' : ''}
+                        ${addr.is_default ? '<span class="badge" style="background:#10b981;color:white;padding:0.2rem 0.6rem;border-radius:4px;font-size:0.8rem;">Default</span>' : ''}
                     </div>
-                    <div>
-                        <button class="btn btn-sm" onclick="editAddress(${addr.id})" style="margin:0.25rem">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteAddress(${addr.id})" style="margin:0.25rem">Delete</button>
+                    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+                        <button class="btn btn-sm" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #ddd;border-radius:4px;background:#fff;" onclick="editAddress(${addr.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #d32f2f;border-radius:4px;background:#fff;color:#d32f2f;" onclick="deleteAddress(${addr.id})">Delete</button>
+                        ${!addr.is_default ? `<button class="btn btn-sm" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #10b981;border-radius:4px;background:#fff;color:#10b981;" onclick="setDefaultAddress(${addr.id})">Set Default</button>` : ''}
                     </div>
                 </div>
             `;
@@ -575,30 +584,44 @@ function initAddressManagement() {
     addressForm.onsubmit = async (e) => {
         e.preventDefault();
 
-        const label = document.getElementById('address-label').value.trim();
-        const phone = document.getElementById('address-phone').value.trim();
-        const addressLine1 = document.getElementById('address-line1').value.trim();
-        const addressLine2 = document.getElementById('address-line2').value.trim();
-        const city = document.getElementById('address-city').value.trim();
-        const postalCode = document.getElementById('address-postal').value.trim();
-        const isDefault = document.getElementById('address-default').checked;
-
-        // Validate phone number (must be exactly 11 digits)
-        if (!/^\d{11}$/.test(phone)) {
-            alert('Phone number must be exactly 11 digits');
-            return;
-        }
-
         try {
+            const label = document.getElementById('address-label').value.trim();
+            const phone = document.getElementById('address-phone').value.trim();
+            const addressLine1 = document.getElementById('address-line1').value.trim();
+            const addressLine2 = document.getElementById('address-line2').value.trim();
+            const city = document.getElementById('address-city').value.trim();
+            const postalCode = document.getElementById('address-postal').value.trim();
+            const isDefault = document.getElementById('address-default').checked;
+
+            // Validate phone number (must start with "09" and be exactly 11 characters)
+            if (!/^09\d{9}$/.test(phone)) {
+                alert('Phone number must start with "09" and be exactly 11 digits (e.g., 09123456789)');
+                return;
+            }
+
+            // Validate city (letters and spaces only)
+            if (!/^[A-Za-z\s]+$/.test(city)) {
+                alert('City must contain only letters');
+                return;
+            }
+
+            // Validate postal code (exactly 4 digits)
+            if (!/^\d{4}$/.test(postalCode)) {
+                alert('Postal code must be exactly 4 digits (e.g., 4118)');
+                return;
+            }
+
             // Check if setting as default and another default exists
             if (isDefault) {
                 const data = await AddressesAPI.getAddresses();
-                const currentDefault = data.addresses && data.addresses.find(addr => addr.is_default && addr.id != window.editingAddressId);
-                
-                if (currentDefault) {
-                    const confirmChange = confirm('An address is already set as default. Would you like to change it to this address?');
-                    if (!confirmChange) {
-                        return;
+                if (data && data.addresses) {
+                    const currentDefault = data.addresses.find(addr => addr.is_default && addr.id != window.editingAddressId);
+                    
+                    if (currentDefault) {
+                        const confirmChange = confirm('An address is already set as default. Would you like to change it to this address?');
+                        if (!confirmChange) {
+                            return;
+                        }
                     }
                 }
             }
@@ -621,9 +644,10 @@ function initAddressManagement() {
                 alert('Address added successfully');
             }
             addressModal.classList.remove('open');
-            loadAddresses();
+            await loadAddresses();
         } catch (error) {
-            alert('Error: ' + error.message);
+            console.error('Address form error:', error);
+            alert('Error: ' + (error.message || 'Unknown error'));
         }
     };
 
@@ -641,6 +665,11 @@ function initAddressManagement() {
 async function editAddress(addressId) {
     const addressModal = document.getElementById('address-modal');
     const modalTitle = document.getElementById('address-modal-title');
+    
+    if (!addressModal || !modalTitle) {
+        alert('Modal elements not found');
+        return;
+    }
 
     try {
         // Fetch current address data
@@ -656,13 +685,21 @@ async function editAddress(addressId) {
         window.editingAddressId = addressId;
 
         // Populate form with current data
-        document.getElementById('address-label').value = address.label || '';
-        document.getElementById('address-phone').value = address.phone || '';
-        document.getElementById('address-line1').value = address.line1 || '';
-        document.getElementById('address-line2').value = address.line2 || '';
-        document.getElementById('address-city').value = address.city || '';
-        document.getElementById('address-postal').value = address.postal_code || '';
-        document.getElementById('address-default').checked = address.is_default || false;
+        const labelEl = document.getElementById('address-label');
+        const phoneEl = document.getElementById('address-phone');
+        const line1El = document.getElementById('address-line1');
+        const line2El = document.getElementById('address-line2');
+        const cityEl = document.getElementById('address-city');
+        const postalEl = document.getElementById('address-postal');
+        const defaultEl = document.getElementById('address-default');
+
+        if (labelEl) labelEl.value = address.label || '';
+        if (phoneEl) phoneEl.value = address.phone || '';
+        if (line1El) line1El.value = address.line1 || '';
+        if (line2El) line2El.value = address.line2 || '';
+        if (cityEl) cityEl.value = address.city || '';
+        if (postalEl) postalEl.value = address.postal_code || '';
+        if (defaultEl) defaultEl.checked = address.is_default || false;
 
         // Set modal title
         modalTitle.textContent = `Edit Address: ${address.label}`;
@@ -670,6 +707,7 @@ async function editAddress(addressId) {
         // Show modal
         addressModal.classList.add('open');
     } catch (error) {
+        console.error('Error loading address:', error);
         alert('Error loading address: ' + error.message);
     }
 }
@@ -680,6 +718,10 @@ async function deleteAddress(addressId) {
     try {
         // Get all addresses before deletion
         const data = await AddressesAPI.getAddresses();
+        if (!data || !data.addresses) {
+            throw new Error('Failed to load addresses');
+        }
+
         const addressToDelete = data.addresses.find(addr => addr.id == addressId);
         
         // Delete the address
@@ -697,7 +739,19 @@ async function deleteAddress(addressId) {
         alert('Address deleted successfully');
         loadAddresses();
     } catch (error) {
-        alert('Error deleting address: ' + error.message);
+        console.error('Failed to delete address:', error);
+        alert('Error deleting address: ' + (error.message || 'Unknown error'));
+    }
+}
+
+async function setDefaultAddress(addressId) {
+    try {
+        await AddressesAPI.updateAddress(addressId, { is_default: true });
+        alert('Default address updated successfully');
+        await loadAddresses();
+    } catch (error) {
+        console.error('Failed to set default address:', error);
+        alert('Error setting default address: ' + (error.message || 'Unknown error'));
     }
 }
 
@@ -929,6 +983,7 @@ window.viewOrderDetails = viewOrderDetails;
 window.cancelOrder = cancelOrder;
 window.editAddress = editAddress;
 window.deleteAddress = deleteAddress;
+window.setDefaultAddress = setDefaultAddress;
 window.loadAddresses = loadAddresses;
 window.closeOrderModal = closeOrderModal;
 window.deleteMyAccount = deleteMyAccount;
