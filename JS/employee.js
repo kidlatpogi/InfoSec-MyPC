@@ -130,12 +130,12 @@ function renderProductRows(products, tbody) {
             ? '<span class="badge" style="background:#dc2626;font-size:0.75rem;">Deleted</span>'
             : '<span class="badge" style="background:#22c55e;font-size:0.75rem;">Active</span>';
 
-        // Actions - different for deleted vs active
+        // Actions - different for deleted vs active (using data-* attributes for CSP compliance)
         const actionButtons = isDeleted
-            ? `<button class="btn btn-sm btn-success" onclick="restoreProduct(${product.id})">Restore</button>`
-            : `<button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
-                <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>`;
+            ? `<button class="btn btn-sm btn-success" data-action="restore" data-product-id="${product.id}">Restore</button>`
+            : `<button class="btn btn-sm" data-action="view" data-product-id="${product.id}">View</button>
+                <button class="btn btn-sm" data-action="edit" data-product-id="${product.id}">Edit</button>
+                <button class="btn btn-sm btn-danger" data-action="delete" data-product-id="${product.id}">Delete</button>`;
 
         row.innerHTML = `
             <td>${product.name}</td>
@@ -162,8 +162,8 @@ function renderOrderRows(orders, tbody) {
             <td><span class="badge" style="background:${statusColor}; color: white; padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">${statusLabel}</span></td>
             <td>${formatPHP(order.total)}</td>
             <td>
-                <button class="btn btn-sm" onclick="viewOrder(${order.id})">View</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id}, '${order.order_number}')">Delete</button>
+                <button class="btn btn-sm" data-action="view" data-order-id="${order.id}">View</button>
+                <button class="btn btn-sm btn-danger" data-action="delete" data-order-id="${order.id}" data-order-number="${order.order_number}">Delete</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -257,7 +257,7 @@ async function verifyPassword() {
                 <p>Enter your password to continue:</p>
                 <input type="password" id="password-verify-input" style="width: 100%; padding: 8px; margin: 1rem 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" autofocus>
                 <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-                    <button onclick="this.closest('.modal').remove()" style="padding: 8px 16px; border: 1px solid #ddd; background: #f5f5f5; border-radius: 4px; cursor: pointer;">Cancel</button>
+                    <button id="password-cancel-btn" style="padding: 8px 16px; border: 1px solid #ddd; background: #f5f5f5; border-radius: 4px; cursor: pointer;">Cancel</button>
                     <button id="password-verify-btn" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Verify</button>
                 </div>
             </div>
@@ -267,6 +267,13 @@ async function verifyPassword() {
 
         const passwordInput = document.getElementById('password-verify-input');
         const verifyBtn = document.getElementById('password-verify-btn');
+        const cancelBtn = document.getElementById('password-cancel-btn');
+
+        // Cancel button handler (CSP-safe, no inline onclick)
+        cancelBtn.addEventListener('click', () => {
+            passwordModal.remove();
+            resolve(false);
+        });
 
         // Handle Enter key
         passwordInput.addEventListener('keypress', (e) => {
@@ -1259,28 +1266,48 @@ function renderVariantsEditor() {
           <div>
             <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Variant Name</label>
             <input type="text" value="${variant.title || variant.label || ''}" 
-              onchange="updateVariant(${idx}, 'title', this.value)"
+              data-variant-idx="${idx}" data-variant-field="title"
               placeholder="e.g., Standard, Pro, Boxed"
               style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
           </div>
           <div>
             <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Price (₱)</label>
             <input type="number" value="${variant.price || 0}" min="0" step="100"
-              onchange="updateVariant(${idx}, 'price', parseFloat(this.value))"
+              data-variant-idx="${idx}" data-variant-field="price"
               style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
           </div>
         </div>
         <div style="margin-bottom: 1rem;">
           <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;">Stock Quantity</label>
           <input type="number" value="${variant.stock || 0}" min="0"
-            onchange="updateVariant(${idx}, 'stock', parseInt(this.value))"
+            data-variant-idx="${idx}" data-variant-field="stock"
             style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;" />
         </div>
-        <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(${idx})" style="background-color: #d32f2f; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">
+        <button type="button" class="btn btn-danger btn-sm" data-action="remove-variant" data-variant-idx="${idx}" style="background-color: #d32f2f; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">
           🗑️ Remove Variant
         </button>
       </div>
     `).join('');
+
+    // Attach event listeners for variant inputs (CSP-safe)
+    container.querySelectorAll('input[data-variant-idx]').forEach(input => {
+      input.addEventListener('change', () => {
+        const idx = parseInt(input.dataset.variantIdx);
+        const field = input.dataset.variantField;
+        let value = input.value;
+        if (field === 'price') value = parseFloat(value);
+        else if (field === 'stock') value = parseInt(value);
+        updateVariant(idx, field, value);
+      });
+    });
+
+    // Attach event listeners for remove buttons
+    container.querySelectorAll('button[data-action="remove-variant"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.variantIdx);
+        removeVariant(idx);
+      });
+    });
   }
 
   // Update JSON display
@@ -1356,6 +1383,8 @@ function initModals() {
             const category = document.getElementById('product-category').value.trim();
             // Price field removed from UI - use 0
             const basePrice = 0;
+            const stockInput = document.getElementById('product-stock');
+            const initialStock = stockInput ? parseInt(stockInput.value) || 0 : 0;
             let variants = [];
 
             const variantsStr = document.getElementById('product-variants').value.trim();
@@ -1366,6 +1395,18 @@ function initModals() {
                     alert('Invalid JSON format for variants');
                     return;
                 }
+            }
+
+            // If no variants were created via the editor, create a default variant with the stock count
+            if (variants.length === 0) {
+                variants = [{ title: 'Standard', price: 0, stock: initialStock }];
+            } else {
+                // Apply stock count to variants that don't have stock set
+                variants.forEach(v => {
+                    if (v.stock === undefined || v.stock === null) {
+                        v.stock = initialStock;
+                    }
+                });
             }
 
             try {
@@ -1392,6 +1433,37 @@ function initModals() {
     }
     if (variantsSaveBtn) {
         variantsSaveBtn.addEventListener('click', saveVariants);
+    }
+
+    // ========================================
+    // EVENT DELEGATION (CSP-compliant - no inline onclick)
+    // ========================================
+    const adminContainer = document.querySelector('.admin-container');
+    if (adminContainer) {
+        adminContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-action]');
+            if (!button) return;
+
+            const action = button.dataset.action;
+
+            // Product actions
+            if (button.dataset.productId) {
+                const productId = parseInt(button.dataset.productId);
+                if (action === 'view') viewProduct(productId);
+                else if (action === 'edit') editProduct(productId);
+                else if (action === 'delete') deleteProduct(productId);
+                else if (action === 'restore') restoreProduct(productId);
+            }
+            // Order actions
+            else if (button.dataset.orderId) {
+                const orderId = parseInt(button.dataset.orderId);
+                if (action === 'view') viewOrder(orderId);
+                else if (action === 'delete') {
+                    const orderNumber = button.dataset.orderNumber || '';
+                    deleteOrder(orderId, orderNumber);
+                }
+            }
+        });
     }
 }
 
