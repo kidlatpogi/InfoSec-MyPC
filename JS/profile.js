@@ -206,10 +206,17 @@ function displayOrderModal(order) {
     let itemsHTML = '';
     if (order.items && order.items.length > 0) {
         itemsHTML = order.items.map(item => {
-            const imageUrl = item.image_url || item.product_image || 'assets/placeholder.png';
+            // Process image URL with base path
+            let imageUrl = item.image_url || item.product_image || '/InfoSec-MyPC/assets/placeholder.png';
+            // Apply base path if missing
+            if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+                if (!imageUrl.startsWith('/InfoSec-MyPC')) {
+                    imageUrl = '/InfoSec-MyPC' + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
+                }
+            }
             return `
             <div class="order-item">
-                <img src="${imageUrl}" alt="${item.product_name}" class="order-item-image" onerror="this.src='assets/placeholder.png'">
+                <img src="${imageUrl}" alt="${item.product_name}" class="order-item-image" data-fallback="/InfoSec-MyPC/assets/placeholder.png">
                 <div class="order-item-info">
                     <div class="order-item-name">${item.product_name}</div>
                     <div class="order-item-variant">${item.variant_title || 'Standard'}</div>
@@ -269,6 +276,16 @@ function displayOrderModal(order) {
     // Show modal
     modal.classList.add('open');
     backdrop.classList.add('open');
+
+    // Add image error handlers
+    setTimeout(() => {
+        const images = contentEl.querySelectorAll('img[data-fallback]');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = this.getAttribute('data-fallback');
+            });
+        });
+    }, 0);
 }
 
 function closeOrderModal() {
