@@ -540,13 +540,8 @@ function initEventDelegation() {
   }
 
   adminContainer.addEventListener("click", (e) => {
-    console.log("Click detected on:", e.target);
-    const button = e.target.closest("button[data-action]");
-    console.log("Found button:", button);
-    if (!button) {
-      console.log("No button with data-action found");
-      return;
-    }
+    const button = e.target.closest("button[data-action], button[data-page-action]");
+    if (!button) return;
 
     const action = button.dataset.action;
     console.log("Button clicked:", action, button.dataset);
@@ -642,7 +637,7 @@ function initAdminSearch() {
   const productSearch = document.getElementById("product-search");
   if (productSearch) {
     productSearch.addEventListener("input", () => {
-      filterProductsTable();
+      filterTable("products-tbody");
     });
   }
 
@@ -658,7 +653,7 @@ function initAdminSearch() {
   const orderSearch = document.getElementById("order-search");
   if (orderSearch) {
     orderSearch.addEventListener("input", () => {
-      filterOrdersTable();
+      filterTable("orders-tbody");
     });
   }
 }
