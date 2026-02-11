@@ -302,6 +302,7 @@ function renderAuditRows(auditLogs, tbody) {
       AUTHENTICATION: "#6366f1",
       USER_MANAGEMENT: "#3b82f6",
       ADMIN_MANAGEMENT: "#8b5cf6",
+      EMPLOYEE_MANAGEMENT: "#f97316",
       PRODUCT_MANAGEMENT: "#10b981",
       ORDER_MANAGEMENT: "#f59e0b",
       SYSTEM: "#6b7280",
