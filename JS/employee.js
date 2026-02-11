@@ -434,22 +434,21 @@ function filterProductsTable() {
     if (!searchInput) return;
 
     const query = searchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#products-tbody tr');
 
-    rows.forEach(row => {
-        const id = row.cells[0]?.textContent.toLowerCase() || '';
-        const name = row.cells[1]?.textContent.toLowerCase() || '';
-        const category = row.cells[2]?.textContent.toLowerCase() || '';
-        const price = row.cells[3]?.textContent.toLowerCase() || '';
-        const stock = row.cells[4]?.textContent.toLowerCase() || '';
-        const variants = row.cells[5]?.textContent.toLowerCase() || '';
+    if (query === '') {
+        paginationState.products.allData = paginationState.products.originalData;
+    } else {
+        paginationState.products.allData = paginationState.products.originalData.filter(item => {
+            const itemText = Object.values(item)
+                .map(val => val ? String(val).toLowerCase() : '')
+                .join(' ');
+            return itemText.includes(query);
+        });
+    }
 
-        const matches = id.includes(query) || name.includes(query) ||
-            category.includes(query) || price.includes(query) ||
-            stock.includes(query) || variants.includes(query);
-
-        row.style.display = matches ? '' : 'none';
-    });
+    paginationState.products.currentPage = 1;
+    paginationState.products.totalItems = paginationState.products.allData.length;
+    updatePaginationDisplay('products');
 }
 
 function filterOrdersTable() {
@@ -457,21 +456,21 @@ function filterOrdersTable() {
     if (!searchInput) return;
 
     const query = searchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#orders-tbody tr');
 
-    rows.forEach(row => {
-        const orderId = row.cells[0]?.textContent.toLowerCase() || '';
-        const email = row.cells[1]?.textContent.toLowerCase() || '';
-        const name = row.cells[2]?.textContent.toLowerCase() || '';
-        const total = row.cells[3]?.textContent.toLowerCase() || '';
-        const status = row.cells[4]?.textContent.toLowerCase() || '';
+    if (query === '') {
+        paginationState.orders.allData = paginationState.orders.originalData;
+    } else {
+        paginationState.orders.allData = paginationState.orders.originalData.filter(item => {
+            const itemText = Object.values(item)
+                .map(val => val ? String(val).toLowerCase() : '')
+                .join(' ');
+            return itemText.includes(query);
+        });
+    }
 
-        const matches = orderId.includes(query) || email.includes(query) ||
-            name.includes(query) || total.includes(query) ||
-            status.includes(query);
-
-        row.style.display = matches ? '' : 'none';
-    });
+    paginationState.orders.currentPage = 1;
+    paginationState.orders.totalItems = paginationState.orders.allData.length;
+    updatePaginationDisplay('orders');
 }
 
 // ========================================
@@ -799,10 +798,17 @@ function editProduct(productId) {
                 // Populate form
                 document.getElementById('product-title').value = product.name;
                 document.getElementById('product-category').value = product.category_name || '';
-                // Price field removed from UI - use 0
+                // Populate price from first variant
+                const variants = product.variants || [];
                 const priceField = document.getElementById('product-price');
                 if (priceField) {
-                  priceField.value = product.base_price;
+                  priceField.value = variants.length > 0 ? variants[0].price : 0;
+                }
+                // Populate stock
+                const stockField = document.getElementById('product-stock');
+                if (stockField) {
+                  const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+                  stockField.value = totalStock;
                 }
                 document.getElementById('product-variants').value = product.variants ? JSON.stringify(product.variants, null, 2) : '';
 
@@ -817,8 +823,10 @@ function editProduct(productId) {
                     e.preventDefault();
                     const name = document.getElementById('product-title').value.trim();
                     const category = document.getElementById('product-category').value.trim();
-                    // Price field removed from UI - use 0
-                    const basePrice = 0;
+                    const editPriceInput = document.getElementById('product-price');
+                    const basePrice = editPriceInput ? parseFloat(editPriceInput.value) || 0 : 0;
+                    const editStockInput = document.getElementById('product-stock');
+                    const stockValue = editStockInput ? parseInt(editStockInput.value) || 0 : 0;
                     let variants = [];
 
                     const variantsStr = document.getElementById('product-variants').value.trim();
@@ -834,6 +842,14 @@ function editProduct(productId) {
                     if (!name || !category) {
                         alert('Please fill in all required fields');
                         return;
+                    }
+
+                    // Apply price/stock from form fields to variants
+                    if (variants.length === 0) {
+                        variants = [{ title: 'Standard', price: basePrice, stock: stockValue }];
+                    } else if (variants.length === 1) {
+                        variants[0].price = basePrice;
+                        variants[0].stock = stockValue;
                     }
 
                     try {
@@ -1381,8 +1397,8 @@ function initModals() {
             e.preventDefault();
             const name = document.getElementById('product-title').value.trim();
             const category = document.getElementById('product-category').value.trim();
-            // Price field removed from UI - use 0
-            const basePrice = 0;
+            const priceInput = document.getElementById('product-price');
+            const basePrice = priceInput ? parseFloat(priceInput.value) || 0 : 0;
             const stockInput = document.getElementById('product-stock');
             const initialStock = stockInput ? parseInt(stockInput.value) || 0 : 0;
             let variants = [];
@@ -1397,12 +1413,15 @@ function initModals() {
                 }
             }
 
-            // If no variants were created via the editor, create a default variant with the stock count
+            // If no variants were created via the editor, create a default variant with price and stock
             if (variants.length === 0) {
-                variants = [{ title: 'Standard', price: 0, stock: initialStock }];
+                variants = [{ title: 'Standard', price: basePrice, stock: initialStock }];
             } else {
-                // Apply stock count to variants that don't have stock set
+                // Apply price/stock to variants that don't have them set
                 variants.forEach(v => {
+                    if (!v.price && v.price !== 0) {
+                        v.price = basePrice;
+                    }
                     if (v.stock === undefined || v.stock === null) {
                         v.stock = initialStock;
                     }
@@ -1441,7 +1460,7 @@ function initModals() {
     const adminContainer = document.querySelector('.admin-container');
     if (adminContainer) {
         adminContainer.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-action]');
+            const button = e.target.closest('button[data-action], button[data-page-action]');
             if (!button) return;
 
             const action = button.dataset.action;
@@ -1462,6 +1481,12 @@ function initModals() {
                     const orderNumber = button.dataset.orderNumber || '';
                     deleteOrder(orderId, orderNumber);
                 }
+            }
+            // Pagination actions
+            else if (button.dataset.pageAction) {
+                const table = button.dataset.pageTable;
+                if (button.dataset.pageAction === 'prev') prevPage(table);
+                else if (button.dataset.pageAction === 'next') nextPage(table);
             }
         });
     }

@@ -1416,10 +1416,17 @@ function editProduct(productId) {
         document.getElementById("product-title").value = product.name;
         document.getElementById("product-category").value =
           product.category_name || "";
-        // Price field removed from UI - use 0
+        // Populate price from first variant
+        const variants = product.variants || [];
         const priceField = document.getElementById("product-price");
         if (priceField) {
-          priceField.value = product.base_price;
+          priceField.value = variants.length > 0 ? variants[0].price : 0;
+        }
+        // Populate stock from total
+        const stockField = document.getElementById("product-stock");
+        if (stockField) {
+          const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+          stockField.value = totalStock;
         }
         document.getElementById("product-variants").value = product.variants
           ? JSON.stringify(product.variants, null, 2)
@@ -1438,8 +1445,10 @@ function editProduct(productId) {
           const category = document
             .getElementById("product-category")
             .value.trim();
-          // Price field removed from UI - use 0
-          const basePrice = 0;
+          const editPriceInput = document.getElementById("product-price");
+          const basePrice = editPriceInput ? parseFloat(editPriceInput.value) || 0 : 0;
+          const editStockInput = document.getElementById("product-stock");
+          const stockValue = editStockInput ? parseInt(editStockInput.value) || 0 : 0;
           let variants = [];
 
           const variantsStr = document
@@ -1457,6 +1466,14 @@ function editProduct(productId) {
           if (!name || !category) {
             alert("Please fill in all required fields");
             return;
+          }
+
+          // Apply price/stock from form fields to variants
+          if (variants.length === 0) {
+            variants = [{ title: "Standard", price: basePrice, stock: stockValue }];
+          } else if (variants.length === 1) {
+            variants[0].price = basePrice;
+            variants[0].stock = stockValue;
           }
 
           try {
@@ -2265,6 +2282,26 @@ function renderVariantsEditor() {
     `,
       )
       .join("");
+
+    // Attach event listeners for variant inputs (CSP-safe)
+    container.querySelectorAll("input[data-variant-idx]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const idx = parseInt(input.dataset.variantIdx);
+        const field = input.dataset.variantField;
+        let value = input.value;
+        if (field === "price") value = parseFloat(value);
+        else if (field === "stock") value = parseInt(value);
+        updateVariant(idx, field, value);
+      });
+    });
+
+    // Attach event listeners for remove buttons
+    container.querySelectorAll("button[data-action='remove-variant']").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.variantIdx);
+        removeVariant(idx);
+      });
+    });
   }
 
   // Update JSON display
@@ -2542,8 +2579,10 @@ function initModals() {
       e.preventDefault();
       const name = document.getElementById("product-title").value.trim();
       const category = document.getElementById("product-category").value.trim();
-      // Price field removed from UI - use 0
-      const basePrice = 0;
+      const priceInput = document.getElementById("product-price");
+      const basePrice = priceInput ? parseFloat(priceInput.value) || 0 : 0;
+      const stockInput = document.getElementById("product-stock");
+      const initialStock = stockInput ? parseInt(stockInput.value) || 0 : 0;
       let variants = [];
 
       const variantsStr = document
@@ -2561,6 +2600,17 @@ function initModals() {
       if (!name || !category) {
         alert("Please fill in all required fields");
         return;
+      }
+
+      // If no variants were created via the editor, create a default variant with price and stock
+      if (variants.length === 0) {
+        variants = [{ title: "Standard", price: basePrice, stock: initialStock }];
+      } else {
+        // Apply price/stock to variants that don't have them set
+        variants.forEach((v) => {
+          if (!v.price && v.price !== 0) v.price = basePrice;
+          if (v.stock === undefined || v.stock === null) v.stock = initialStock;
+        });
       }
 
       try {
