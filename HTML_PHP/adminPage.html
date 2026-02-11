@@ -71,9 +71,9 @@
       </div>
       <div style="display: flex; gap: 0.5rem;">
         <button id="users-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="prevPage('users')">Previous</button>
+          data-page-action="prev" data-page-table="users">Previous</button>
         <button id="users-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="nextPage('users')">Next</button>
+          data-page-action="next" data-page-table="users">Next</button>
       </div>
     </div>
   </div>
@@ -123,9 +123,9 @@
       </div>
       <div style="display: flex; gap: 0.5rem;">
         <button id="employees-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="prevPage('employees')">Previous</button>
+          data-page-action="prev" data-page-table="employees">Previous</button>
         <button id="employees-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="nextPage('employees')">Next</button>
+          data-page-action="next" data-page-table="employees">Next</button>
       </div>
     </div>
   </div>
@@ -180,9 +180,9 @@
       </div>
       <div style="display: flex; gap: 0.5rem;">
         <button id="products-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="prevPage('products')">Previous</button>
+          data-page-action="prev" data-page-table="products">Previous</button>
         <button id="products-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="nextPage('products')">Next</button>
+          data-page-action="next" data-page-table="products">Next</button>
       </div>
     </div>
   </div>
@@ -277,9 +277,9 @@
       </div>
       <div style="display: flex; gap: 0.5rem;">
         <button id="orders-prev-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="prevPage('orders')">Previous</button>
+          data-page-action="prev" data-page-table="orders">Previous</button>
         <button id="orders-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
-          onclick="nextPage('orders')">Next</button>
+          data-page-action="next" data-page-table="orders">Next</button>
       </div>
     </div>
   </div>
@@ -362,6 +362,16 @@
         <select id="product-category" required>
           <option value="">-- Select a Category --</option>
         </select>
+      </div>
+      <div class="form-group">
+        <label>Base Price (₱)</label>
+        <input type="number" id="product-price" min="0" step="100" value="0" placeholder="Enter base price">
+        <small style="color: #666; display: block; margin-top: 0.25rem;">Sets price for the default variant. Use "Edit Prices" for per-variant pricing.</small>
+      </div>
+      <div class="form-group">
+        <label>Initial Stock Count</label>
+        <input type="number" id="product-stock" min="0" value="0" placeholder="Enter stock quantity">
+        <small style="color: #666; display: block; margin-top: 0.25rem;">Sets stock for the default variant. Use "Edit Prices" for per-variant stock.</small>
       </div>
       <div class="form-group" style="display: none;">
         <label>Variants (JSON format)</label>
