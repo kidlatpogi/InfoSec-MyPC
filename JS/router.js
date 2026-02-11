@@ -161,17 +161,18 @@ class Router {
     // Track if we're navigating to a protected page
     this.isProtectedPage = ['admin', 'employee', 'superadmin'].includes(page);
 
-    // For protected pages, replace history and push extra entry to block back button
-    if (pushState && path !== window.location.pathname) {
-      if (this.isProtectedPage) {
-        // Replace current history entry
-        window.history.replaceState({ path }, '', path === '/' ? '/' : path);
-        // Push the same page again to create a barrier
-        window.history.pushState({ path }, '', path === '/' ? '/' : path);
-      } else {
-        window.history.pushState({ path }, '', path === '/' ? '/' : path);
-      }
-    }
+ // Line 164-174, replace with:
+if (pushState && path !== window.location.pathname) {
+  // Reconstruct full URL for browser history
+  const fullPath = path === '/' ? '/InfoSec-MyPC/' : `/InfoSec-MyPC${path}`;
+  
+  if (this.isProtectedPage) {
+    window.history.replaceState({ path }, '', fullPath);
+    window.history.pushState({ path }, '', fullPath);
+  } else {
+    window.history.pushState({ path }, '', fullPath);
+  }
+}
 
     this.loadPage(page);
   }
