@@ -144,15 +144,31 @@ function renderAdminRows(admins, tbody) {
     const row = document.createElement("tr");
     const createdDate = new Date(admin.created_at).toLocaleDateString();
     const roleColor = admin.role === "superadmin" ? "#8b5cf6" : "#3b82f6";
+    const isArchived = admin.is_archived == 1;
+
+    // Add visual indicator for deactivated admins
+    if (isArchived) {
+      row.style.opacity = "0.7";
+      row.style.backgroundColor = "#fff3f3";
+    }
+
+    // Status badge
+    const statusBadge = isArchived
+      ? '<span class="badge" style="background:#dc2626">Deactivated</span>'
+      : `<span class="badge" style="background:#22c55e">Active</span>`;
+
+    // Actions - different buttons for deactivated vs active admins
+    const actionButtons = isArchived
+      ? `<button class="btn btn-sm btn-success" data-action="reactivate" data-admin-id="${admin.id}">Reactivate</button>`
+      : `<button class="btn btn-sm" data-action="edit" data-admin-id="${admin.id}" data-admin-email="${admin.email}">Edit</button>
+         <button class="btn btn-sm btn-danger" data-action="delete" data-admin-id="${admin.id}">Deactivate</button>`;
+
     row.innerHTML = `
       <td>${admin.email}</td>
       <td>${admin.first_name} ${admin.last_name}</td>
-      <td><span class="badge" style="background:${roleColor}">${admin.role}</span></td>
+      <td>${statusBadge}</td>
       <td>${createdDate}</td>
-      <td>
-        <button class="btn btn-sm" data-action="edit" data-admin-id="${admin.id}" data-admin-email="${admin.email}">Edit</button>
-        <button class="btn btn-sm btn-danger" data-action="delete" data-admin-id="${admin.id}">Delete</button>
-      </td>
+      <td>${actionButtons}</td>
     `;
     tbody.appendChild(row);
   });
@@ -239,6 +255,25 @@ function renderProductRows(products, tbody) {
       (sum, v) => sum + parseInt(v.stock || 0),
       0,
     );
+    const isDeleted = product.active == 0;
+
+    // Add visual indicator for deleted products
+    if (isDeleted) {
+      row.style.opacity = "0.7";
+      row.style.backgroundColor = "#fff3f3";
+    }
+
+    // Status display
+    const statusBadge = isDeleted
+      ? '<span class="badge" style="background:#dc2626;font-size:0.75rem;">Deleted</span>'
+      : '<span class="badge" style="background:#22c55e;font-size:0.75rem;">Active</span>';
+
+    // Actions - different for deleted vs active
+    const actionButtons = isDeleted
+      ? `<button class="btn btn-sm btn-success" data-action="restore" data-product-id="${product.id}">Restore</button>`
+      : `<button class="btn btn-sm" data-action="view" data-product-id="${product.id}">View</button>
+        <button class="btn btn-sm" data-action="edit" data-product-id="${product.id}">Edit</button>
+        <button class="btn btn-sm btn-danger" data-action="delete" data-product-id="${product.id}">Delete</button>`;
 
     row.innerHTML = `
       <td>${product.name}</td>
@@ -246,11 +281,8 @@ function renderProductRows(products, tbody) {
       <td>${formatPHP(minPrice)}</td>
       <td>${variants.length}</td>
       <td>${totalStock}</td>
-      <td>
-        <button class="btn btn-sm" data-action="view" data-product-id="${product.id}">View</button>
-        <button class="btn btn-sm" data-action="edit" data-product-id="${product.id}">Edit</button>
-        <button class="btn btn-sm btn-danger" data-action="delete" data-product-id="${product.id}">Delete</button>
-      </td>
+      <td>${statusBadge}</td>
+      <td>${actionButtons}</td>
     `;
     tbody.appendChild(row);
   });
@@ -580,6 +612,7 @@ function initEventDelegation() {
         const email = button.dataset.adminEmail;
         editAdmin(adminId, email);
       } else if (action === "delete") deleteAdmin(adminId);
+      else if (action === "reactivate") reactivateAdmin(adminId);
     }
     // User actions
     else if (button.dataset.userId) {
@@ -605,6 +638,7 @@ function initEventDelegation() {
       if (action === "view") viewProduct(productId);
       else if (action === "edit") editProduct(productId);
       else if (action === "delete") deleteProduct(productId);
+      else if (action === "restore") restoreProduct(productId);
     }
     // Order actions
     else if (button.dataset.orderId) {
@@ -664,6 +698,14 @@ function initSuperadminSearch() {
     });
   }
 
+  // Admin status filter
+  const adminStatusFilter = document.getElementById("admin-status-filter");
+  if (adminStatusFilter) {
+    adminStatusFilter.addEventListener("change", () => {
+      loadAdmins();
+    });
+  }
+
   // User search
   const userSearch = document.getElementById("user-search");
   if (userSearch) {
@@ -703,6 +745,14 @@ function initSuperadminSearch() {
   if (productSearch) {
     productSearch.addEventListener("input", () => {
       filterTable("products-tbody");
+    });
+  }
+
+  // Product status filter
+  const productStatusFilter = document.getElementById("product-status-filter");
+  if (productStatusFilter) {
+    productStatusFilter.addEventListener("change", () => {
+      loadProducts();
     });
   }
 
@@ -843,8 +893,12 @@ async function loadAdmins() {
   const tbody = document.getElementById("admins-tbody");
   if (!tbody) return;
 
+  // Get filter value from dropdown
+  const filterSelect = document.getElementById("admin-status-filter");
+  const includeArchived = filterSelect ? parseInt(filterSelect.value) : 0;
+
   try {
-    const data = await ManagementAPI.getAdmins();
+    const data = await ManagementAPI.getAdmins(includeArchived);
 
     if (!data.admins || data.admins.length === 0) {
       paginationState.admins.allData = [];
@@ -986,18 +1040,22 @@ async function loadProducts() {
     return;
   }
 
+  // Get product status filter
+  const statusFilter = document.getElementById("product-status-filter");
+  const productStatus = statusFilter ? statusFilter.value : "1";
+
   tbody.innerHTML =
-    '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
   try {
-    const data = await ProductsAPI.getAllProducts();
+    const data = await ProductsAPI.getAllProducts(productStatus);
 
     if (!data.products || data.products.length === 0) {
       paginationState.products.allData = [];
       paginationState.products.totalItems = 0;
       paginationState.products.currentPage = 1;
       tbody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
+        '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#666;">No products found</td></tr>';
       return;
     }
 
@@ -1402,7 +1460,7 @@ async function deleteProduct(productId) {
   if (!verified) return;
 
   showConfirmDialog(
-    "Are you sure you want to delete this product? This action cannot be undone.",
+    "Are you sure you want to delete this product?",
     async () => {
       try {
         await ProductsAPI.deleteProduct(productId);
@@ -1410,6 +1468,24 @@ async function deleteProduct(productId) {
         await loadProducts();
       } catch (error) {
         alert("Error deleting product: " + error.message);
+      }
+    },
+  );
+}
+
+async function restoreProduct(productId) {
+  const verified = await verifyPassword();
+  if (!verified) return;
+
+  showConfirmDialog(
+    "Are you sure you want to restore this product? It will become active again.",
+    async () => {
+      try {
+        await ProductsAPI.restoreProduct(productId);
+        alert("Product restored successfully");
+        await loadProducts();
+      } catch (error) {
+        alert("Error restoring product: " + error.message);
       }
     },
   );
@@ -1625,15 +1701,33 @@ async function deleteAdmin(adminId) {
   const verified = await verifyPassword();
   if (!verified) return;
 
-  showConfirmDialog("Are you sure you want to delete this admin?", async () => {
+  showConfirmDialog("Are you sure you want to deactivate this admin?", async () => {
     try {
       await ManagementAPI.deleteAdmin(adminId);
-      alert("Admin deleted successfully");
+      alert("Admin deactivated successfully");
       loadAdmins();
     } catch (error) {
-      alert("Error deleting admin: " + error.message);
+      alert("Error deactivating admin: " + error.message);
     }
   });
+}
+
+async function reactivateAdmin(adminId) {
+  const verified = await verifyPassword();
+  if (!verified) return;
+
+  showConfirmDialog(
+    "Are you sure you want to reactivate this admin? They will be able to log in again.",
+    async () => {
+      try {
+        await ManagementAPI.reactivateAdmin(adminId);
+        alert("Admin reactivated successfully");
+        loadAdmins();
+      } catch (error) {
+        alert("Error reactivating admin: " + error.message);
+      }
+    },
+  );
 }
 
 // ========================================

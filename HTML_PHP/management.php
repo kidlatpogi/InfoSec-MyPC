@@ -72,11 +72,28 @@ try {
             sendError('Unauthorized', 403);
         }
 
-        $admins = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, role, created_at 
-             FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
-            [$user_id]
-        );
+        // Optional filter: include_archived=0 active only, 1 all, 2 deactivated only
+        $includeArchived = isset($_GET['include_archived']) ? (int) $_GET['include_archived'] : 0;
+
+        if ($includeArchived === 2) {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? AND is_archived = 1 ORDER BY archived_at DESC",
+                [$user_id]
+            );
+        } elseif ($includeArchived === 1) {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
+                [$user_id]
+            );
+        } else {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? AND (is_archived = 0 OR is_archived IS NULL) ORDER BY created_at DESC",
+                [$user_id]
+            );
+        }
 
         sendSuccess(['admins' => $admins]);
     }
@@ -181,7 +198,7 @@ try {
         sendSuccess([], 'Admin updated successfully');
     }
 
-    // Delete admin
+    // Delete admin (soft delete - archive)
     elseif ($action === 'deleteAdmin') {
         if ($current_user['role'] !== 'superadmin') {
             sendError('Unauthorized', 403);
@@ -197,12 +214,39 @@ try {
         }
 
         if ($admin_id == $user_id) {
-            sendError('Cannot delete yourself');
+            sendError('Cannot deactivate yourself');
         }
 
-        $db->query("DELETE FROM users WHERE id = ? AND role IN ('admin', 'superadmin')", [$admin_id]);
-        logAuditEvent('DELETE', 'admin', $admin_id, $user_id, ['action' => 'delete_admin']);
-        sendSuccess([], 'Admin deleted successfully');
+        // Soft delete - archive the admin
+        $db->query(
+            "UPDATE users SET is_archived = 1, archived_at = NOW() WHERE id = ? AND role IN ('admin', 'superadmin')",
+            [$admin_id]
+        );
+        logAuditEvent('ARCHIVE', 'admin', $admin_id, $user_id, ['action' => 'deactivate_admin']);
+        sendSuccess([], 'Admin deactivated successfully');
+    }
+
+    // Reactivate admin (un-archive)
+    elseif ($action === 'reactivateAdmin') {
+        if ($current_user['role'] !== 'superadmin') {
+            sendError('Unauthorized', 403);
+        }
+
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+
+        $admin_id = $_POST['admin_id'] ?? null;
+        if (!$admin_id) {
+            sendError('Admin ID required');
+        }
+
+        $db->query(
+            "UPDATE users SET is_archived = 0, archived_at = NULL WHERE id = ? AND role IN ('admin', 'superadmin')",
+            [$admin_id]
+        );
+        logAuditEvent('REACTIVATE', 'admin', $admin_id, $user_id, ['action' => 'reactivate_admin']);
+        sendSuccess([], 'Admin reactivated successfully');
     }
 
     // ========================================
@@ -795,11 +839,23 @@ try {
             sendError('Unauthorized', 403);
         }
 
+        // Optional filter: product_status = 1 (active), 0 (deleted), 'all' (everything)
+        $productStatus = isset($_GET['product_status']) ? $_GET['product_status'] : '1';
+
+        $whereClause = '';
+        if ($productStatus === '0') {
+            $whereClause = 'WHERE p.active = 0';
+        } elseif ($productStatus === 'all') {
+            $whereClause = '';
+        } else {
+            $whereClause = 'WHERE p.active = 1';
+        }
+
         $products = $db->fetchAll(
-            "SELECT p.id, p.name, p.slug, p.category_id, c.name as category_name, p.created_at
+            "SELECT p.id, p.name, p.slug, p.category_id, p.active, c.name as category_name, p.created_at
              FROM products p
              LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.active = 1
+             $whereClause
              ORDER BY p.created_at DESC"
         );
 
@@ -1024,6 +1080,26 @@ try {
         logAuditEvent('DELETE', 'product', $productId, $current_user['id'], ['product_id' => $productId]);
 
         sendSuccess(['message' => 'Product deleted']);
+    }
+
+    // Restore product (set active = 1)
+    elseif ($action === 'restoreProduct') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+
+        $productId = $_GET['product_id'] ?? $_POST['product_id'] ?? null;
+
+        if (!$productId) {
+            sendError('Product ID is required');
+        }
+
+        $db->execute("UPDATE products SET active = 1 WHERE id = ?", [$productId]);
+
+        // Log audit
+        logAuditEvent('RESTORE', 'product', $productId, $current_user['id'], ['product_id' => $productId]);
+
+        sendSuccess(['message' => 'Product restored successfully']);
     }
 
     // ========================================
