@@ -83,6 +83,8 @@
     min-height: 48px;
     display: flex;
     align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .search-filter input {

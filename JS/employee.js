@@ -117,6 +117,25 @@ function renderProductRows(products, tbody) {
         const variants = product.variants || [];
         const minPrice = variants.length > 0 ? Math.min(...variants.map(v => parseFloat(v.price))) : 0;
         const totalStock = variants.reduce((sum, v) => sum + parseInt(v.stock || 0), 0);
+        const isDeleted = product.active == 0;
+
+        // Add visual indicator for deleted products
+        if (isDeleted) {
+            row.style.opacity = '0.7';
+            row.style.backgroundColor = '#fff3f3';
+        }
+
+        // Status display
+        const statusBadge = isDeleted
+            ? '<span class="badge" style="background:#dc2626;font-size:0.75rem;">Deleted</span>'
+            : '<span class="badge" style="background:#22c55e;font-size:0.75rem;">Active</span>';
+
+        // Actions - different for deleted vs active
+        const actionButtons = isDeleted
+            ? `<button class="btn btn-sm btn-success" onclick="restoreProduct(${product.id})">Restore</button>`
+            : `<button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
+                <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>`;
 
         row.innerHTML = `
             <td>${product.name}</td>
@@ -124,11 +143,8 @@ function renderProductRows(products, tbody) {
             <td>${formatPHP(minPrice)}</td>
             <td>${variants.length}</td>
             <td>${totalStock}</td>
-            <td>
-                <button class="btn btn-sm" onclick="viewProduct(${product.id})">View</button>
-                <button class="btn btn-sm" onclick="editProduct(${product.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
-            </td>
+            <td>${statusBadge}</td>
+            <td>${actionButtons}</td>
         `;
         tbody.appendChild(row);
     });
@@ -389,6 +405,14 @@ function initEmployeeSearch() {
         });
     }
 
+    // Product status filter
+    const productStatusFilter = document.getElementById('product-status-filter');
+    if (productStatusFilter) {
+        productStatusFilter.addEventListener('change', () => {
+            loadProducts();
+        });
+    }
+
     // Order search
     const orderSearch = document.getElementById('order-search');
     if (orderSearch) {
@@ -495,10 +519,12 @@ async function loadProducts() {
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
 
     try {
-        const data = await ProductsAPI.getAllProducts();
+        const statusFilter = document.getElementById('product-status-filter');
+        const productStatus = statusFilter ? statusFilter.value : '1';
+        const data = await ProductsAPI.getAllProducts(productStatus);
 
         // Store all data in pagination state
         paginationState.products.allData = data.products || [];
@@ -521,7 +547,7 @@ async function loadProducts() {
     } catch (error) {
         console.error('Failed to load products:', error);
         const errorMsg = error.message || 'Unknown error';
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}</td></tr>`;
     }
 }
 
@@ -931,6 +957,21 @@ async function deleteProduct(productId) {
             loadProducts();
         } catch (error) {
             alert('Error deleting product: ' + error.message);
+        }
+    });
+}
+
+async function restoreProduct(productId) {
+    const verified = await verifyPassword();
+    if (!verified) return;
+
+    showConfirmDialog('Are you sure you want to restore this product? It will become active again.', async () => {
+        try {
+            await ProductsAPI.restoreProduct(productId);
+            alert('Product restored successfully');
+            loadProducts();
+        } catch (error) {
+            alert('Error restoring product: ' + error.message);
         }
     });
 }
@@ -1556,6 +1597,7 @@ window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.editStock = editStock;
 window.deleteProduct = deleteProduct;
+window.restoreProduct = restoreProduct;
 window.openVariantsEditor = openVariantsEditor;
 window.addVariant = addVariant;
 window.removeVariant = removeVariant;
