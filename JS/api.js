@@ -172,8 +172,8 @@ const ProductsAPI = {
   },
 
   // Get all products (for admin/employee dashboards)
-  async getAllProducts() {
-    return await apiCall("management.php?action=getProducts");
+  async getAllProducts(productStatus = "1") {
+    return await apiCall(`management.php?action=getProducts&product_status=${productStatus}`);
   },
 
   // Create new product
@@ -215,6 +215,18 @@ const ProductsAPI = {
         method: "POST",
       },
     );
+  },
+
+  // Restore product
+  async restoreProduct(productId) {
+    const body = toFormData({
+      action: "restoreProduct",
+      product_id: productId,
+    });
+    return await apiCall("management.php", {
+      method: "POST",
+      body,
+    });
   },
 
   // Update product stock
@@ -429,8 +441,10 @@ const OrdersAPI = {
 
 const ManagementAPI = {
   // ===== ADMINS =====
-  async getAdmins() {
-    return await apiCall("management.php?action=getAdmins");
+  async getAdmins(includeArchived = 0) {
+    return await apiCall(
+      `management.php?action=getAdmins&include_archived=${includeArchived}`,
+    );
   },
 
   async createAdmin(email, password, firstName, lastName, phone = "") {
@@ -463,6 +477,17 @@ const ManagementAPI = {
   async deleteAdmin(adminId) {
     const body = toFormData({
       action: "deleteAdmin",
+      admin_id: adminId,
+    });
+    return await apiCall("management.php", {
+      method: "POST",
+      body,
+    });
+  },
+
+  async reactivateAdmin(adminId) {
+    const body = toFormData({
+      action: "reactivateAdmin",
       admin_id: adminId,
     });
     return await apiCall("management.php", {

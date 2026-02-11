@@ -27,7 +27,6 @@
     <button class="tab-btn" data-tab="products">Manage Products</button>
     <button class="tab-btn" data-tab="orders">Manage Orders</button>
     <button class="tab-btn" data-tab="audit">Audit Logs</button>
-    <button class="tab-btn" data-tab="profile">My Profile</button>
   </div>
 
   <!-- Sales Dashboard Tab -->
@@ -310,6 +309,11 @@
 
     <div class="search-filter" style="margin-left: 1rem">
       <input type="text" id="admin-search" placeholder="Search admins by email or name..." />
+      <select id="admin-status-filter" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd">
+        <option value="0">Active Admins</option>
+        <option value="1">All Admins</option>
+        <option value="2">Deactivated Only</option>
+      </select>
     </div>
 
     <div class="table-wrapper">
@@ -485,6 +489,11 @@
       <select id="product-category-filter" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd">
         <option value="">All Categories</option>
       </select>
+      <select id="product-status-filter" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd">
+        <option value="1">Active Products</option>
+        <option value="all">All Products</option>
+        <option value="0">Deleted Only</option>
+      </select>
     </div>
 
     <div class="table-wrapper">
@@ -496,12 +505,13 @@
             <th>Price</th>
             <th>Variants</th>
             <th>Stock</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="products-tbody">
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2rem">
+            <td colspan="7" style="text-align: center; padding: 2rem">
               Loading products...
             </td>
           </tr>
@@ -731,28 +741,7 @@
       </div>
     </div>
 
-    <!-- Audit Info Banner -->
-    <div style="
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      ">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
-        stroke-width="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-      <span style="color: #166534; font-size: 0.9rem">
-        <strong>Read-Only Audit Trail:</strong> This log is tamper-proof and
-        cannot be modified. All admin and superadmin actions are automatically
-        recorded.
-      </span>
-    </div>
+
 
     <!-- Filters -->
     <div class="search-filter" style="
@@ -772,7 +761,8 @@
         <option value="CREATE">Create</option>
         <option value="UPDATE">Update</option>
         <option value="DELETE">Delete</option>
-        <option value="ARCHIVE">Archive</option>
+        <option value="ARCHIVE">Deactivate</option>
+        <option value="RESTORE">Restore</option>
         <option value="VIEW">View</option>
         <option value="SECURITY_EVENT">Security Event</option>
       </select>
@@ -781,15 +771,16 @@
         <option value="AUTHENTICATION">Authentication</option>
         <option value="USER_MANAGEMENT">User Management</option>
         <option value="ADMIN_MANAGEMENT">Admin Management</option>
+        <option value="EMPLOYEE_MANAGEMENT">Employee Management</option>
         <option value="PRODUCT_MANAGEMENT">Product Management</option>
         <option value="ORDER_MANAGEMENT">Order Management</option>
         <option value="SYSTEM">System</option>
         <option value="SECURITY">Security</option>
       </select>
-      <input type="date" id="audit-date-from" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd"
-        placeholder="From Date" />
-      <input type="date" id="audit-date-to" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd"
-        placeholder="To Date" />
+      <label for="audit-date-from" style="font-size: 0.85rem; font-weight: 600; color: #333;">From:</label>
+      <input type="date" id="audit-date-from" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd" />
+      <label for="audit-date-to" style="font-size: 0.85rem; font-weight: 600; color: #333;">To:</label>
+      <input type="date" id="audit-date-to" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd" />
     </div>
 
     <div class="table-wrapper">
@@ -917,57 +908,6 @@
     </div>
   </div>
 
-  <!-- Profile Tab -->
-  <div id="profile-tab" class="tab-content">
-    <div class="tab-header">
-      <h2>My Profile</h2>
-    </div>
-
-    <div class="form-wrapper" style="max-width: 600px; margin: 2rem auto">
-      <form id="profile-edit-form" novalidate>
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="profile-full-name" required />
-        </div>
-
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="profile-email" readonly style="background-color: #f5f5f5; cursor: not-allowed"
-            maxlength="100" />
-        </div>
-
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" id="profile-phone" pattern="[0-9]{11}" maxlength="11" minlength="11"
-            placeholder="09123456789" title="Phone number must be exactly 11 digits" />
-        </div>
-
-        <h3 style="margin-top: 2rem; margin-bottom: 1rem">Change Password</h3>
-
-        <div class="form-group">
-          <label>Current Password</label>
-          <input type="password" id="profile-current-password" />
-        </div>
-
-        <div class="form-group">
-          <label>New Password (optional)</label>
-          <input type="password" id="profile-new-password" />
-        </div>
-
-        <div class="form-group">
-          <label>Confirm New Password</label>
-          <input type="password" id="profile-confirm-password" />
-        </div>
-
-        <div class="form-actions" style="margin-top: 2rem">
-          <button type="button" class="secondary" id="reset-profile-btn">
-            Cancel
-          </button>
-          <button type="submit" class="primary">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </main>
 
 <!-- Add/Edit Admin Modal -->
@@ -1162,20 +1102,20 @@
   </div>
 </div>
 
-<!-- Confirm Delete Modal -->
+<!-- Confirm Deactivation Modal -->
 <div id="confirm-modal" class="modal">
   <div class="modal-content modal-small">
     <div class="modal-header">
-      <h2>Confirm Delete</h2>
+      <h2>Confirm Deactivation</h2>
       <button class="modal-close">&times;</button>
     </div>
-    <p id="confirm-message">Are you sure you want to delete this item?</p>
+    <p id="confirm-message">Are you sure you want to deactivate this user? They will no longer be able to log in.</p>
     <div class="form-actions">
       <button type="button" class="secondary" data-action="cancel">
         Cancel
       </button>
-      <button type="button" id="confirm-delete-btn" class="danger">
-        Delete
+      <button type="button" id="confirm-delete-btn" class="btn btn-danger">
+        Deactivate
       </button>
     </div>
   </div>

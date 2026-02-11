@@ -161,10 +161,66 @@ function logAction($user_id, $role, $action, $details = null) {
 function logAuditEvent($action, $entityType, $entityId, $userId, $details = null) {
     try {
         $db = getDB();
+
+        // Also log to audit_trail table for the unified audit view
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 500);
+
+        // Determine actor info from session
+        $actorEmail = $_SESSION['admin_email'] ?? $_SESSION['user_email'] ?? 'unknown';
+        $actorRole = $_SESSION['admin_role'] ?? $_SESSION['user_role'] ?? 'admin';
+        // Ensure role is valid for the ENUM
+        if (!in_array($actorRole, ['admin', 'superadmin'])) {
+            $actorRole = 'admin';
+        }
+
+        // Map entity type to action category
+        $categoryMap = [
+            'user' => 'USER_MANAGEMENT',
+            'admin' => 'ADMIN_MANAGEMENT',
+            'employee' => 'EMPLOYEE_MANAGEMENT',
+            'product' => 'PRODUCT_MANAGEMENT',
+            'order' => 'ORDER_MANAGEMENT',
+            'account' => 'SECURITY',
+            'system' => 'SYSTEM'
+        ];
+        $actionCategory = $categoryMap[strtolower($entityType)] ?? 'SYSTEM';
+
+        // Build description from action + entity type + details
+        $description = ucfirst(strtolower($action)) . ' ' . $entityType;
+        if ($details) {
+            if (is_array($details)) {
+                if (isset($details['email'])) {
+                    $description .= ': ' . $details['email'];
+                } elseif (isset($details['name'])) {
+                    $description .= ': ' . $details['name'];
+                } elseif (isset($details['action'])) {
+                    $description .= ' (' . $details['action'] . ')';
+                }
+            }
+        }
+
+        // Map action to valid ENUM value
+        $validActions = ['LOGIN','LOGOUT','LOGIN_FAILED','ACCOUNT_LOCKED','CREATE','UPDATE','DELETE','ARCHIVE','RESTORE','VIEW','EXPORT','IMPORT','PASSWORD_CHANGE','PASSWORD_RESET','PERMISSION_CHANGE','ROLE_CHANGE','SYSTEM_CONFIG','SECURITY_EVENT'];
+        $actionType = strtoupper($action);
+        if ($actionType === 'REACTIVATE') $actionType = 'RESTORE';
+        if ($actionType === 'UNLOCK') $actionType = 'SECURITY_EVENT';
+        if (!in_array($actionType, $validActions)) {
+            $actionType = 'VIEW'; // fallback
+        }
+
         $db->insert(
-            "INSERT INTO audit_logs (action, entity_type, entity_id, user_id, details, created_at) 
-             VALUES (?, ?, ?, ?, ?, NOW())",
-            [$action, $entityType, $entityId, $userId, $details ? json_encode($details) : null]
+            "INSERT INTO audit_trail (
+                actor_id, actor_email, actor_role, actor_ip, actor_user_agent,
+                action_type, action_category, target_type, target_id, target_identifier,
+                description, session_id, request_uri
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $userId, $actorEmail, $actorRole, $ip, $ua,
+                $actionType, $actionCategory, $entityType, $entityId,
+                $details['email'] ?? $details['name'] ?? null,
+                $description, session_id(), $_SERVER['REQUEST_URI'] ?? ''
+            ]
         );
     } catch (Exception $e) {
         error_log("Audit logging skipped: " . $e->getMessage());

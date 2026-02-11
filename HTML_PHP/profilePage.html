@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - MyPC Store</title>
-    <link rel="stylesheet" href="/CSS/styles.css?v=1">
-    <link rel="stylesheet" href="/CSS/order-modal.css">
+    <link rel="stylesheet" href="/InfoSec-MyPC/CSS/styles.css?v=1">
+    <link rel="stylesheet" href="/InfoSec-MyPC/CSS/order-modal.css">
 </head>
 
 <body>
@@ -156,7 +156,7 @@
                                 <div style="position:relative;">
                                     <input type="password" id="current-password" placeholder="Enter current password"
                                         required>
-                                    <svg onclick="togglePassword('current-password')"
+                                    <svg class="toggle-password-icon" data-field="current-password"
                                         style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:20px;height:20px;"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -170,7 +170,7 @@
                                 <div style="position:relative;">
                                     <input type="password" id="new-password"
                                         placeholder="Leave blank to keep current password">
-                                    <svg onclick="togglePassword('new-password')"
+                                    <svg class="toggle-password-icon" data-field="new-password"
                                         style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:20px;height:20px;"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -183,7 +183,7 @@
                                 <label>Confirm New Password</label>
                                 <div style="position:relative;">
                                     <input type="password" id="confirm-password" placeholder="Confirm new password">
-                                    <svg onclick="togglePassword('confirm-password')"
+                                    <svg class="toggle-password-icon" data-field="confirm-password"
                                         style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:20px;height:20px;"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -310,8 +310,8 @@
                                 <h3 style="color: #d32f2f;">Delete Account</h3>
                                 <p>Permanently deactivate your account</p>
                             </div>
-                            <button class="btn" style="color: #d32f2f; border-color: #d32f2f;"
-                                onclick="deleteMyAccount()">Delete</button>
+                            <button class="btn delete-account-btn" style="color: #d32f2f; border-color: #d32f2f;"
+                                >Delete</button>
                         </div>
                     </div>
                 </section>
@@ -385,8 +385,8 @@
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="address-phone" required pattern="[0-9]{11}" maxlength="11" minlength="11"
-                        placeholder="09123456789" title="Phone number must be exactly 11 digits" />
+                    <input type="tel" id="address-phone" required pattern="^09[0-9]{9}$" maxlength="11" minlength="11"
+                        placeholder="09123456789" title="Phone number must start with 09 and be exactly 11 digits" />
                 </div>
                 <div class="form-group">
                     <label>Address Line 1</label>
@@ -398,11 +398,13 @@
                 </div>
                 <div class="form-group">
                     <label>City</label>
-                    <input type="text" id="address-city" required />
+                    <input type="text" id="address-city" required pattern="[A-Za-z\s]+"
+                        title="City must contain only letters" placeholder="e.g., Calamba" />
                 </div>
                 <div class="form-group">
                     <label>Postal Code</label>
-                    <input type="text" id="address-postal" required />
+                    <input type="text" id="address-postal" required maxlength="4" minlength="4" pattern="[0-9]{4}"
+                        title="Postal code must be exactly 4 digits" placeholder="e.g., 4118" />
                 </div>
                 <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
                     <input type="checkbox" id="address-default" />

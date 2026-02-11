@@ -396,7 +396,7 @@ async function renderProducts() {
       .join('');
 
     el.innerHTML = `
-      <img src="${escapeHtml(p.img)}" alt="${escapeHtml(
+      <img src="${escapeHtml(ensureImageUrl(p.img))}" alt="${escapeHtml(
       p.title
     )}" loading="lazy">
       <h3>${escapeHtml(p.title)}</h3>
@@ -649,7 +649,7 @@ async function renderCartItems() {
         ensureImageUrl(item.image_url)
       )}" alt="${escapeHtml(
       item.name
-    )}" onerror="this.src='/serve-image.php?path=%2Fassets%2Fplaceholder.jpg'">
+    )}" data-fallback="/InfoSec-MyPC/assets/placeholder.jpg" class="cart-item-img">>
       <div class="cart-details">
         <div class="cart-title">${escapeHtml(item.name)}${variantText}</div>
         <div class="cart-meta">${formatPHP(item.unit_price)} × ${
@@ -692,6 +692,14 @@ async function renderCartItems() {
 
   // Calculate and display total for only selected items
   updateCartTotal();
+
+  // Add image error handlers for cart items
+  const cartImages = itemsEl.querySelectorAll('.cart-item-img[data-fallback]');
+  cartImages.forEach(img => {
+    img.addEventListener('error', function() {
+      this.src = this.getAttribute('data-fallback');
+    });
+  });
 }
 
 function updateCartTotal() {

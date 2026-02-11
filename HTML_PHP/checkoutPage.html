@@ -51,6 +51,14 @@
             <div class="checkout-form">
                 <h2>Shipping Details</h2>
                 <form id="checkout-form" novalidate>
+                    <!-- Saved Address Selector -->
+                    <div class="form-group">
+                        <label>Saved Address</label>
+                        <select id="saved-address-select" style="width:100%;padding:0.6rem;border:1px solid #ddd;border-radius:6px;font-size:0.95rem;">
+                            <option value="">-- Enter address manually --</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="fullname" placeholder="John Doe" required>
@@ -58,13 +66,14 @@
 
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" id="email" placeholder="john@example.com" required maxlength="100">
+                        <input type="email" id="email" placeholder="john@example.com" required maxlength="100"
+                            title="Please enter a valid email address">
                     </div>
 
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="tel" id="phone" placeholder="09123456789" required pattern="[0-9]{11}"
-                            maxlength="11" minlength="11" title="Phone number must be exactly 11 digits">
+                        <input type="tel" id="phone" placeholder="09123456789" required pattern="^09[0-9]{9}$"
+                            maxlength="11" minlength="11" title="Phone number must start with 09 and be exactly 11 digits">
                     </div>
 
                     <div class="form-group">
@@ -75,11 +84,13 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>City</label>
-                            <input type="text" id="city" placeholder="Manila" required>
+                            <input type="text" id="city" placeholder="e.g., Calamba" required pattern="[A-Za-z\s]+"
+                                title="City must contain only letters">
                         </div>
                         <div class="form-group">
                             <label>Postal Code</label>
-                            <input type="text" id="postal" placeholder="1000" required>
+                            <input type="text" id="postal" placeholder="e.g., 4118" required maxlength="4" minlength="4"
+                                pattern="[0-9]{4}" title="Postal code must be exactly 4 digits">
                         </div>
                     </div>
 

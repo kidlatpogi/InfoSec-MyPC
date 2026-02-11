@@ -142,6 +142,11 @@
       <select id="product-category-filter" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
         <option value="">All Categories</option>
       </select>
+      <select id="product-status-filter" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="1">Active Products</option>
+        <option value="all">All Products</option>
+        <option value="0">Deleted Only</option>
+      </select>
     </div>
 
     <div class="table-wrapper">
@@ -153,12 +158,13 @@
             <th>Price</th>
             <th>Variants</th>
             <th>Stock</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="products-tbody">
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2rem">
+            <td colspan="7" style="text-align: center; padding: 2rem">
               Loading products...
             </td>
           </tr>
@@ -275,60 +281,6 @@
         <button id="orders-next-btn" class="btn btn-sm" style="padding: 0.4rem 1rem;"
           onclick="nextPage('orders')">Next</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Profile Tab -->
-  <div id="profile-tab" class="tab-content" style="display: none;">
-    <div class="tab-header">
-      <h2>My Profile</h2>
-    </div>
-
-    <div class="form-wrapper" style="max-width: 600px; margin: 2rem auto;">
-      <form id="profile-edit-form" novalidate>
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="profile-full-name" required />
-        </div>
-
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="profile-email" readonly style="background-color: #f5f5f5; cursor: not-allowed;"
-            maxlength="100" />
-        </div>
-
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" id="profile-phone" pattern="[0-9]{11}" maxlength="11" minlength="11"
-            placeholder="09123456789" title="Phone number must be exactly 11 digits" />
-        </div>
-
-        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Change Password</h3>
-
-        <div class="form-group">
-          <label>Current Password</label>
-          <input type="password" id="profile-current-password" />
-        </div>
-
-        <div class="form-group">
-          <label>New Password (optional)</label>
-          <input type="password" id="profile-new-password" />
-        </div>
-
-        <div class="form-group">
-          <label>Confirm New Password</label>
-          <input type="password" id="profile-confirm-password" />
-        </div>
-
-        <div class="form-actions" style="margin-top: 2rem;">
-          <button type="button" class="secondary" onclick="resetProfileForm()">
-            Cancel
-          </button>
-          <button type="submit" class="primary">
-            Save Changes
-          </button>
-        </div>
-      </form>
     </div>
   </div>
 </main>
@@ -448,20 +400,20 @@
   </div>
 </div>
 
-<!-- Confirm Delete Modal -->
+<!-- Confirm Deactivation Modal -->
 <div id="confirm-modal" class="modal">
   <div class="modal-content modal-small">
     <div class="modal-header">
-      <h2>Confirm Delete</h2>
+      <h2>Confirm Deactivation</h2>
       <button class="modal-close">&times;</button>
     </div>
-    <p id="confirm-message">Are you sure you want to delete this item?</p>
+    <p id="confirm-message">Are you sure you want to deactivate this item?</p>
     <div class="form-actions">
       <button type="button" class="secondary" data-action="cancel">
         Cancel
       </button>
-      <button type="button" id="confirm-delete-btn" class="danger">
-        Delete
+      <button type="button" id="confirm-delete-btn" class="btn btn-danger">
+        Deactivate
       </button>
     </div>
   </div>

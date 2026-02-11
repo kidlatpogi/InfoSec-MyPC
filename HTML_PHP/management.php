@@ -72,13 +72,30 @@ try {
             sendError('Unauthorized', 403);
         }
 
-        $admins = $db->fetchAll(
-            "SELECT id, email, first_name, last_name, phone, role, created_at 
-             FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
-            [$user_id]
-        );
+        // Optional filter: include_archived=0 active only, 1 all, 2 deactivated only
+        $includeArchived = isset($_GET['include_archived']) ? (int) $_GET['include_archived'] : 0;
 
-        sendSuccess(['admins' => $admins]);
+        if ($includeArchived === 2) {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? AND is_archived = 1 ORDER BY archived_at DESC",
+                [$user_id]
+            );
+        } elseif ($includeArchived === 1) {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? ORDER BY created_at DESC",
+                [$user_id]
+            );
+        } else {
+            $admins = $db->fetchAll(
+                "SELECT id, email, first_name, last_name, phone, role, is_archived, archived_at, created_at 
+                 FROM users WHERE role IN ('admin', 'superadmin') AND id != ? AND (is_archived = 0 OR is_archived IS NULL) ORDER BY created_at DESC",
+                [$user_id]
+            );
+        }
+
+        sendSuccess(['admins' => $admins], null, true);
     }
 
     // Create new admin (superadmin only)
@@ -181,7 +198,7 @@ try {
         sendSuccess([], 'Admin updated successfully');
     }
 
-    // Delete admin
+    // Delete admin (soft delete - archive)
     elseif ($action === 'deleteAdmin') {
         if ($current_user['role'] !== 'superadmin') {
             sendError('Unauthorized', 403);
@@ -197,12 +214,39 @@ try {
         }
 
         if ($admin_id == $user_id) {
-            sendError('Cannot delete yourself');
+            sendError('Cannot deactivate yourself');
         }
 
-        $db->query("DELETE FROM users WHERE id = ? AND role IN ('admin', 'superadmin')", [$admin_id]);
-        logAuditEvent('DELETE', 'admin', $admin_id, $user_id, ['action' => 'delete_admin']);
-        sendSuccess([], 'Admin deleted successfully');
+        // Soft delete - archive the admin
+        $db->query(
+            "UPDATE users SET is_archived = 1, archived_at = NOW() WHERE id = ? AND role IN ('admin', 'superadmin')",
+            [$admin_id]
+        );
+        logAuditEvent('ARCHIVE', 'admin', $admin_id, $user_id, ['action' => 'deactivate_admin']);
+        sendSuccess([], 'Admin deactivated successfully');
+    }
+
+    // Reactivate admin (un-archive)
+    elseif ($action === 'reactivateAdmin') {
+        if ($current_user['role'] !== 'superadmin') {
+            sendError('Unauthorized', 403);
+        }
+
+        if ($method !== 'POST') {
+            sendError('Invalid request method', 400);
+        }
+
+        $admin_id = $_POST['admin_id'] ?? null;
+        if (!$admin_id) {
+            sendError('Admin ID required');
+        }
+
+        $db->query(
+            "UPDATE users SET is_archived = 0, archived_at = NULL WHERE id = ? AND role IN ('admin', 'superadmin')",
+            [$admin_id]
+        );
+        logAuditEvent('REACTIVATE', 'admin', $admin_id, $user_id, ['action' => 'reactivate_admin']);
+        sendSuccess([], 'Admin reactivated successfully');
     }
 
     // ========================================
@@ -236,7 +280,7 @@ try {
             );
         }
 
-        sendSuccess(['users' => $users]);
+        sendSuccess(['users' => $users], null, true);
     }
 
     // Create new user (for admin)
@@ -450,7 +494,7 @@ try {
             );
         }
 
-        sendSuccess(['employees' => $employees]);
+        sendSuccess(['employees' => $employees], null, true);
     }
 
     // Create new employee
@@ -795,11 +839,23 @@ try {
             sendError('Unauthorized', 403);
         }
 
+        // Optional filter: product_status = 1 (active), 0 (deleted), 'all' (everything)
+        $productStatus = isset($_GET['product_status']) ? $_GET['product_status'] : '1';
+
+        $whereClause = '';
+        if ($productStatus === '0') {
+            $whereClause = 'WHERE p.active = 0';
+        } elseif ($productStatus === 'all') {
+            $whereClause = '';
+        } else {
+            $whereClause = 'WHERE p.active = 1';
+        }
+
         $products = $db->fetchAll(
-            "SELECT p.id, p.name, p.slug, p.category_id, c.name as category_name, p.created_at
+            "SELECT p.id, p.name, p.slug, p.category_id, p.active, c.name as category_name, p.created_at
              FROM products p
              LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.active = 1
+             $whereClause
              ORDER BY p.created_at DESC"
         );
 
@@ -1026,11 +1082,31 @@ try {
         sendSuccess(['message' => 'Product deleted']);
     }
 
+    // Restore product (set active = 1)
+    elseif ($action === 'restoreProduct') {
+        if (!in_array($current_user['role'], ['admin', 'superadmin', 'employee'])) {
+            sendError('Unauthorized', 403);
+        }
+
+        $productId = $_GET['product_id'] ?? $_POST['product_id'] ?? null;
+
+        if (!$productId) {
+            sendError('Product ID is required');
+        }
+
+        $db->execute("UPDATE products SET active = 1 WHERE id = ?", [$productId]);
+
+        // Log audit
+        logAuditEvent('RESTORE', 'product', $productId, $current_user['id'], ['product_id' => $productId]);
+
+        sendSuccess(['message' => 'Product restored successfully']);
+    }
+
     // ========================================
-    // AUDIT TRAIL MANAGEMENT (Admin & Superadmin - READ ONLY)
+    // AUDIT TRAIL MANAGEMENT (Admin & Superadmin)
     // ========================================
 
-    // Get audit trail logs (paginated, read-only)
+    // Get audit trail logs (paginated)
     elseif ($action === 'getAuditTrail') {
         if (!in_array($current_user['role'], ['admin', 'superadmin'])) {
             sendError('Unauthorized - Admin access required', 403);
@@ -1048,62 +1124,94 @@ try {
         $dateFrom = isset($_GET['date_from']) ? sanitizeInput($_GET['date_from']) : null;
         $dateTo = isset($_GET['date_to']) ? sanitizeInput($_GET['date_to']) : null;
 
-        // Build query with filters
+        // Build combined query from audit_trail (all categories) + login_attempts (authentication)
+        // This union ensures all CRUD, auth, and system events appear in the audit log
+        $baseSql = "SELECT * FROM (
+            -- All entries from audit_trail table (CRUD, auth, system, etc.)
+            SELECT 
+                at.id,
+                at.actor_email,
+                at.actor_role,
+                at.action_type,
+                at.action_category,
+                at.description,
+                at.actor_ip,
+                at.created_at,
+                'audit_trail' as source
+            FROM audit_trail at
+
+            UNION ALL
+
+            -- Login attempts not already in audit_trail (authentication events from users)
+            SELECT 
+                la.id + 1000000 as id,
+                la.email as actor_email,
+                CASE 
+                    WHEN la.account_type = 'admin' THEN 'admin'
+                    ELSE 'admin'
+                END as actor_role,
+                CASE 
+                    WHEN la.success = 1 AND la.failure_reason = 'Logout' THEN 'LOGOUT'
+                    WHEN la.success = 1 THEN 'LOGIN'
+                    WHEN la.failure_reason LIKE '%locked%' THEN 'ACCOUNT_LOCKED'
+                    ELSE 'LOGIN_FAILED'
+                END as action_type,
+                'AUTHENTICATION' as action_category,
+                CASE 
+                    WHEN la.success = 1 AND la.failure_reason = 'Logout' THEN 'Logout'
+                    WHEN la.success = 1 THEN CONCAT('Login Success (', la.account_type, ')')
+                    WHEN la.failure_reason LIKE '%locked%' THEN CONCAT('Account Locked - ', la.failure_reason)
+                    ELSE CONCAT('Login Failed - ', COALESCE(la.failure_reason, 'Unknown reason'))
+                END as description,
+                la.ip_address as actor_ip,
+                la.attempt_time as created_at,
+                'login_attempts' as source
+            FROM login_attempts la
+            WHERE NOT EXISTS (
+                SELECT 1 FROM audit_trail at2 
+                WHERE at2.actor_email = la.email 
+                AND at2.action_category = 'AUTHENTICATION'
+                AND at2.created_at = la.attempt_time
+            )
+        ) combined";
+
+        // Build WHERE conditions on the combined result
         $whereConditions = [];
         $params = [];
 
         if ($actorEmail) {
-            $whereConditions[] = "email LIKE ?";
+            $whereConditions[] = "actor_email LIKE ?";
             $params[] = "%$actorEmail%";
         }
         if ($actionType) {
-            $whereConditions[] = "event_type = ?";
+            $whereConditions[] = "action_type = ?";
             $params[] = $actionType;
         }
         if ($actionCategory) {
-            $whereConditions[] = "account_type = ?";
+            $whereConditions[] = "action_category = ?";
             $params[] = $actionCategory;
         }
         if ($dateFrom) {
-            $whereConditions[] = "event_time >= ?";
+            $whereConditions[] = "created_at >= ?";
             $params[] = $dateFrom . ' 00:00:00';
         }
         if ($dateTo) {
-            $whereConditions[] = "event_time <= ?";
+            $whereConditions[] = "created_at <= ?";
             $params[] = $dateTo . ' 23:59:59';
         }
 
-        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        $whereClause = !empty($whereConditions) ? ' WHERE ' . implode(' AND ', $whereConditions) : '';
 
-        // Get total count from the combined authentication activity view
-        $countSql = "SELECT COUNT(*) as total FROM v_authentication_activity $whereClause";
+        // Get total count
+        $countSql = "SELECT COUNT(*) as total FROM ($baseSql $whereClause) as counted";
         $countResult = $db->fetchOne($countSql, $params);
         $totalItems = $countResult['total'] ?? 0;
 
-        // Get paginated results from the view (includes both audit_trail and login_attempts)
-        $sql = "SELECT 
-                    id, 
-                    email as actor_email, 
-                    account_type, 
-                    role as actor_role,
-                    event_type as action_type, 
-                    'AUTHENTICATION' as action_category,
-                    event_description as description,
-                    ip_address as actor_ip, 
-                    event_time as created_at,
-                    source
-                FROM v_authentication_activity 
-                $whereClause 
-                ORDER BY event_time DESC 
-                LIMIT ? OFFSET ?";
+        // Get paginated results
+        $sql = "$baseSql $whereClause ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        $paginatedParams = array_merge($params, [$perPage, $offset]);
 
-        $params[] = $perPage;
-        $params[] = $offset;
-
-        $logs = $db->fetchAll($sql, $params);
-
-        // Log this view action
-        logAuditTrailView($db, $current_user['id'], $current_user['email'], $current_user['role']);
+        $logs = $db->fetchAll($sql, $paginatedParams);
 
         // Send response with timestamps preserved (audit logs NEED timestamps!)
         sendSuccess([
@@ -1112,7 +1220,7 @@ try {
                 'current_page' => $page,
                 'per_page' => $perPage,
                 'total_items' => $totalItems,
-                'total_pages' => ceil($totalItems / $perPage)
+                'total_pages' => max(1, ceil($totalItems / $perPage))
             ]
         ], null, true); // true = preserve timestamps for audit logs
     }

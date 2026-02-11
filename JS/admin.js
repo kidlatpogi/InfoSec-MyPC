@@ -138,7 +138,7 @@ function renderUserRows(users, tbody) {
     // Fix invalid date issue
     let createdDate = "N/A";
     if (user.created_at) {
-      const date = new Date(user.created_at);
+      const date = new Date(user.created_at.replace(' ', 'T'));
       if (!isNaN(date.getTime())) {
         createdDate = date.toLocaleDateString();
       }
@@ -188,7 +188,7 @@ function renderEmployeeRows(employees, tbody) {
     // Fix invalid date issue
     let createdDate = "N/A";
     if (emp.created_at) {
-      const date = new Date(emp.created_at);
+      const date = new Date(emp.created_at.replace(' ', 'T'));
       if (!isNaN(date.getTime())) {
         createdDate = date.toLocaleDateString();
       }
@@ -237,6 +237,25 @@ function renderProductRows(products, tbody) {
       (sum, v) => sum + parseInt(v.stock || 0),
       0,
     );
+    const isDeleted = product.active == 0;
+
+    // Add visual indicator for deleted products
+    if (isDeleted) {
+      row.style.opacity = "0.7";
+      row.style.backgroundColor = "#fff3f3";
+    }
+
+    // Status display
+    const statusBadge = isDeleted
+      ? '<span class="badge" style="background:#dc2626;font-size:0.75rem;">Deleted</span>'
+      : '<span class="badge" style="background:#22c55e;font-size:0.75rem;">Active</span>';
+
+    // Actions - different for deleted vs active
+    const actionButtons = isDeleted
+      ? `<button class="btn btn-sm btn-success" data-action="restore" data-product-id="${product.id}">Restore</button>`
+      : `<button class="btn btn-sm" data-action="view" data-product-id="${product.id}">View</button>
+        <button class="btn btn-sm" data-action="edit" data-product-id="${product.id}">Edit</button>
+        <button class="btn btn-sm btn-danger" data-action="delete" data-product-id="${product.id}">Delete</button>`;
 
     row.innerHTML = `
       <td>${product.name}</td>
@@ -244,11 +263,8 @@ function renderProductRows(products, tbody) {
       <td>${formatPHP(minPrice)}</td>
       <td>${variants.length}</td>
       <td>${totalStock}</td>
-      <td>
-        <button class="btn btn-sm" data-action="view" data-product-id="${product.id}">View</button>
-        <button class="btn btn-sm" data-action="edit" data-product-id="${product.id}">Edit</button>
-        <button class="btn btn-sm btn-danger" data-action="delete" data-product-id="${product.id}">Delete</button>
-      </td>
+      <td>${statusBadge}</td>
+      <td>${actionButtons}</td>
     `;
     tbody.appendChild(row);
   });
@@ -556,6 +572,7 @@ function initEventDelegation() {
       if (action === "view") viewProduct(productId);
       else if (action === "edit") editProduct(productId);
       else if (action === "delete") deleteProduct(productId);
+      else if (action === "restore") restoreProduct(productId);
     }
     // Order actions
     else if (button.dataset.orderId) {
@@ -615,6 +632,14 @@ function initAdminSearch() {
   if (productSearch) {
     productSearch.addEventListener("input", () => {
       filterProductsTable();
+    });
+  }
+
+  // Product status filter
+  const productStatusFilter = document.getElementById("product-status-filter");
+  if (productStatusFilter) {
+    productStatusFilter.addEventListener("change", () => {
+      loadProducts();
     });
   }
 
@@ -886,11 +911,15 @@ async function loadProducts() {
   }
 
   tbody.innerHTML =
-    '<tr><td colspan="6" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+    '<tr><td colspan="7" style="text-align:center;padding:2rem">Loading products...</td></tr>';
+
+  // Get filter value from dropdown
+  const statusFilter = document.getElementById("product-status-filter");
+  const productStatus = statusFilter ? statusFilter.value : '1';
 
   try {
     console.log("Calling ProductsAPI.getAllProducts()...");
-    const data = await ProductsAPI.getAllProducts();
+    const data = await ProductsAPI.getAllProducts(productStatus);
     console.log("Products data received:", data);
 
     // Store all data in pagination state and sort alphabetically by product name
@@ -923,7 +952,7 @@ async function loadProducts() {
     console.error("Failed to load products:", error);
     console.error("Error details:", error.message, error.stack);
     const errorMsg = error.message || "Unknown error";
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}<br><small>Check console for details</small></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#d32f2f;">Failed to load products: ${errorMsg}<br><small>Check console for details</small></td></tr>`;
   }
 }
 
@@ -1984,7 +2013,7 @@ async function deleteProduct(productId) {
   if (!verified) return;
 
   showConfirmDialog(
-    "Are you sure you want to delete this product? This action cannot be undone.",
+    "Are you sure you want to delete this product?",
     async () => {
       try {
         await ProductsAPI.deleteProduct(productId);
@@ -1992,6 +2021,24 @@ async function deleteProduct(productId) {
         loadProducts();
       } catch (error) {
         alert("Error deleting product: " + error.message);
+      }
+    },
+  );
+}
+
+async function restoreProduct(productId) {
+  const verified = await verifyPassword();
+  if (!verified) return;
+
+  showConfirmDialog(
+    "Are you sure you want to restore this product? It will become active again.",
+    async () => {
+      try {
+        await ProductsAPI.restoreProduct(productId);
+        alert("Product restored successfully");
+        loadProducts();
+      } catch (error) {
+        alert("Error restoring product: " + error.message);
       }
     },
   );
@@ -2415,6 +2462,7 @@ window.viewProduct = viewProduct;
 window.editProduct = editProduct;
 window.editStock = editStock;
 window.deleteProduct = deleteProduct;
+window.restoreProduct = restoreProduct;
 window.openVariantsEditor = openVariantsEditor;
 window.addVariant = addVariant;
 window.removeVariant = removeVariant;
