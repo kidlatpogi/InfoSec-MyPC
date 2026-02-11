@@ -149,8 +149,8 @@ async function loadUserOrders() {
                     <p><strong>Items:</strong> ${itemsList}</p>
                 </div>
                 <div class="order-actions">
-                    <button class="btn" onclick="viewOrderDetails(${order.id})">View Details</button>
-                    ${order.status === 'pending' ? `<button class="btn" onclick="cancelOrder(${order.id})">Cancel</button>` : ''}
+                    <button class="btn view-order-details-btn" data-order-id="${order.id}">View Details</button>
+                    ${order.status === 'pending' ? `<button class="btn cancel-order-btn" data-order-id="${order.id}">Cancel</button>` : ''}
                 </div>
             `;
 
@@ -508,6 +508,24 @@ function initProfileEditForm() {
             alert('Error updating profile. Please check the console for details.');
         }
     });
+
+    // Add event listeners for password toggle icons
+    document.querySelectorAll('.toggle-password-icon').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const fieldId = this.getAttribute('data-field');
+            const field = document.getElementById(fieldId);
+            if (field) {
+                const isPassword = field.type === 'password';
+                field.type = isPassword ? 'text' : 'password';
+            }
+        });
+    });
+
+    // Add event listener for delete account button
+    const deleteAccountBtn = document.querySelector('.delete-account-btn');
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', deleteMyAccount);
+    }
 }
 
 // ========================================
@@ -541,9 +559,9 @@ async function loadAddresses() {
                         ${addr.is_default ? '<span class="badge" style="background:#10b981;color:white;padding:0.2rem 0.6rem;border-radius:4px;font-size:0.8rem;">Default</span>' : ''}
                     </div>
                     <div style="display:flex;flex-direction:column;gap:0.25rem;">
-                        <button class="btn btn-sm" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #ddd;border-radius:4px;background:#fff;" onclick="editAddress(${addr.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #d32f2f;border-radius:4px;background:#fff;color:#d32f2f;" onclick="deleteAddress(${addr.id})">Delete</button>
-                        ${!addr.is_default ? `<button class="btn btn-sm" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #10b981;border-radius:4px;background:#fff;color:#10b981;" onclick="setDefaultAddress(${addr.id})">Set Default</button>` : ''}
+                        <button class="btn btn-sm edit-address-btn" data-address-id="${addr.id}" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #ddd;border-radius:4px;background:#fff;">Edit</button>
+                        <button class="btn btn-sm delete-address-btn" data-address-id="${addr.id}" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #d32f2f;border-radius:4px;background:#fff;color:#d32f2f;">Delete</button>
+                        ${!addr.is_default ? `<button class="btn btn-sm set-default-btn" data-address-id="${addr.id}" style="margin:0.25rem;padding:0.4rem 0.8rem;cursor:pointer;border:1px solid #10b981;border-radius:4px;background:#fff;color:#10b981;">Set Default</button>` : ''}
                     </div>
                 </div>
             `;
@@ -658,6 +676,23 @@ function initAddressManagement() {
         });
     });
 
+    // Address list event delegation
+    const addressesList = document.querySelector('#addresses .addresses-list');
+    if (addressesList) {
+        addressesList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-address-btn')) {
+                const addressId = e.target.getAttribute('data-address-id');
+                editAddress(parseInt(addressId));
+            } else if (e.target.classList.contains('delete-address-btn')) {
+                const addressId = e.target.getAttribute('data-address-id');
+                deleteAddress(parseInt(addressId));
+            } else if (e.target.classList.contains('set-default-btn')) {
+                const addressId = e.target.getAttribute('data-address-id');
+                setDefaultAddress(parseInt(addressId));
+            }
+        });
+    }
+
     // Initial load
     loadAddresses();
 }
@@ -769,6 +804,20 @@ function initOrderSorting() {
 
     if (sortStatus) {
         sortStatus.addEventListener('change', sortOrders);
+    }
+
+    // Event delegation for order action buttons
+    const ordersList = document.getElementById('orders-list');
+    if (ordersList) {
+        ordersList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-order-details-btn')) {
+                const orderId = e.target.getAttribute('data-order-id');
+                viewOrderDetails(parseInt(orderId));
+            } else if (e.target.classList.contains('cancel-order-btn')) {
+                const orderId = e.target.getAttribute('data-order-id');
+                cancelOrder(parseInt(orderId));
+            }
+        });
     }
 }
 
