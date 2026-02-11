@@ -402,7 +402,7 @@ DELIMITER ;
 
 -- Procedure to archive user account
 DELIMITER $$
-CREATE PROCEDURE IF NOT EXISTS `archive_user`(IN p_user_id BIGINT)
+CREATE PROCEDURE IF NOT EXISTS `archive_user`(IN p_user_id BIGINT UNSIGNED)
 BEGIN
     UPDATE users 
     SET is_archived = 1, 
@@ -413,7 +413,7 @@ DELIMITER ;
 
 -- Procedure to restore archived user
 DELIMITER $$
-CREATE PROCEDURE IF NOT EXISTS `restore_user`(IN p_user_id BIGINT)
+CREATE PROCEDURE IF NOT EXISTS `restore_user`(IN p_user_id BIGINT UNSIGNED)
 BEGIN
     UPDATE users 
     SET is_archived = 0, 
