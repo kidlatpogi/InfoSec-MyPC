@@ -294,26 +294,10 @@ INSERT IGNORE INTO `users` (`email`, `password_hash`, `first_name`, `last_name`,
 -- =====================================================
 -- SAMPLE PRODUCTS DATA
 -- =====================================================
--- Complete product catalog with all categories
--- Note: For additional storage products, see inline data below
+-- Product data is managed in 2 products_inserts.sql
+-- Run that file after this one to populate the full product catalog
+-- with correct product IDs and image associations
 -- =====================================================
-
--- Sample AMD CPU Products
-INSERT IGNORE INTO `products` (`category_id`, `sku`, `name`, `slug`, `short_description`, `long_description`, `active`) VALUES
-(1, 'CPU-AMD-R5-7600', 'AMD Ryzen 5 7600', 'amd-ryzen-5-7600', '6-core / 12-thread Zen 4 desktop processor', '6-core / 12-thread Zen 4 desktop processor, 3.8 GHz base, 5.1 GHz boost, 6 MB L2 + 32 MB L3, 65 W TDP, AM5 socket. Native DDR5-5200 support and integrated Radeon Graphics.', 1),
-(1, 'CPU-AMD-R7-7800X3D', 'AMD Ryzen 7 7800X3D', 'amd-ryzen-7-7800x3d', '8C/16T gaming CPU with 3D V-Cache', '8C/16T gaming CPU with 96 MB L3 stacked cache, 4.2 GHz base, 5.0 GHz boost, 120 W. Massive cache delivers 10-30% better gaming FPS.', 1);
-
--- Sample CPU Variants
-INSERT IGNORE INTO `product_variants` (`product_id`, `variant_sku`, `title`, `price`, `stock`) VALUES
-(1, 'CPU-AMD-R5-7600-BOX', 'Boxed with Cooler', 14995.00, 15),
-(1, 'CPU-AMD-R5-7600-OEM', 'OEM (Tray)', 13795.00, 10),
-(2, 'CPU-AMD-R7-7800X3D-BOX', 'Boxed', 27995.00, 10),
-(2, 'CPU-AMD-R7-7800X3D-OEM', 'OEM (Tray)', 26795.00, 5);
-
--- Sample CPU Images
-INSERT IGNORE INTO `product_images` (`product_id`, `url`, `alt_text`, `order`) VALUES
-(1, '/assets/AMD CPU/AMD RYZEN 5 7600.webp', 'AMD Ryzen 5 7600', 0),
-(2, '/assets/AMD CPU/AMD RYZEN 7 7800 X3D.webp', 'AMD Ryzen 7 7800X3D', 0);
 
 -- =====================================================
 -- ANALYTICS & REPORTING VIEWS (Optional)
