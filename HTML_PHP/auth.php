@@ -6,9 +6,14 @@
 
 // Secure session configuration - MUST be set before session_start()
 // Ref: Secure Coding Practices - Slides 99-107
+// Detect if running over HTTPS to set cookie secure flag accordingly
+$isHTTPS = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        || (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);       // Enforce HTTPS-only cookies
-ini_set('session.cookie_samesite', 'Strict'); // Prevent CSRF (Slide 106)
+ini_set('session.cookie_secure', $isHTTPS ? 1 : 0);
+ini_set('session.cookie_samesite', $isHTTPS ? 'Strict' : 'Lax');
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
 
@@ -17,9 +22,9 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => true,     // Strict HTTPS (Slide 106)
+    'secure' => $isHTTPS,
     'httponly' => true,
-    'samesite' => 'Strict' // CSRF protection (Slide 106)
+    'samesite' => $isHTTPS ? 'Strict' : 'Lax'
 ]);
 
 session_start();

@@ -38,6 +38,18 @@ class SecurityHeaders {
         // 'https://yourdomain.com',
         // 'https://www.yourdomain.com',
     ];
+
+    /**
+     * Check if an origin is from a private/local network IP
+     */
+    private static function isPrivateNetworkOrigin($origin) {
+        $parsed = parse_url($origin);
+        if (!$parsed || !isset($parsed['host'])) return false;
+        $host = $parsed['host'];
+        // Allow private network IPs (RFC 1918)
+        return filter_var($host, FILTER_VALIDATE_IP) &&
+               !filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+    }
     
     // Allowed methods for CORS
     private static $allowedMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -90,8 +102,8 @@ class SecurityHeaders {
     private static function handleCORS() {
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
         
-        // Check if origin is allowed
-        if (in_array($origin, self::$allowedOrigins)) {
+        // Check if origin is allowed (explicit list or private network IP)
+        if (in_array($origin, self::$allowedOrigins) || self::isPrivateNetworkOrigin($origin)) {
             header('Access-Control-Allow-Origin: ' . $origin);
             header('Access-Control-Allow-Credentials: true');
             header('Vary: Origin');
