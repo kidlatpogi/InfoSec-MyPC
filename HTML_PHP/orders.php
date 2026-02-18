@@ -337,13 +337,13 @@ try {
         }
 
         // Get order items with product details and images
+        // Use a subquery for image to avoid duplicate rows when a product has multiple images
         $items = $db->fetchAll(
             "SELECT oi.*, p.slug, p.name as product_name_full, pv.title as variant_title_full,
-                    pi.url as image_url
+                    (SELECT pi.url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.`order` ASC LIMIT 1) as image_url
              FROM order_items oi
              LEFT JOIN product_variants pv ON oi.variant_id = pv.id
              LEFT JOIN products p ON pv.product_id = p.id
-             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.`order` = 0
              WHERE oi.order_id = ?",
             [$order_id]
         );
